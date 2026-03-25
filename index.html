@@ -104,6 +104,14 @@ button.danger{background:var(--red-bg);color:var(--red);border:1px solid #ff6b6b
 .toast.show{transform:translateY(0)}
 .data-count{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;color:var(--text2);font-family:'Space Mono',monospace}
 .data-count .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}.hidden{display:none!important}
+.cat-row{cursor:pointer;position:relative}
+.cat-row:hover{background:var(--surface3);transform:translateX(2px)}
+.cat-row .chevron{color:var(--text3);font-size:18px;font-weight:700;margin-left:4px;transition:color .2s}
+.cat-row:hover .chevron{color:var(--accent2)}
+.cat-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:16px;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.cat-modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding-left:12px;margin-bottom:16px}
+@media(max-width:768px){.cat-modal{padding:14px}.cat-modal-header{margin-bottom:12px}}
 </style>
 </head>
 <body>
@@ -189,9 +197,10 @@ function rDash(el){
   </div>`}
   ${m?`<div class="section-title">Par mois</div>${Object.entries(gMT()).map(([mo,v])=>{const dd=v.i-v.e;return`<div class="expense-row"><span class="cat" style="min-width:50px">${(MN[mo]||mo).slice(0,3)}</span><span class="amt positive">${fS(v.i)}</span><span class="amt negative">${fS(v.e)}</span><span class="badge ${dd<0?'badge-red':'badge-green'}">${dd>=0?'+':''}${fS(dd)}</span></div>`}).join('')}`:''}
   <div class="section-title">Catégories</div>
-  ${ct.map(([c,t])=>{const pct=(t/mx*100).toFixed(0);const col=CC[c]||'#636e72';return m?
-    `<div class="expense-row"><span style="width:8px;height:8px;border-radius:2px;background:${col};flex-shrink:0"></span><span class="cat" style="min-width:0;flex:1;font-size:13px">${c}</span><span class="amt negative" style="font-size:13px">${fS(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}">${fS(t/mc)}/m</span></div>`:
-    `<div class="expense-row"><span class="cat">${c}</span><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="amt negative">${fmt(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}" style="margin-left:8px">${fmt(t/mc)}/m</span></div>`}).join('')}`;
+  ${ct.map(([c,t])=>{const pct=(t/mx*100).toFixed(0);const col=CC[c]||'#636e72';const esc=c.replace(/'/g,"\\'");return m?
+    `<div class="expense-row cat-row" onclick="showCat('${esc}')"><span style="width:8px;height:8px;border-radius:2px;background:${col};flex-shrink:0"></span><span class="cat" style="min-width:0;flex:1;font-size:13px">${c}</span><span class="amt negative" style="font-size:13px">${fS(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}">${fS(t/mc)}/m</span><span class="chevron">\u203A</span></div>`:
+    `<div class="expense-row cat-row" onclick="showCat('${esc}')"><span class="cat">${c}</span><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="amt negative">${fmt(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}" style="margin-left:8px">${fmt(t/mc)}/m</span><span class="chevron">\u203A</span></div>`}).join('')}
+  <div id="catModal" class="cat-modal hidden"></div>`;
   if(!m){
     const tc=ct.slice(0,8),oT=ct.slice(8).reduce((s,[,v])=>s+v,0),lb=tc.map(([c])=>c),vl=tc.map(([,v])=>v);
     if(oT>0){lb.push('Autres');vl.push(oT)}
@@ -300,6 +309,31 @@ function rAdd(el){
 }
 
 window.setT=t=>{S.tab=t;render()};window.setMo=m=>{S.mo=m;render()};
+window.showCat=cat=>{
+  const d=gF().filter(x=>x.amount<0&&x.categoryParent===cat).sort((a,b)=>b.date<a.date?-1:1);
+  const total=abs(d.reduce((s,x)=>s+x.amount,0));
+  const col=CC[cat]||'#636e72';
+  const mc=S.mo===0?gM().length:1;
+  const m=mob();
+  // Group by supplier
+  const bySupp={};d.forEach(x=>{const k=x.label;bySupp[k]=(bySupp[k]||0)+abs(x.amount)});
+  const topSupp=Object.entries(bySupp).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  const modal=document.getElementById('catModal');
+  modal.classList.remove('hidden');
+  modal.innerHTML=`
+    <div class="cat-modal-header" style="border-left:4px solid ${col}">
+      <div><h3 style="margin:0;font-size:${m?'16px':'18px'}">${cat}</h3>
+        <div style="color:var(--text2);font-size:13px;margin-top:4px">${d.length} opérations · ${fmt(total)} total · ${fmt(total/mc)}/mois</div>
+      </div>
+      <button onclick="closeCat()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">\u2715</button>
+    </div>
+    ${topSupp.length>1?`<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Top fournisseurs</div>${topSupp.map(([name,amt])=>{const pct=(amt/topSupp[0][1]*100).toFixed(0);return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:12px;min-width:${m?'100px':'140px'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span><div style="flex:1;height:4px;background:var(--surface3);border-radius:2px"><div style="width:${pct}%;height:100%;background:${col};border-radius:2px"></div></div><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);min-width:60px;text-align:right">${fmt(amt)}</span></div>`}).join('')}</div>`:''}
+    <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Détail des opérations</div>
+    <div class="tx-list" style="max-height:${m?'300px':'400px'}">${d.map(x=>`<div class="tx-item"><span class="tx-date">${x.date.slice(5)}</span><span class="tx-label">${x.label}</span><span class="tx-amt negative">${fmt(abs(x.amount))}</span></div>`).join('')}</div>`;
+  modal.scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.closeCat=()=>{document.getElementById('catModal').classList.add('hidden');};
 window.addE=()=>{const l=document.getElementById('aL').value.trim(),a=parseFloat(document.getElementById('aA').value),c=document.getElementById('aC').value,d=document.getElementById('aD').value;if(!l||!a)return toast('\u26A0\uFE0F','Remplis libellé et montant');S.manual.push({date:d,label:l,categoryParent:c,amount:-abs(a),month:+d.split('-')[1]});save();toast('\u2705',l+' ajouté');render()};
 window.addInc=()=>{const l=document.getElementById('iL').value.trim(),a=parseFloat(document.getElementById('iA').value),c=document.getElementById('iC').value,d=document.getElementById('iD').value;if(!l||!a)return toast('\u26A0\uFE0F','Remplis libellé et montant');S.inc.push({date:d,label:l,categoryParent:c,amount:abs(a),month:+d.split('-')[1]});save();toast('\u2705','+'+fmt(a)+' — '+l);render()};
 window.rmM=i=>{S.manual.splice(i,1);save();render()};
