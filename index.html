@@ -103,11 +103,15 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .ri .rd{width:24px;height:24px;border-radius:50%;border:none;background:var(--nob);color:var(--no);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:8px;flex-shrink:0}.ri .rd:hover{background:var(--no);color:#fff}
 .fab{position:fixed;bottom:32px;right:32px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--al));color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 6px 24px var(--ag);z-index:90;display:flex;align-items:center;justify-content:center;transition:all .25s}.fab:hover{transform:scale(1.08)}.fab:active{transform:scale(.95)}
 /* Fixed charges */
-.fix-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.fix-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer;transition:all .15s;border-radius:6px;margin:0 -4px}
 .fix-item:last-child{border-bottom:none}
+.fix-item:hover{background:rgba(255,255,255,0.03)}
 .fix-item .fix-icon{font-size:14px;flex-shrink:0}
 .fix-item .fix-label{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fix-item .fix-amt{font-family:var(--m);font-weight:700;color:var(--no);flex-shrink:0}
+.fix-item .fix-toggle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .2s;color:transparent}
+.fix-item .fix-toggle.on{border-color:var(--ok);background:var(--ok);color:#fff}
+.fix-item .fix-toggle.off{border-color:var(--no);background:var(--nob);color:var(--no)}
 .fix-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(124,108,240,0.15);color:var(--al);margin-left:6px;letter-spacing:.3px}
 /* Type toggle */
 .type-toggle{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs)}
@@ -139,7 +143,7 @@ const SR=[["2026-01-30","2026-01-30","CARTE 29/01/26 KEOLIS RENNES ME CB*2399","
 const COL={"Vie quotidienne":"#7c6cf0","Loisirs et sorties":"#f06c9a","Auto & Moto":"#f0c34e","Abonnements & téléphonie":"#5da8f0","Santé":"#34d9b4","Virements émis":"#a89eff","Logement":"#3ee8a8","Emprunts (hors immobilier)":"#f06c6c","Non catégorisé":"#6b7080","Retraits cash":"#a0aab5","Voyages & Transports":"#e07548","Chèques":"#c8d0d8","Cadeaux et solidarité":"#f0d84e","Autres dépenses":"#f0a080","Services financiers & professionnels":"#8899aa"};
 const IC={"Vie quotidienne":"🛒","Loisirs et sorties":"🎉","Auto & Moto":"🚗","Abonnements & téléphonie":"📱","Santé":"💊","Virements émis":"📤","Logement":"🏠","Emprunts (hors immobilier)":"💳","Non catégorisé":"❓","Retraits cash":"💵","Voyages & Transports":"🚆","Chèques":"📝","Cadeaux et solidarité":"🎁","Autres dépenses":"📦","Services financiers & professionnels":"🏦"};
 const MN=["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-const TABS=[{id:'dashboard',l:'📊 Vue'},{id:'forecast',l:'🔮 Prévoir'},{id:'transactions',l:'📋 Opérations'},{id:'import',l:'📥 Import'},{id:'settings',l:'⚙️'}];
+const TABS=[{id:'dashboard',l:'📊 Vue'},{id:'forecast',l:'📅 Prévoir'},{id:'transactions',l:'📋 Opérations'},{id:'import',l:'📥 Import'},{id:'settings',l:'⚙️'}];
 const AC=Object.keys(COL).sort();
 const DEFO={"hlm les foyers":"Logement"};
 // Categories that are typically fixed charges
@@ -186,15 +190,13 @@ function detectFixed(){
   });
   const fixed=[];
   Object.entries(bySup).forEach(([sup,d])=>{
-    // User override
-    if(S.fixedSup[sup]===false)return; // explicitly excluded
+    if(S.fixedSup[sup]===false)return;
     const mc=Object.keys(d.months).length;
     const amts=Object.values(d.months);
     const avg=amts.reduce((a,b)=>a+b,0)/mc;
-    const maxDev=Math.max(...amts.map(a=>Math.abs(a-avg)/avg));
-    // Auto-detect: appears in most months, stable amount, AND in a "fixed" category
-    const isFixed=S.fixedSup[sup]===true || // user forced
-      (mc>=Math.min(mks.length,2) && maxDev<0.15 && FIXED_CATS.has(d.cat));
+    const maxDev=Math.max(...amts.map(a=>Math.abs(a-avg)/Math.max(avg,1)));
+    const isFixed=S.fixedSup[sup]===true||
+      (mc>=Math.min(mks.length,2)&&maxDev<0.15&&FIXED_CATS.has(d.cat));
     if(isFixed){
       fixed.push({supplier:sup,label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),cat:d.cat,avg,months:mc,forced:S.fixedSup[sup]===true});
     }
@@ -222,7 +224,7 @@ function vD(mks){
   const st=cSt(S.mk),sorted=Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
   const ded=[];if(S.taxOn&&S.taxR>0)ded.push(`Impôt ${S.taxR}%`);if(S.savOn&&S.savT>0)ded.push(`Épargne ${fmt(S.savT)}`);
   
-  // Fixed charges
+  // Fixed charges - only show active ones (excluded disappear naturally)
   const fixed=detectFixed();
   const fixedTotal=fixed.reduce((s,f)=>s+f.avg,0);
   
@@ -232,10 +234,15 @@ function vD(mks){
   
   // FIXED CHARGES CARD
   if(fixed.length){
-    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span></div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charges récurrentes détectées · <span style="color:var(--ok)">${fmt(av-fixedTotal)}</span> restant après charges</div>`;
+    const editing=S._editFix;
+    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charges · <span style="color:var(--ok)">${fmt(net()-fixedTotal)}</span> restant après charges${editing?' · <span style="color:var(--al)">Décochez pour retirer</span>':''}</div>`;
     fixed.forEach(f=>{
-      h+=`<div class="fix-item"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
+      if(editing){
+        h+=`<div class="fix-item" onclick="removeFix('${esc(f.supplier)}')"><span class="fix-toggle on">✓</span><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
+      } else {
+        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
+      }
     });
     h+=`</div>`;
   }
@@ -289,10 +296,8 @@ function vT(mks){
 
 /* ══ IMPORT ══ */
 function vI(){
-  return`<div class="card"><div class="ct" style="margin-bottom:14px">📥 Import CSV BoursoBank</div><p style="color:var(--ts);margin-bottom:16px;font-size:13px">Les mois sont détectés automatiquement. Import multiple supporté.</p>
-  <div class="uz" id="dz" onclick="document.getElementById('fi').click()"><div style="font-size:40px;margin-bottom:12px">📄</div><div style="font-weight:600">Cliquez ou déposez un/des CSV</div><input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="oF(event)" multiple></div>
-  <div class="fg"><label>Ou collez le CSV</label><textarea id="ct" rows="8" placeholder="dateOp;dateVal;label;..."></textarea></div>
-  <button class="btn bp" onclick="iT()">📥 Importer</button></div>
+  return`<div class="card"><div class="ct" style="margin-bottom:14px">📥 Import CSV</div><p style="color:var(--ts);margin-bottom:16px;font-size:13px">Importez vos relevés bancaires. Les mois sont détectés automatiquement.</p>
+  <div class="uz" id="dz" onclick="document.getElementById('fi').click()"><div style="font-size:40px;margin-bottom:12px">📄</div><div style="font-weight:600;margin-bottom:4px">Cliquez ou déposez vos CSV</div><div style="font-size:12px;color:var(--tm)">Import multiple supporté</div><input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="oF(event)" multiple></div></div>
   <div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:12px">⚠️ Reset</div><button class="btn bd" onclick="rAll()">🗑️ Tout effacer</button></div>`;
 }
 
@@ -331,6 +336,7 @@ function vS(){
 /* ── ACTIONS ── */
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
+function removeFix(sup){S.fixedSup[sup]=false;S._editFix=false;save();render();toast('🔓','Charge retirée')}
 function sFE(c){S.fEd=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
 function cFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.fAdj[c]=v;S.fEd=null;save();render();toast('✅','OK')}}
 function xFE(){S.fEd=null;render()}
@@ -359,19 +365,50 @@ function showCD(cat){
 /* ── REASSIGN ── */
 function oRe(id){
   const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  const b=document.getElementById('m-re-b'),sup=tx.supplier,same=sup?S.tx.filter(t=>t.supplier.toLowerCase()===sup.toLowerCase()):[];
+  const b=document.getElementById('m-re-b'),sup=tx.supplier,supL=sup?sup.toLowerCase():'',same=sup?S.tx.filter(t=>t.supplier.toLowerCase()===supL):[];
+  const isRec=S.fixedSup[supL]===true||S.manRec.some(r=>r.supplier===supL);
   let h=`<div style="margin-bottom:16px;padding:14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
     <div style="font-weight:600;font-size:14px;margin-bottom:4px">${tx.label}</div>
     <div style="font-size:12px;color:var(--tm);font-family:var(--m)">${tx.date} · ${fmtD(Math.abs(tx.amount))}</div>
-    <div style="font-size:12px;color:var(--ts);margin-top:4px">Actuel: <strong>${tx.categoryParent}</strong></div>
+    <div style="font-size:12px;color:var(--ts);margin-top:4px">Catégorie: <strong>${tx.categoryParent}</strong></div>
     ${sup?`<div style="font-size:11px;color:var(--tm);margin-top:4px">"${sup}" → ${same.length} opérations</div>`:''}
-  </div><div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Nouvelle catégorie</div>`;
+  </div>
+  <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Type de dépense</div>
+  <div style="display:flex;gap:8px;margin-bottom:20px">
+    <div onclick="setRecur(${id},false)" style="flex:1;padding:14px;border-radius:var(--rs);border:1px solid ${isRec?'var(--border)':'var(--accent)'};background:${isRec?'transparent':'rgba(124,108,240,0.08)'};cursor:pointer;text-align:center;transition:all .2s">
+      <div style="font-size:20px;margin-bottom:4px">⚡</div>
+      <div style="font-weight:600;font-size:13px;color:${isRec?'var(--ts)':'var(--text)'}">Ponctuel</div>
+    </div>
+    <div onclick="setRecur(${id},true)" style="flex:1;padding:14px;border-radius:var(--rs);border:1px solid ${isRec?'var(--accent)':'var(--border)'};background:${isRec?'rgba(124,108,240,0.08)':'transparent'};cursor:pointer;text-align:center;transition:all .2s">
+      <div style="font-size:20px;margin-bottom:4px">🔄</div>
+      <div style="font-weight:600;font-size:13px;color:${isRec?'var(--text)':'var(--ts)'}">Récurrent</div>
+      <div style="font-size:10px;color:var(--tm);margin-top:2px">→ Charge fixe</div>
+    </div>
+  </div>
+  <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Catégorie</div>`;
   AC.forEach(cat=>{const col=COL[cat]||'#6b7080',ic=IC[cat]||'📦',act=cat===tx.categoryParent;
     h+=`<div onclick="dRe(${id},'${esc(cat)}')" style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid ${act?'var(--accent)':'var(--border)'};background:${act?'rgba(124,108,240,0.08)':'transparent'};transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${act?'rgba(124,108,240,0.08)':'transparent'}'"><span style="font-size:16px">${ic}</span><span style="font-weight:600;font-size:13px;flex:1">${cat}</span><span style="width:10px;height:10px;border-radius:50%;background:${col}"></span></div>`});
-  if(sup)h+=`<div class="al aw" style="margin-top:14px">⚡ S'applique aux <strong>${same.length} opérations</strong> de "${sup}"</div>`;
+  if(sup)h+=`<div class="al aw" style="margin-top:14px">⚡ S'applique aux <strong>${same.length}</strong> opérations de "${sup}"</div>`;
   b.innerHTML=h;document.getElementById('m-re').classList.add('a');
 }
-function dRe(id,cat){const tx=S.tx.find(t=>t.id===id);if(!tx)return;const sup=tx.supplier.toLowerCase();if(sup)S.catOv[sup]=cat;S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=cat});save();cm('m-re');render();toast('🏷️',S.tx.filter(t=>t.supplier.toLowerCase()===sup).length+' → '+cat)}
+function setRecur(id,rec){
+  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
+  const supL=tx.supplier.toLowerCase();
+  if(rec){
+    S.fixedSup[supL]=true;
+    if(!S.manRec.some(r=>r.supplier===supL)){
+      S.manRec.push({label:tx.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),amount:tx.amount,cat:tx.categoryParent,supplier:supL})}
+    save();toast('🔄','Ajouté aux charges fixes');
+  }else{
+    delete S.fixedSup[supL];
+    S.manRec=S.manRec.filter(r=>r.supplier!==supL);
+    save();toast('⚡','Retiré des charges fixes');
+  }
+  oRe(id);render();
+}
+function dRe(id,cat){const tx=S.tx.find(t=>t.id===id);if(!tx)return;const sup=tx.supplier.toLowerCase();if(sup)S.catOv[sup]=cat;S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=cat});
+  S.manRec.forEach(r=>{if(r.supplier===sup)r.cat=cat});
+  save();cm('m-re');render();toast('🏷️',S.tx.filter(t=>t.supplier.toLowerCase()===sup).length+' → '+cat)}
 function dRule(sup){delete S.catOv[sup];const orig=stx(SR);S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup.toLowerCase()){const o=orig.find(x=>x.id===t.id);if(o)t.categoryParent=o.categoryParent}});aOv();save();render();toast('🗑️','Règle supprimée')}
 
 /* ── ADD TRANSACTION / RECURRING ── */
@@ -430,8 +467,7 @@ function pCSV(text){
 function oF(e){const files=e.target.files;if(!files.length)return;let t=0,d=0;
   const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
   Promise.all(ps).then(()=>{save();render();toast('✅',`${t} importées`);if(t>0)setTab('transactions')})}
-function iT(){const t=document.getElementById('ct').value.trim();if(!t)return;const n=pCSV(t);if(!n.length){toast('⚠️','Rien trouvé');return}
-  const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();save();render();toast('✅',`${u.length} importées`);if(u.length)setTab('transactions')}
+
 function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
 
 /* ── EVENTS ── */
@@ -446,385 +482,4 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')['m-cat','m-re','m-a
 /* ── INIT ── */
 load();const _m=gMks();S.mk=_m.length?_m[_m.length-1]:'all';rNav();render();
 
-</script></body></html>.cat-count{font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.06);padding:2px 7px;border-radius:6px;font-family:var(--mono)}
-.cat-amount{font-family:var(--mono);font-size:17px;font-weight:700}
-.cat-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:10px}
-.cat-fill{height:100%;border-radius:2px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
-.cat-footer{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-muted)}
-.cat-detail-arrow{opacity:0.5;transition:opacity 0.2s,transform 0.2s}.cat-card:hover .cat-detail-arrow{opacity:1;transform:translateX(2px)}
-.tx-list{display:flex;flex-direction:column;gap:6px}
-.tx-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius-sm);transition:all 0.15s;cursor:pointer}
-.tx-item:hover{background:rgba(255,255,255,0.03);transform:translateX(3px)}
-.tx-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.tx-content{flex:1;min-width:0}.tx-label{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
-.tx-meta{font-size:11px;color:var(--text-muted);font-family:var(--mono)}
-.tx-amount{font-family:var(--mono);font-size:14px;font-weight:700;text-align:right;flex-shrink:0}
-.negative{color:var(--danger)}.positive{color:var(--success)}
-.forecast-row{background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;transition:border-color 0.2s}.forecast-row:hover{border-color:var(--border-active)}
-.forecast-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.forecast-cat{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
-.forecast-dot{width:10px;height:10px;border-radius:50%}
-.forecast-amount-wrapper{display:flex;align-items:center;gap:6px}
-.forecast-amount{font-family:var(--mono);font-size:17px;font-weight:700;padding:4px 10px;border-radius:7px;background:var(--surface);cursor:pointer;border:1px solid transparent;transition:all 0.2s;min-width:75px;text-align:right}
-.forecast-amount:hover{border-color:var(--accent)}
-.forecast-amount.editing{background:var(--bg);border-color:var(--accent);cursor:text;outline:none;color:var(--text);font-family:var(--mono);font-size:17px;font-weight:700}
-.forecast-slider{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,0.08);border-radius:2px;outline:none;margin:10px 0;cursor:pointer}
-.forecast-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--cat-color,var(--accent));cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
-.forecast-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--cat-color,var(--accent));cursor:grab}
-.forecast-hint{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);font-family:var(--mono)}
-.scenario-card{padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;cursor:pointer;transition:all 0.25s}
-.scenario-card:hover{transform:translateY(-2px)}.scenario-card:active{transform:translateY(0)}
-.scenario-card.optimist{background:var(--success-bg);border-color:rgba(52,217,180,0.3)}.scenario-card.pessimist{background:var(--danger-bg);border-color:rgba(240,108,108,0.3)}.scenario-card.neutral{background:rgba(124,108,240,0.08);border-color:rgba(124,108,240,0.3)}
-.scenario-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}.scenario-value{font-family:var(--mono);font-size:18px;font-weight:700}.scenario-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
-.progress-container{margin:16px 0}.progress-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;color:var(--text-secondary)}
-.progress-bar{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
-.progress-fill.danger{background:var(--danger)}.progress-fill.warning{background:var(--warning)}.progress-fill.success{background:linear-gradient(90deg,var(--success),#5eecd5)}
-input,select,textarea{width:100%;padding:13px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:all 0.2s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);background:rgba(124,108,240,0.05);box-shadow:0 0 0 3px var(--accent-glow)}
-input[type="number"]{font-family:var(--mono);font-weight:600}
-label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px}
-.form-group{margin-bottom:20px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:12px;cursor:pointer;transition:all 0.2s;user-select:none}
-.toggle-row:hover{border-color:var(--border-active)}.toggle-row.active{border-color:var(--accent);background:rgba(124,108,240,0.06)}
-.toggle-label{font-size:14px;font-weight:600}.toggle-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
-.toggle-switch{width:44px;height:24px;border-radius:12px;background:rgba(255,255,255,0.1);position:relative;flex-shrink:0;transition:background 0.25s}
-.toggle-switch::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}
-.toggle-row.active .toggle-switch{background:var(--accent)}.toggle-row.active .toggle-switch::after{transform:translateX(20px)}
-.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px}.btn:active{transform:scale(0.98)}
-.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#fff;box-shadow:0 4px 16px var(--accent-glow)}.btn-primary:hover{box-shadow:0 6px 24px rgba(124,108,240,0.4)}
-.btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text)}.btn-secondary:hover{border-color:var(--border-active)}
-.btn-danger{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(240,108,108,0.3)}.btn-danger:hover{border-color:var(--danger)}
-.btn-icon{width:34px;height:34px;border-radius:8px;border:none;background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all 0.2s;flex-shrink:0}
-.btn-icon:hover{background:var(--accent);color:#fff}.btn-icon.confirm-btn{background:var(--success);color:#fff}.btn-icon.cancel-btn{background:var(--danger-bg);color:var(--danger)}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:16px}
-.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(124,108,240,0.04)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s}
-.modal-overlay.active{display:flex}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.modal-content{background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:560px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1)}
-.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.modal-header h3{font-size:16px;font-weight:700}
-.modal-body{padding:20px;overflow-y:auto;flex:1}
-.close-btn{width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,0.06);color:var(--text-secondary);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}.close-btn:hover{background:var(--danger-bg);color:var(--danger)}
-.alert{padding:14px 16px;border-radius:var(--radius-sm);margin-bottom:14px;border:1px solid transparent;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
-.alert-success{background:var(--success-bg);border-color:rgba(52,217,180,0.25);color:var(--success)}
-.alert-info{background:rgba(124,108,240,0.08);border-color:rgba(124,108,240,0.25);color:var(--accent-light)}
-.alert-warning{background:var(--warning-bg);border-color:rgba(240,195,78,0.25);color:var(--warning)}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface-solid);border:1px solid var(--border);padding:14px 24px;border-radius:var(--radius-sm);box-shadow:0 12px 40px rgba(0,0,0,0.5);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;z-index:2000;opacity:0;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);pointer-events:none}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;margin-top:28px;display:flex;align-items:center;gap:8px}.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.deduction-card{background:var(--surface-solid);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;transition:all 0.2s}.deduction-card.enabled{border-color:var(--accent);background:rgba(124,108,240,0.04)}
-.deduction-inline{display:flex;align-items:center;gap:12px}.deduction-inline input[type="number"]{max-width:140px;text-align:right}.deduction-inline .unit{font-size:14px;font-weight:600;color:var(--text-secondary);flex-shrink:0}
-/* Category select dropdown in transactions */
-.cat-select-btn{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid transparent;color:var(--accent-light);cursor:pointer;transition:all 0.15s;font-family:var(--font)}
-.cat-select-btn:hover{border-color:var(--accent);background:rgba(124,108,240,0.1)}
-/* Override rules list */
-.rule-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:13px}
-.rule-item .rule-supplier{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rule-item .rule-arrow{color:var(--text-muted);margin:0 8px;flex-shrink:0}
-.rule-item .rule-cat{color:var(--accent-light);font-weight:600;flex-shrink:0}
-.rule-item .rule-del{width:24px;height:24px;border-radius:50%;border:none;background:var(--danger-bg);color:var(--danger);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:8px;flex-shrink:0;transition:all 0.15s}.rule-item .rule-del:hover{background:var(--danger);color:#fff}
-.hidden{display:none !important}
-</style>
-</head>
-<body>
-<div class="app" id="app">
-  <div class="header"><div class="header-top"><h1>💰 Finances Pro</h1><div class="header-stats" id="stats-bar"></div></div></div>
-  <div class="nav" id="main-nav"></div>
-  <div id="content"></div>
-</div>
-<div class="modal-overlay" id="cat-modal"><div class="modal-content"><div class="modal-header"><h3 id="modal-title">Détail</h3><button class="close-btn" onclick="closeModal()">×</button></div><div class="modal-body" id="modal-body"></div></div></div>
-<div class="modal-overlay" id="reassign-modal"><div class="modal-content" style="max-width:420px"><div class="modal-header"><h3 id="reassign-title">Changer la catégorie</h3><button class="close-btn" onclick="closeReassign()">×</button></div><div class="modal-body" id="reassign-body"></div></div></div>
-<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
-<script>
-const SEED_RAW=[["2026-01-30","2026-01-30","CARTE 29/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-30","2026-01-30","CARTE 29/01/26 SnP*AAL CB*2399","Non catégorisé","Non catégorisé","snp*aal",-10.0],["2026-01-30","2026-01-30","CARTE 29/01/26 HELLOASSO* CAGNOT CB*2399","Solidarité - Autres","Cadeaux et solidarité","helloasso",-5.0],["2026-01-30","2026-01-30","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-130.0],["2026-01-30","2026-01-30","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-120.0],["2026-01-29","2026-01-29","CARTE 28/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-29","2026-01-29","CARTE 28/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-29","2026-01-29","CARTE 28/01/26 LE RELAIS DE PACE CB*2399","Carburant","Auto & Moto","le relais de pace",-10.9],["2026-01-29","2026-01-29","CARTE 28/01/26 SNCF OUIGO CB*2399","Transports longue distance (avions, trains…)","Voyages & Transports","sncf",-54.0],["2026-01-29","2026-01-29","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-25.97],["2026-01-28","2026-01-28","PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","edf",-4.39],["2026-01-27","2026-01-27","CARTE 26/01/26 FRESH FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","fresh food",-12.5],["2026-01-27","2026-01-27","CARTE 03/08/25 BOUCHERIE VILLE04 CB*2399","Alimentation","Vie quotidienne","boucherie ville",-20.89],["2026-01-27","2026-01-27","CARTE 26/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-25.12],["2026-01-27","2026-01-27","CARTE 26/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-12.99],["2026-01-27","2026-01-27","CARTE 25/01/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-48.68],["2026-01-27","2026-01-27","CARTE 23/01/26 SC-SCEM PHO.AUT CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","sc scem pho aut",-8.0],["2026-01-26","2026-01-26","CARTE 24/01/26 SP MECCA BOOKS CB*2399","Non catégorisé","Non catégorisé","sp mecca books",-21.9],["2026-01-26","2026-01-26","CARTE 23/01/26 WWW.NAJAMINSTITUT CB*2399","Non catégorisé","Non catégorisé","www.najaminstitute.com",-11.2],["2026-01-26","2026-01-26","CARTE 24/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.28],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-25.03],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-7.93],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-65.43],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-4.98],["2026-01-26","2026-01-26","CARTE 25/01/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-01-26","2026-01-26","CARTE 25/01/26 BOULANGERIE M.M04 CB*2399","Alimentation","Vie quotidienne","boulangerie m",-2.5],["2026-01-26","2026-01-26","CARTE 25/01/26 POSTE CODE EXAM CB*2399","Vie Quotidienne - Autres","Vie quotidienne","la poste",-30.0],["2026-01-26","2026-01-26","CARTE 25/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.1],["2026-01-26","2026-01-24","VIR INST PAPA","Virements émis","Virements émis","papa",-30.0],["2026-01-26","2026-01-26","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-01-23","2026-01-23","CARTE 22/01/26 PHARMACIE MACE CB*2399","Pharmacie et laboratoire","Santé","pharmacie mace",-2.09],["2026-01-23","2026-01-23","CARTE 22/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-22","2026-01-22","RETRAIT DAB 20/01/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-100.0],["2026-01-22","2026-01-22","CARTE 21/01/26 AMAZON PAYMENTS 2 CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","amazon",-15.91],["2026-01-21","2026-01-21","CARTE 20/01/26 POSTE CODE EXAM CB*2399","Vie Quotidienne - Autres","Vie quotidienne","la poste",-30.0],["2026-01-20","2026-01-20","CARTE 19/01/26 LA MIE CALINE CB*2399","Alimentation","Vie quotidienne","la mie caline",-4.1],["2026-01-20","2026-01-20","CARTE 19/01/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-30.0],["2026-01-20","2026-01-20","CARTE 19/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-19","2026-01-19","RETRAIT DAB 16/01/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-150.0],["2026-01-19","2026-01-19","CARTE 17/01/26 MONMEZIERES CB*2399","Divertissement - culture (ciné, théâtre, concerts…)","Loisirs et sorties","monmezieres",-12.3],["2026-01-19","2026-01-19","CARTE 16/01/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-8.7],["2026-01-19","2026-01-19","CARTE 16/01/26 PPG*OFFREAVANTAGE CB*2399","Mobilier, électroménager, décoration…","Vie quotidienne","ppg",-20.8],["2026-01-19","2026-01-19","CARTE 16/01/26 CARREFOUR CESSON CB*2399","Alimentation","Vie quotidienne","carrefour",-25.81],["2026-01-19","2026-01-19","CARTE 16/01/26 BOUTIQUE COIFFEUR CB*2399","Bien-être et soins (coiffeur, parfums…)","Vie quotidienne","boutique coiffure",-30.58],["2026-01-19","2026-01-19","CARTE 16/01/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-1.6],["2026-01-19","2026-01-19","CARTE 16/01/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-2.0],["2026-01-19","2026-01-19","CARTE 16/01/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-15.0],["2026-01-19","2026-01-19","CARTE 16/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-19","2026-01-19","CARTE 16/01/26 BOULANG LA ROTOND CB*2399","Alimentation","Vie quotidienne","boulanger la rotonde",-4.7],["2026-01-16","2026-01-16","CARTE 15/01/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-16","2026-01-16","CARTE 15/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.71],["2026-01-16","2026-01-16","CARTE 15/01/26 VILLA D'OR CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-13.9],["2026-01-16","2026-01-16","PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-01-16","2026-01-16","PRLV SEPA ACM IARD SA","Assurances (Auto/Moto)","Auto & Moto","acm iard",-18.33],["2026-01-15","2026-01-15","CARTE 14/01/26 AMOUR DE PIZZA CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-28.0],["2026-01-15","2026-01-15","PRLV SEPA SYNDICAT UNSA ENERGIE","Club / association (sport, hobby, art…)","Loisirs et sorties","syndicat unsa energie",-15.0],["2026-01-14","2026-01-14","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-30.0],["2026-01-14","2026-01-14","CARTE 13/01/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-01-14","2026-01-14","CARTE 13/01/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-9.9],["2026-01-14","2026-01-14","CARTE 13/01/26 CARREFOUR EXPRESS CB*2399","Alimentation","Vie quotidienne","carrefour",-4.71],["2026-01-14","2026-01-14","CARTE 13/01/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-2.6],["2026-01-14","2026-01-14","CARTE 12/01/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-13.72],["2026-01-13","2026-01-13","CARTE 12/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.08],["2026-01-13","2026-01-13","CHQ. N.1546746","Chèques","Chèques","cheque n 1546746",-75.0],["2026-01-12","2026-01-12","CARTE 10/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-9.73],["2026-01-12","2026-01-12","CARTE 09/01/26 CARREFOUR CESSON CB*4457","Alimentation","Vie quotidienne","carrefour",-2.69],["2026-01-12","2026-01-12","CARTE 09/01/26 CARREFOUR CESSON CB*4457","Alimentation","Vie quotidienne","carrefour",-36.19],["2026-01-12","2026-01-12","CARTE 08/01/26 GRAND FRAIS 4 CB*4457","Alimentation","Vie quotidienne","grand frais",-16.86],["2026-01-12","2026-01-12","CARTE 09/01/26 Microsoft*Subscri CB*4457","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","microsoft",-10.0],["2026-01-12","2026-01-12","CARTE 11/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-15.86],["2026-01-12","2026-01-12","PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-01-09","2026-01-09","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-20.0],["2026-01-09","2026-01-09","CARTE 08/01/26 SARL GBP CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","gbp",-3.95],["2026-01-09","2026-01-09","CARTE 08/01/26 VILLA D'OR CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-13.9],["2026-01-09","2026-01-09","CARTE 07/01/26 FDJ OBGF 2 CB*4457","Dépenses Jeux et paris","Loisirs et sorties","francaise des je",-170.0],["2026-01-08","2026-01-08","CARTE 06/01/26 NOTION LABS, INC. CB*4457","Abonnements & téléphonie","Abonnements & téléphonie","notion labs inc",-28.2],["2026-01-08","2026-01-08","CARTE 07/01/26 LE SULTAN CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","le sultan",-7.6],["2026-01-08","2026-01-08","CARTE 07/01/26 PACE LAVAGE CB*4457","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-08","2026-01-08","CARTE 07/01/26 TOPWG.COM* NOUNOU CB*4457","Non catégorisé","Non catégorisé","topwg.com* nounou-top",-6.99],["2026-01-07","2026-01-07","CARTE 06/01/26 CARREFOUR EXPRE04 CB*4457","Alimentation","Vie quotidienne","carrefour",-2.95],["2026-01-07","2026-01-07","CARTE 07/01/26 OPENAI *CHATGPT S CB*4457","Non catégorisé","Non catégorisé","openai *chatgpt subscr",-23.0],["2026-01-06","2026-01-06","CARTE 05/01/26 NORAUTO 70 CB*4457","Entretien - Réparation","Auto & Moto","norauto",-10.47],["2026-01-06","2026-01-06","CARTE 05/01/26 SAHIN CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","sahin",-154.96],["2026-01-06","2026-01-06","CARTE 05/01/26 NCD FOOD CB*4457","Non catégorisé","Non catégorisé","ncd food",-10.0],["2026-01-06","2026-01-06","CARTE 05/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-6.84],["2026-01-06","2026-01-06","CARTE 05/01/26 BARBERKING 35 2 CB*4457","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-01-06","2026-01-06","CARTE 05/01/26 UBR* PENDING.UBER CB*4457","Taxis","Voyages & Transports","ubr pending uber com",-19.9],["2026-01-06","2026-01-06","CARTE 05/01/26 Boulanger CB*4457","Electronique et informatique","Vie quotidienne","boulanger",-50.04],["2026-01-06","2026-01-06","CARTE 04/01/26 BOULANGERIE M.M04 CB*4457","Alimentation","Vie quotidienne","boulangerie m",-5.7],["2026-01-06","2026-01-06","CARTE 02/01/26 CANAL PLUS FR CB*4457","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-01-06","2026-01-06","CARTE 04/01/26 carrefour city 4 CB*4457","Alimentation","Vie quotidienne","carrefour city",-7.26],["2026-01-06","2026-01-06","PRLV SEPA Floa SA","Crédit conso","Emprunts (hors immobilier)","banque du groupe casino banque casino",-39.25],["2026-01-06","2026-01-06","PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-01-05","2026-01-05","CARTE 03/01/26 hostinger.com CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-5.04],["2026-01-05","2026-01-05","CARTE 03/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-28.48],["2026-01-05","2026-01-05","CARTE 02/01/26 GRAND FRAIS 4 CB*4457","Alimentation","Vie quotidienne","grand frais",-89.48],["2026-01-05","2026-01-05","CARTE 03/01/26 HOSTINGER* HOSTIN CB*4457","Vêtements et accessoires","Vie quotidienne","hostinger hostinger f",-12.19],["2026-01-05","2026-01-05","CARTE 02/01/26 CONTROLE TECHNI CB*4457","Entretien - Réparation","Auto & Moto","controle technique",-69.0],["2026-01-05","2026-01-05","CARTE 02/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-93.99],["2026-01-05","2026-01-05","CARTE 02/01/26 APPLE.COM/BILL CB*4457","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-01-05","2026-01-04","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-22.5],["2026-01-05","2026-01-03","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-01-05","2026-01-05","CHQ. N.1546745","Chèques","Chèques","cheque n 1546745",-200.0],["2026-01-02","2026-01-02","*FRAIS REFABRICATION CB","Frais bancaires et de gestion (dont agios)","Services financiers & professionnels","boursorama banque",-10.0],["2026-01-02","2026-01-02","CARTE 31/12/25 PACE LAVAGE CB*4457","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-02","2026-01-02","CARTE 31/12/25 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-25.68],["2026-01-02","2026-01-02","CARTE 31/12/25 CHP ST GREGOIRE 4 CB*4457","Médecins et frais médicaux","Santé","chp saint grego",-2.5],["2026-01-02","2026-01-02","CARTE 31/12/25 NCD FOOD CB*4457","Non catégorisé","Non catégorisé","ncd food",-10.0],["2026-02-26","2026-02-26","VIR INST SA HLM LES FOYERS","Loyers, Charges","Logement","hlm les foyers",-600.0],["2026-02-26","2026-02-26","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-02-26","2026-02-26","CARTE 26/02/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-02-26","2026-02-26","CARTE 25/02/26 THE RIVER CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","the river",-23.5],["2026-02-26","2026-02-26","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-02-25","2026-02-25","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-100.0],["2026-02-23","2026-02-23","CARTE 21/02/26 NORAUTO 70 CB*2399","Entretien - Réparation","Auto & Moto","norauto",-13.47],["2026-02-23","2026-02-23","CARTE 21/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-20.0],["2026-02-23","2026-02-23","CARTE 21/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-78.95],["2026-02-23","2026-02-23","CARTE 21/02/26 RIVEX 4 CB*2399","Alimentation","Vie quotidienne","rivex",-76.28],["2026-02-23","2026-02-23","CARTE 20/02/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-02-23","2026-02-23","CARTE 20/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.71],["2026-02-23","2026-02-23","CARTE 20/02/26 RIVEX RENNES 47 4 CB*2399","Alimentation","Vie quotidienne","rivex",-5.23],["2026-02-23","2026-02-23","CARTE 19/02/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-9.0],["2026-02-19","2026-02-19","CARTE 18/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.96],["2026-02-18","2026-02-18","CARTE 17/02/26 RESTAURANT LE K04 CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","restaurant le k",-21.2],["2026-02-18","2026-02-18","CARTE 17/02/26 SARL OPI CB*2399","Bien-être et soins (coiffeur, parfums…)","Vie quotidienne","opi",-7.0],["2026-02-18","2026-02-18","CARTE 17/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-5.4],["2026-02-18","2026-02-18","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-395.0],["2026-02-17","2026-02-17","CARTE 16/02/26 PHARMACIE DU CH03 CB*2399","Pharmacie et laboratoire","Santé","pharmacie du ch",-11.8],["2026-02-17","2026-02-17","CARTE 16/02/26 CARREFOUR CITY CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.54],["2026-02-17","2026-02-17","CARTE 16/02/26 LE SOLEIL CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","le soleil",-12.0],["2026-02-17","2026-02-17","PRLV SEPA ACM IARD SA","Assurances (Auto/Moto)","Auto & Moto","acm iard",-18.33],["2026-02-16","2026-02-16","CARTE 14/02/26 EL BARAKA CB*2399","Alimentation","Vie quotidienne","el baraka",-84.64],["2026-02-16","2026-02-16","CARTE 14/02/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-3.3],["2026-02-16","2026-02-16","CARTE 13/02/26 COMPTOIRS BIO 4 CB*2399","Alimentation","Vie quotidienne","comptoirs bio",-1.25],["2026-02-16","2026-02-16","CARTE 13/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-9.75],["2026-02-16","2026-02-16","CARTE 13/02/26 SUMUP *CENTRE CU CB*2399","Auto / Moto - Autres","Auto & Moto","sumup centre culturel a",-5.0],["2026-02-16","2026-02-15","VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-10.0],["2026-02-16","2026-02-16","PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-02-13","2026-02-13","CARTE 12/02/26 VILLA D'OR CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-14.9],["2026-02-13","2026-02-13","CARTE 12/02/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-02-13","2026-02-13","CARTE 12/02/26 UBER *TRIP CB*2399","Taxis","Voyages & Transports","uber",-1.0],["2026-02-13","2026-02-13","CARTE 12/02/26 UBR* PENDING.UBER CB*2399","Taxis","Voyages & Transports","ubr pending uber com",-28.98],["2026-02-12","2026-02-12","CARTE 11/02/26 SCARABEE PARIS CB*2399","Alimentation","Vie quotidienne","scarabee paris",-8.05],["2026-02-12","2026-02-12","CARTE 10/02/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-21.31],["2026-02-12","2026-02-12","CARTE 11/02/26 SARL ETHNIC FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","ethnic food",-10.0],["2026-02-11","2026-02-11","CARTE 10/02/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-02-11","2026-02-11","CARTE 10/02/26 PHARMACIE MACE CB*2399","Pharmacie et laboratoire","Santé","pharmacie mace",-15.52],["2026-02-10","2026-02-10","CARTE 09/02/26 DERSIM CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","dersim",-7.5],["2026-02-10","2026-02-10","CARTE 08/02/26 CANAL PLUS FR CB*2399","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-02-10","2026-02-10","PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-02-09","2026-02-09","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-20.0],["2026-02-09","2026-02-09","CARTE 06/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-11.2],["2026-02-09","2026-02-09","CARTE 06/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-10.79],["2026-02-09","2026-02-09","CARTE 07/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-7.9],["2026-02-09","2026-02-07","VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-25.0],["2026-02-09","2026-02-07","VIR INST MARINE TANFIN","Virements émis","Virements émis","marine tanfin",-194.95],["2026-02-06","2026-02-06","CARTE 05/02/26 LES DELICES DE 03 CB*2399","Alimentation","Vie quotidienne","les delices de",-3.0],["2026-02-06","2026-02-06","CARTE 05/02/26 LECLERC LAVAGE CB*2399","Alimentation","Vie quotidienne","leclerc",-8.0],["2026-02-06","2026-02-06","CARTE 05/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-4.57],["2026-02-06","2026-02-06","PRLV SEPA Floa SA","Non catégorisé","Non catégorisé","",-39.25],["2026-02-05","2026-02-05","CARTE 03/02/26 CANVA* I04781-283 CB*2399","Non catégorisé","Non catégorisé","canva* i04781-28358670",-16.0],["2026-02-05","2026-02-05","CARTE 04/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.06],["2026-02-05","2026-02-05","CHQ. N.1546747","Chèques","Chèques","cheque n 1546747",-70.0],["2026-02-05","2026-02-05","CHQ. N.1546743","Chèques","Chèques","cheque n 1546743",-200.0],["2026-02-05","2026-02-05","PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-02-04","2026-02-04","VIR INST SA HLM LES FOYERS","Solidarité - Autres","Cadeaux et solidarité","hlm les foyers",-530.0],["2026-02-04","2026-02-04","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-30.0],["2026-02-04","2026-02-04","CARTE 03/02/26 PITAYA CB*2399","Non catégorisé","Non catégorisé","pitaya",-16.4],["2026-02-04","2026-02-04","CARTE 02/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-10.7],["2026-02-03","2026-02-03","CARTE 01/02/26 OPENROUTER, INC CB*2399","Non catégorisé","Non catégorisé","openrouter, inc",-9.12],["2026-02-03","2026-02-03","CARTE 02/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-47.04],["2026-02-03","2026-02-03","CARTE 02/02/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-39.0],["2026-02-03","2026-02-03","CARTE 02/02/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-02-03","2026-02-03","CARTE 02/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-96.36],["2026-02-03","2026-02-03","CARTE 02/02/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-02-03","2026-02-03","CARTE 02/02/26 SERVICE NAVIGO 4 CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","navigo",-2.55],["2026-02-03","2026-02-03","CARTE 02/02/26 SELECTA SAS CB*2399","Alimentation","Vie quotidienne","selecta",-3.7],["2026-02-03","2026-02-03","CARTE 02/02/26 APPLE.COM/BILL CB*2399","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-02-02","2026-02-02","CARTE 29/01/26 CLAUDE.AI SUBSCRI CB*2399","Non catégorisé","Non catégorisé","claude.ai subscription",-108.0],["2026-02-02","2026-02-02","CARTE 31/01/26 SC-COMPTOIR DE Z CB*2399","Alimentation","Vie quotidienne","sc comptoir de z",-13.8],["2026-02-02","2026-02-02","CARTE 31/01/26 SC-LE PANIER DE CB*2399","Alimentation","Vie quotidienne","sc le panier de",-12.0],["2026-02-02","2026-02-02","CARTE 31/01/26 U EXPRESS 9 CB*2399","Alimentation","Vie quotidienne","u express",-1.15],["2026-02-02","2026-02-02","CARTE 31/01/26 U EXPRESS 9 CB*2399","Alimentation","Vie quotidienne","u express",-9.22],["2026-02-02","2026-02-02","CARTE 31/01/26 SERVICE NAVIGO 4 CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","navigo",-5.1],["2026-02-02","2026-02-02","CARTE 30/01/26 SELECTA SAS CB*2399","Alimentation","Vie quotidienne","selecta",-3.7],["2026-02-02","2026-02-02","CARTE 30/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-3.4],["2026-02-02","2026-02-02","CARTE 30/01/26 LE FEU DE BOIS 4 CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","le feu de bois",-20.7],["2026-02-02","2026-01-31","VIR INST COCHET EVA MAELYS","Virements émis","Virements émis","cochet eva maelys",-20.0],["2026-02-02","2026-02-02","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-44.99],["2026-03-30","2026-03-28","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-77.0],["2026-03-30","2026-03-28","Vir Inst Sa Hlm Les Foyers | VIR INST SA HLM LES FOYERS","Solidarité - Autres","Cadeaux et solidarité","hlm les foyers",-623.0],["2026-03-30","2026-03-30","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.3],["2026-03-30","2026-03-30","EDF | PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","edf",-4.39],["2026-03-27","2026-03-27","Mowok | CARTE 26/03/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-03-27","2026-03-27","Geffray | CARTE 26/03/26 geffray 4 CB*2399","Médecins et frais médicaux","Santé","geffray",-2.8],["2026-03-27","2026-03-27","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-03-26","2026-03-26","Hostinger.com | CARTE 25/03/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-03-26","2026-03-26","Carrefour | CARTE 25/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-5.1],["2026-03-26","2026-03-26","Carrefour | CARTE 25/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.74],["2026-03-26","2026-03-26","Super U | CARTE 25/03/26 SUPER U 9 CB*2399","Alimentation","Vie quotidienne","super u",-53.66],["2026-03-26","2026-03-26","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-03-25","2026-03-25","Chez Theo | CARTE 24/03/26 CHEZ THEO CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","chez theo",-6.5],["2026-03-25","2026-03-25","Boulang.patis | CARTE 24/03/26 BOULANG.PATIS B03 CB*2399","Alimentation","Vie quotidienne","boulanger patisserie",-1.6],["2026-03-25","2026-03-25","Keolis | CARTE 24/03/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-03-25","2026-03-25","E.Leclerc | CARTE 24/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-33.0],["2026-03-25","2026-03-25","Grand Pere Jules | CARTE 24/03/26 GRAND PERE JULES CB*2399","Non catégorisé","Non catégorisé","grand pere jules",-4.8],["2026-03-23","2026-03-23","Au Comptoir Des Pains | CARTE 20/03/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-5.45],["2026-03-23","2026-03-23","Sif | CARTE 20/03/26 SIF CB*2399","Dons et Cadeaux","Cadeaux et solidarité","sif",-27.0],["2026-03-19","2026-03-19","Rivages Exotiques | CARTE 18/03/26 RIVEX RENNES 11 4 CB*2399","Alimentation","Vie quotidienne","rivex",-16.67],["2026-03-19","2026-03-19","La Baraka | CARTE 18/03/26 EL BARAKA CB*2399","Alimentation","Vie quotidienne","el baraka",-54.05],["2026-03-19","2026-03-19","E.Leclerc | CARTE 18/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-14.04],["2026-03-17","2026-03-17","Retrait Dab 16/03/26 Noyal Sur V Cb*2399 | RETRAIT DAB 16/03/26 NOYAL SUR V CB*2399","Retraits cash","Retraits cash","retrait automate",-60.0],["2026-03-17","2026-03-17","E.Leclerc | CARTE 16/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-18.64],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-12.0],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-16","2026-03-16","Retrait Dab 14/03/26 Rennes Cb*2399 | RETRAIT DAB 14/03/26 RENNES CB*2399","Retraits cash","Retraits cash","retrait automate",-100.0],["2026-03-16","2026-03-16","E.Leclerc | CARTE 13/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-154.44],["2026-03-16","2026-03-15","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-368.0],["2026-03-16","2026-03-14","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-25.0],["2026-03-16","2026-03-14","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-5.0],["2026-03-16","2026-03-16","Energie Mutuelle | PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-03-13","2026-03-13","Au Comptoir Des Pains | CARTE 12/03/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-2.4],["2026-03-13","2026-03-13","Marche De L'ori | CARTE 12/03/26 MARCHE DE L ORI03 CB*2399","Alimentation","Vie quotidienne","marche de l ori",-26.75],["2026-03-13","2026-03-13","Pace Lavage | CARTE 12/03/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-03-12","2026-03-12","Retrait Dab 11/03/26 Acigne Cb*2399 | RETRAIT DAB 11/03/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-50.0],["2026-03-12","2026-03-12","Flowbird | CARTE 11/03/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-1.4],["2026-03-11","2026-03-11","Canal+ | CARTE 09/03/26 CANAL PLUS FR CB*2399","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-03-11","2026-03-11","Lec | CARTE 10/03/26 PH LE CENTRE CB*2399","Pharmacie et laboratoire","Santé","pharmacie le centre",-15.39],["2026-03-11","2026-03-11","Lidl | CARTE 09/03/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-4.18],["2026-03-10","2026-03-10","Matw Meals | CARTE 08/03/26 MATW MEALS CB*2399","Non catégorisé","Non catégorisé","matw meals",-10.0],["2026-03-10","2026-03-10","Anthropic | CARTE 08/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-10","2026-03-10","E.Leclerc | CARTE 09/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-6.53],["2026-03-10","2026-03-10","GiFi | CARTE 09/03/26 GIFI ST GREGOIR 4 CB*2399","Vie Quotidienne - Autres","Vie quotidienne","gifi",-12.47],["2026-03-10","2026-03-10","Amazon | CARTE 07/03/26 AMAZON PAYMENTS 2 CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","amazon",-13.98],["2026-03-10","2026-03-10","Intermarché | CARTE 09/03/26 INTERMARCHE 4 CB*2399","Alimentation","Vie quotidienne","intermarche",-1.52],["2026-03-10","2026-03-10","Carrefour | CARTE 09/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-16.03],["2026-03-10","2026-03-10","Grand Frais | CARTE 08/03/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-9.97],["2026-03-10","2026-03-10","Grand Frais | CARTE 08/03/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-6.38],["2026-03-10","2026-03-10","Amour De Pizza | CARTE 08/03/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-9.4],["2026-03-10","2026-03-10","Amour De Pizza | CARTE 08/03/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-25.7],["2026-03-10","2026-03-10","Crédit Agricole Consumer Finance | PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-03-09","2026-03-09","Anthropic | CARTE 08/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-09","2026-03-09","Amazon | CARTE 07/03/26 COFIDIS AMAZON CB*2399","Crédit conso","Emprunts (hors immobilier)","cofidis",-34.26],["2026-03-09","2026-03-09","Carrefour | CARTE 07/03/26 CARREFOUR CESSON CB*2399","Alimentation","Vie quotidienne","carrefour",-10.83],["2026-03-09","2026-03-09","Brico Dépôt | CARTE 08/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-3.29],["2026-03-09","2026-03-09","Brico Dépôt | CARTE 08/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-18.9],["2026-03-09","2026-03-09","Carrefour | CARTE 08/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.58],["2026-03-09","2026-03-09","E.Leclerc | CARTE 07/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-34.74],["2026-03-09","2026-03-09","Carrefour | CARTE 07/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.05],["2026-03-09","2026-03-09","Carrefour | CARTE 06/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.89],["2026-03-09","2026-03-09","Sarl To Eurl | CARTE 06/03/26 SARL TO EURL CB*2399","Electronique et informatique","Vie quotidienne","to",-81.82],["2026-03-09","2026-03-09","Action | CARTE 06/03/26 Action 4549 CB*2399","Vie Quotidienne - Autres","Vie quotidienne","action",-22.36],["2026-03-09","2026-03-09","Boulangerie M.m | CARTE 05/03/26 BOULANGERIE M.M04 CB*2399","Alimentation","Vie quotidienne","boulangerie m",-2.55],["2026-03-06","2026-03-06","FLOA Bank | PRLV SEPA Floa SA","Non catégorisé","Non catégorisé","",-39.25],["2026-03-05","2026-03-05","Canva | CARTE 03/03/26 CANVA* I04809-288 CB*2399","Non catégorisé","Non catégorisé","canva* i04809-28846783",-32.0],["2026-03-05","2026-03-05","Domiserve | CARTE 04/03/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-24.43],["2026-03-05","2026-03-05","Active Assurances | PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-03-04","2026-03-04","Eurl Bouvier | CARTE 03/03/26 EURL BOUVIER 03 CB*2399","Alimentation","Vie quotidienne","bouvier",-10.8],["2026-03-04","2026-03-04","Domiserve | CARTE 03/03/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-40.0],["2026-03-04","2026-03-04","Keolis | CARTE 03/03/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-03-04","2026-03-04","Brico Dépôt | CARTE 02/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-8.48],["2026-03-04","2026-03-04","Brico Dépôt | CARTE 02/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-9.99],["2026-03-04","2026-03-04","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-26.0],["2026-03-03","2026-03-03","Apple | CARTE 02/03/26 APPLE.COM/BILL CB*2399","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-03-03","2026-03-03","Barber King | CARTE 02/03/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-03-03","2026-03-03","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-44.99],["2026-03-02","2026-03-02","Railway | CARTE 28/02/26 RAILWAY CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","railway",-4.24],["2026-03-02","2026-03-02","Claude.ai Subscri | CARTE 28/02/26 CLAUDE.AI SUBSCRI CB*2399","Non catégorisé","Non catégorisé","claude.ai subscription",-108.0],["2026-03-02","2026-03-02","Amour De Pizza | CARTE 27/02/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-28.0],["2026-03-02","2026-03-02","Pharmacie Du Ch | CARTE 27/02/26 PHARMACIE DU CH03 CB*2399","Pharmacie et laboratoire","Santé","pharmacie du ch",-12.9],["2026-03-02","2026-03-02","E.Leclerc | CARTE 27/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-60.95],["2026-03-02","2026-03-02","Brico Dépôt | CARTE 01/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-14.93],["2026-03-02","2026-03-02","E.Leclerc | CARTE 28/02/26 E.LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-281.79],["2026-03-02","2026-03-02","Grand Frais | CARTE 28/02/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-28.18],["2026-03-02","2026-03-02","Brico Dépôt | CARTE 28/02/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-56.51],["2026-03-02","2026-02-28","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-20.0],["2026-03-02","2026-03-02","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-25.96],["2026-03-02","2026-03-02","EDF | PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","electricite de france",-4.39]];
-const COLORS={"Vie quotidienne":"#7c6cf0","Loisirs et sorties":"#f06c9a","Auto & Moto":"#f0c34e","Abonnements & téléphonie":"#5da8f0","Santé":"#34d9b4","Virements émis":"#a89eff","Logement":"#3ee8a8","Emprunts (hors immobilier)":"#f06c6c","Non catégorisé":"#6b7080","Retraits cash":"#a0aab5","Voyages & Transports":"#e07548","Chèques":"#c8d0d8","Cadeaux et solidarité":"#f0d84e","Autres dépenses":"#f0a080","Services financiers & professionnels":"#8899aa"};
-const ICONS={"Vie quotidienne":"🛒","Loisirs et sorties":"🎉","Auto & Moto":"🚗","Abonnements & téléphonie":"📱","Santé":"💊","Virements émis":"📤","Logement":"🏠","Emprunts (hors immobilier)":"💳","Non catégorisé":"❓","Retraits cash":"💵","Voyages & Transports":"🚆","Chèques":"📝","Cadeaux et solidarité":"🎁","Autres dépenses":"📦","Services financiers & professionnels":"🏦"};
-const MN=["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-const TABS=[{id:'dashboard',l:'📊 Vue'},{id:'forecast',l:'🔮 Prévoir'},{id:'transactions',l:'📋 Opérations'},{id:'import',l:'📥 Import'},{id:'settings',l:'⚙️'}];
-const ALL_CATS=Object.keys(COLORS).sort();
-
-let S={tab:'dashboard',month:3,transactions:[],salary:2300,savingsTarget:200,savingsEnabled:false,taxRate:0,taxEnabled:false,forecastAdj:{},editingCat:null,
-  catOverrides:{},  // supplier -> categoryParent
-  reassignIdx:-1
-};
-
-// Default overrides: fix HLM LES FOYERS
-const DEFAULT_OVERRIDES={"hlm les foyers":"Logement"};
-
-function seedToTx(raw){
-  return raw.map((r,i)=>{
-    const d=r[0],parts=d.split('-');
-    return{id:i,date:d,dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6],month:parseInt(parts[1]),year:parseInt(parts[0])};
-  });
-}
-
-function applyOverrides(){
-  S.transactions.forEach(t=>{
-    const sup=t.supplier.toLowerCase();
-    if(S.catOverrides[sup]){t.categoryParent=S.catOverrides[sup];}
-  });
-}
-
-function save(){
-  localStorage.setItem('finProV3',JSON.stringify({transactions:S.transactions,salary:S.salary,savingsTarget:S.savingsTarget,savingsEnabled:S.savingsEnabled,taxRate:S.taxRate,taxEnabled:S.taxEnabled,forecastAdj:S.forecastAdj,catOverrides:S.catOverrides}));
-}
-
-function load(){
-  try{
-    const d=JSON.parse(localStorage.getItem('finProV3'));
-    if(d&&d.transactions&&d.transactions.length){
-      S.transactions=d.transactions;S.salary=d.salary??2300;S.savingsTarget=d.savingsTarget??200;S.savingsEnabled=d.savingsEnabled??false;S.taxRate=d.taxRate??0;S.taxEnabled=d.taxEnabled??false;S.forecastAdj=d.forecastAdj??{};S.catOverrides=d.catOverrides??{...DEFAULT_OVERRIDES};
-      applyOverrides();
-      return;
-    }
-  }catch(e){}
-  S.transactions=seedToTx(SEED_RAW);
-  S.catOverrides={...DEFAULT_OVERRIDES};
-  applyOverrides();
-}
-
-function getMonths(){return[...new Set(S.transactions.map(t=>t.month))].sort((a,b)=>a-b)}
-function txByMonth(m){return m===0?S.transactions:S.transactions.filter(t=>t.month===m)}
-function catStats(m){const txs=txByMonth(m).filter(t=>t.amount<0);const o={};txs.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t);});return o;}
-function catAverages(){const ms=getMonths();if(!ms.length)return{};const sums={};ms.forEach(m=>{const st=catStats(m);Object.entries(st).forEach(([c,d])=>{sums[c]=(sums[c]||0)+d.total;});});const avg={};Object.keys(sums).forEach(c=>avg[c]=sums[c]/ms.length);return avg;}
-function fmt(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n)}
-function fmtD(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
-function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
-function netAvailable(sal){let n=sal||S.salary;if(S.taxEnabled&&S.taxRate>0)n-=n*(S.taxRate/100);if(S.savingsEnabled&&S.savingsTarget>0)n-=S.savingsTarget;return n}
-function toast(i,m){const el=document.getElementById('toast');document.getElementById('toast-icon').textContent=i;document.getElementById('toast-msg').textContent=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),3000)}
-function setTab(id){S.tab=id;renderNav();render()}
-function setMonth(m){S.month=m;render()}
-function renderNav(){document.getElementById('main-nav').innerHTML=TABS.map(t=>`<button class="nav-btn ${S.tab===t.id?'active':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}
-function render(){
-  const el=document.getElementById('content'),ms=getMonths();
-  document.getElementById('stats-bar').textContent=`${S.transactions.length} opérations · ${ms.length} mois`;
-  switch(S.tab){
-    case'dashboard':el.innerHTML=vDash(ms);break;case'forecast':el.innerHTML=vForecast();break;
-    case'transactions':el.innerHTML=vTx(ms);break;case'import':el.innerHTML=vImport();break;case'settings':el.innerHTML=vSettings();break;
-  }
-}
-
-function vDash(ms){
-  const txs=txByMonth(S.month),exp=txs.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0),nb=S.month===0?ms.length:1,avail=netAvailable()*nb,bal=avail-exp;
-  const st=catStats(S.month),sorted=Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
-  const ded=[];if(S.taxEnabled&&S.taxRate>0)ded.push(`Impôt ${S.taxRate}%`);if(S.savingsEnabled&&S.savingsTarget>0)ded.push(`Épargne ${fmt(S.savingsTarget)}`);
-  let h=`<div class="month-scroll"><button class="month-chip ${S.month===0?'active':''}" onclick="setMonth(0)">Tout</button>${ms.map(m=>`<button class="month-chip ${S.month===m?'active':''}" onclick="setMonth(${m})">${MN[m]}</button>`).join('')}</div>
-  <div class="grid-2"><div class="card"><div class="card-header"><span class="card-title">Dépenses</span><span style="font-size:18px">📉</span></div><div class="card-value negative">${fmt(exp)}</div><div class="card-sub">${txs.filter(t=>t.amount<0).length} transactions</div></div>
-  <div class="card"><div class="card-header"><span class="card-title">Solde estimé</span><span style="font-size:18px">${bal>=0?'📈':'🚨'}</span></div><div class="card-value ${bal>=0?'positive':'negative'}">${fmt(bal)}</div><div class="card-sub">sur ${fmt(avail)} dispo${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''}</div></div></div>`;
-  if(S.savingsEnabled||S.taxEnabled){
-    h+=`<div class="card" style="padding:14px 18px"><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-family:var(--mono)">`;
-    if(S.taxEnabled&&S.taxRate>0){const ta=S.salary*(S.taxRate/100)*nb;h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--warning)">⚡</span> Impôt : <strong style="color:var(--warning)">${fmt(ta)}</strong></div>`}
-    if(S.savingsEnabled&&S.savingsTarget>0){const sa=S.savingsTarget*nb;h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--success)">💎</span> Épargne : <strong style="color:var(--success)">${fmt(sa)}</strong></div>`}
-    h+=`</div></div>`}
-  h+=`<div class="section-title">Répartition ${S.month>0?MN[S.month]:'globale'}</div>`;
-  sorted.forEach(([cat,data])=>{const pct=exp>0?(data.total/exp*100):0,col=COLORS[cat]||'#6b7080',icon=ICONS[cat]||'📦';
-    h+=`<div class="cat-card" onclick="showCatDetail('${esc(cat)}')" style="--cat-color:${col}"><div class="cat-header"><div class="cat-name"><span style="font-size:18px">${icon}</span><span>${cat}</span><span class="cat-count">${data.count}</span></div><div class="cat-amount" style="color:${col}">${fmt(data.total)}</div></div><div class="cat-bar"><div class="cat-fill" style="width:${pct}%;background:${col}"></div></div><div class="cat-footer"><span>${pct.toFixed(1)}% du total</span><span class="cat-detail-arrow">Détail →</span></div></div>`;
-  });
-  return h;
-}
-
-function vForecast(){
-  const avg=catAverages(),ms=getMonths(),nextM=ms.length?Math.max(...ms)+1:1,mName=MN[nextM]||('Mois '+nextM);
-  if(!Object.keys(S.forecastAdj).length)S.forecastAdj={...avg};
-  const proj=Object.values(S.forecastAdj).reduce((a,b)=>a+b,0),avail=netAvailable(),rem=avail-proj,pct=avail>0?(proj/avail)*100:0;
-  const fixed=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Santé'];
-  let h=`<div class="card" style="background:linear-gradient(135deg,#6c5ce7,#5b4cd8);border:none;text-align:center"><div style="font-size:12px;opacity:.85;letter-spacing:1px;text-transform:uppercase">Prévision</div><div style="font-family:var(--mono);font-size:26px;font-weight:700;margin:6px 0">${mName} 2026</div><div style="font-size:13px;opacity:.8">Basé sur ${ms.length} mois d'historique</div></div>
-  <div class="grid-2" style="margin-top:14px"><div class="card"><div class="card-title">Budget prévu</div><div class="card-value">${fmt(proj)}</div><div class="card-sub">dépenses estimées</div></div>
-  <div class="card" style="${rem<0?'border-color:rgba(240,108,108,.4)':rem<200?'border-color:rgba(240,195,78,.4)':'border-color:rgba(52,217,180,.4)'}"><div class="card-title" style="color:${rem<0?'var(--danger)':rem<200?'var(--warning)':'var(--success)'}">Reste disponible</div><div class="card-value" style="color:${rem<0?'var(--danger)':rem<200?'var(--warning)':'var(--success)'}">${fmt(rem)}</div><div class="card-sub">sur ${fmt(avail)} net</div></div></div>
-  <div class="card"><div class="progress-header"><span>Budget utilisé</span><span style="font-family:var(--mono)">${pct.toFixed(1)}%</span></div><div class="progress-bar"><div class="progress-fill ${pct>95?'danger':pct>80?'warning':'success'}" style="width:${Math.min(pct,100)}%"></div></div></div>
-  <div class="grid-3"><div class="scenario-card optimist" onclick="applyScenario(0.8)"><div class="scenario-label" style="color:var(--success)">Optimiste</div><div class="scenario-value" style="color:var(--success)">${fmt(avail-proj*0.8)}</div><div class="scenario-sub">-20%</div></div>
-  <div class="scenario-card neutral" onclick="applyScenario(1)"><div class="scenario-label" style="color:var(--accent-light)">Réaliste</div><div class="scenario-value">${fmt(rem)}</div><div class="scenario-sub">Moyennes</div></div>
-  <div class="scenario-card pessimist" onclick="applyScenario(1.2)"><div class="scenario-label" style="color:var(--danger)">Pessimiste</div><div class="scenario-value" style="color:var(--danger)">${fmt(avail-proj*1.2)}</div><div class="scenario-sub">+20%</div></div></div>
-  <div class="section-title">Ajuster par catégorie</div>`;
-  Object.entries(S.forecastAdj).sort((a,b)=>b[1]-a[1]).forEach(([cat,val])=>{const isF=fixed.includes(cat),avgV=avg[cat]||val,col=COLORS[cat]||'#6b7080',ed=S.editingCat===cat;
-    h+=`<div class="forecast-row"><div class="forecast-header"><div class="forecast-cat"><span class="forecast-dot" style="background:${col}"></span><span>${cat}${isF?' 🔒':''}</span></div><div class="forecast-amount-wrapper">`;
-    if(ed){h+=`<input type="number" class="forecast-amount editing" value="${val.toFixed(2)}" id="fedit" step="0.01" onkeydown="if(event.key==='Enter')confirmFE('${esc(cat)}');if(event.key==='Escape')cancelFE()"><button class="btn-icon confirm-btn" onclick="confirmFE('${esc(cat)}')">✓</button><button class="btn-icon cancel-btn" onclick="cancelFE()">✕</button>`}
-    else{h+=`<span class="forecast-amount" style="color:${col}" onclick="startFE('${esc(cat)}')">${fmt(val)}</span>`;if(!isF)h+=`<button class="btn-icon" onclick="startFE('${esc(cat)}')">✎</button>`}
-    h+=`</div></div>`;
-    if(!isF&&!ed){const mx=Math.max(avgV*3,val*1.5,100),diff=avgV>0?((val/avgV-1)*100):0,dl=diff>1?`↑ +${diff.toFixed(0)}%`:diff<-1?`↓ ${diff.toFixed(0)}%`:'→ Moy';
-      h+=`<input type="range" class="forecast-slider" min="0" max="${mx.toFixed(0)}" value="${val.toFixed(0)}" step="5" style="--cat-color:${col}" oninput="updFA('${esc(cat)}',this.value)"><div class="forecast-hint"><span>Moy: ${fmt(avgV)}</span><span>${dl}</span></div>`}
-    h+=`</div>`;
-  });
-  h+=`<div style="display:flex;gap:12px;margin-top:16px"><button class="btn btn-secondary" onclick="resetFC()" style="flex:1">🔄 Réinitialiser</button><button class="btn btn-primary" onclick="saveFC()" style="flex:1">💾 Sauvegarder</button></div>`;
-  return h;
-}
-
-function vTx(ms){
-  const txs=txByMonth(S.month).sort((a,b)=>b.date.localeCompare(a.date));
-  let h=`<div class="month-scroll"><button class="month-chip ${S.month===0?'active':''}" onclick="setMonth(0)">Tout</button>${ms.map(m=>`<button class="month-chip ${S.month===m?'active':''}" onclick="setMonth(${m})">${MN[m]}</button>`).join('')}</div><div class="tx-list">`;
-  if(!txs.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--text-muted)"><div style="font-size:40px;margin-bottom:12px">📭</div><div>Aucune transaction</div></div>`}
-  else{txs.forEach(t=>{const neg=t.amount<0,col=COLORS[t.categoryParent]||'#6b7080';
-    h+=`<div class="tx-item" onclick="openReassign(${t.id})"><div class="tx-icon" style="background:${col}18;color:${col}">${ICONS[t.categoryParent]||'📦'}</div><div class="tx-content"><div class="tx-label">${t.label}</div><div class="tx-meta">${t.date.slice(8,10)}/${t.date.slice(5,7)} · ${t.categoryParent} <span class="cat-select-btn">✎ Changer</span></div></div><div class="tx-amount ${neg?'negative':'positive'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`;
-  })}
-  h+=`</div>`;return h;
-}
-
-function vImport(){
-  return`<div class="card"><div class="card-title" style="margin-bottom:14px">📥 Import CSV BoursoBank</div><p style="color:var(--text-secondary);margin-bottom:16px;font-size:13px">Format BoursoBank (11 colonnes avec ; comme séparateur)</p>
-  <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-in').click()"><div style="font-size:40px;margin-bottom:12px">📄</div><div style="font-weight:600;margin-bottom:4px">Cliquez ou déposez un CSV</div><input type="file" id="file-in" accept=".csv,.txt" style="display:none" onchange="onFile(event)"></div>
-  <div class="form-group"><label>Ou collez le CSV ici</label><textarea id="csv-text" rows="8" placeholder="dateOp;dateVal;label;..."></textarea></div>
-  <button class="btn btn-primary" onclick="importText()">📥 Importer</button></div>
-  <div class="card" style="margin-top:14px"><div class="card-title" style="margin-bottom:12px">⚠️ Réinitialisation</div><button class="btn btn-danger" onclick="resetAll()">🗑️ Effacer et recharger l'exemple</button></div>`;
-}
-
-function vSettings(){
-  const gross=S.salary,taxA=S.taxEnabled?gross*(S.taxRate/100):0,savA=S.savingsEnabled?S.savingsTarget:0,net=gross-taxA-savA;
-  const ruleKeys=Object.keys(S.catOverrides);
-  let h=`<div class="card"><div class="card-title" style="margin-bottom:20px">⚙️ Paramètres</div>
-  <div class="form-group"><label>Revenu mensuel net</label><input type="number" value="${S.salary}" onchange="S.salary=parseFloat(this.value)||0;save();render()" style="font-size:18px"></div>
-  <div class="section-title" style="margin-top:24px">Déductions mensuelles</div>
-  <div class="deduction-card ${S.savingsEnabled?'enabled':''}"><div class="toggle-row ${S.savingsEnabled?'active':''}" onclick="toggleSav()"><div><div class="toggle-label">💎 Objectif d'épargne</div><div class="toggle-sub">Montant mensuel mis de côté</div></div><div class="toggle-switch"></div></div>${S.savingsEnabled?`<div style="padding:12px 16px 4px"><div class="deduction-inline"><input type="number" value="${S.savingsTarget}" min="0" step="10" onchange="S.savingsTarget=parseFloat(this.value)||0;save();render()"><span class="unit">€ / mois</span></div></div>`:''}</div>
-  <div class="deduction-card ${S.taxEnabled?'enabled':''}"><div class="toggle-row ${S.taxEnabled?'active':''}" onclick="toggleTax()"><div><div class="toggle-label">⚡ Prélèvement à la source</div><div class="toggle-sub">Taux d'imposition sur le revenu</div></div><div class="toggle-switch"></div></div>${S.taxEnabled?`<div style="padding:12px 16px 4px"><div class="deduction-inline"><input type="number" value="${S.taxRate}" min="0" max="50" step="0.1" onchange="S.taxRate=parseFloat(this.value)||0;save();render()"><span class="unit">%</span></div></div>`:''}</div>
-  <div class="section-title" style="margin-top:24px">Récapitulatif</div>
-  <div class="card" style="background:rgba(255,255,255,0.02);margin-bottom:0"><div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>Revenu brut</span><span style="font-family:var(--mono);font-weight:600">${fmt(gross)}</span></div>`;
-  if(S.taxEnabled&&S.taxRate>0)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--warning)"><span>− Impôt (${S.taxRate}%)</span><span style="font-family:var(--mono);font-weight:600">-${fmt(taxA)}</span></div>`;
-  if(S.savingsEnabled&&S.savingsTarget>0)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--success)"><span>− Épargne</span><span style="font-family:var(--mono);font-weight:600">-${fmt(savA)}</span></div>`;
-  h+=`<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span>Budget disponible</span><span style="font-family:var(--mono);color:${net>=0?'var(--success)':'var(--danger)'}">${fmt(net)}</span></div></div>
-  <div class="alert alert-info" style="margin-top:16px">💾 Tout est sauvegardé automatiquement</div></div>`;
-
-  // Category override rules section
-  h+=`<div class="card" style="margin-top:14px"><div class="card-title" style="margin-bottom:14px">🏷️ Règles de catégorisation (${ruleKeys.length})</div>
-  <p style="color:var(--text-secondary);font-size:13px;margin-bottom:14px">Quand vous réassignez une transaction, une règle est créée pour que toutes les transactions du même fournisseur soient automatiquement recatégorisées.</p>`;
-  if(ruleKeys.length){
-    ruleKeys.sort().forEach(sup=>{
-      h+=`<div class="rule-item"><span class="rule-supplier">${sup}</span><span class="rule-arrow">→</span><span class="rule-cat">${ICONS[S.catOverrides[sup]]||'📦'} ${S.catOverrides[sup]}</span><button class="rule-del" onclick="delRule('${esc(sup)}')">✕</button></div>`;
-    });
-  }else{h+=`<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">Aucune règle. Cliquez sur une transaction pour la réassigner.</div>`}
-  h+=`</div>`;
-  return h;
-}
-
-// Actions
-function toggleSav(){S.savingsEnabled=!S.savingsEnabled;save();render();toast(S.savingsEnabled?'💎':'⭕',S.savingsEnabled?'Épargne activée':'Épargne désactivée')}
-function toggleTax(){S.taxEnabled=!S.taxEnabled;save();render();toast(S.taxEnabled?'⚡':'⭕',S.taxEnabled?'Impôt activé':'Impôt désactivé')}
-function startFE(c){S.editingCat=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
-function confirmFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.forecastAdj[c]=v;S.editingCat=null;save();render();toast('✅','Mis à jour')}}
-function cancelFE(){S.editingCat=null;render()}
-function updFA(c,v){S.forecastAdj[c]=parseFloat(v);render()}
-function applyScenario(f){const avg=catAverages(),fx=['Logement','Emprunts (hors immobilier)'];Object.keys(S.forecastAdj).forEach(c=>{if(!fx.includes(c))S.forecastAdj[c]=(avg[c]||0)*f});render();toast('✅',f<1?'Optimiste':f>1?'Pessimiste':'Réaliste')}
-function resetFC(){S.forecastAdj={...catAverages()};render();toast('🔄','Réinitialisé')}
-function saveFC(){save();toast('💾','Sauvegardé')}
-
-// Category detail modal
-function showCatDetail(cat){
-  const modal=document.getElementById('cat-modal'),body=document.getElementById('modal-body');
-  document.getElementById('modal-title').innerHTML=`<span style="margin-right:8px">${ICONS[cat]||'📦'}</span>${cat}`;
-  let txs=S.month===0?S.transactions.filter(t=>t.categoryParent===cat&&t.amount<0):S.transactions.filter(t=>t.categoryParent===cat&&t.amount<0&&t.month===S.month);
-  txs.sort((a,b)=>b.date.localeCompare(a.date));
-  const total=txs.reduce((s,t)=>s+Math.abs(t.amount),0),col=COLORS[cat]||'#6b7080';
-  const byM={};txs.forEach(t=>{byM[t.month]=(byM[t.month]||0)+Math.abs(t.amount)});
-  let h=`<div style="margin-bottom:20px"><div style="font-family:var(--mono);font-size:30px;font-weight:700;color:${col}">${fmt(total)}</div><div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${txs.length} transactions sur ${Object.keys(byM).length} mois</div></div>`;
-  if(Object.keys(byM).length>1){
-    h+=`<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.8px">Répartition mensuelle</div>`;
-    Object.entries(byM).sort((a,b)=>a[0]-b[0]).forEach(([m,a])=>{h+=`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><span>${MN[m]}</span><span style="font-family:var(--mono);font-weight:600">${fmt(a)}</span></div>`});
-    h+=`<div style="margin-bottom:20px"></div>`;
-  }
-  h+=`<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.8px">Opérations</div>`;
-  txs.forEach(t=>{h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--surface);border-radius:8px;margin-bottom:6px;border:1px solid var(--border)"><div style="min-width:0;flex:1;margin-right:12px"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.label}</div><div style="font-size:11px;color:var(--text-muted);font-family:var(--mono)">${t.date} · ${t.category}</div></div><div style="font-family:var(--mono);font-weight:700;color:var(--danger);flex-shrink:0;font-size:13px">${fmtD(Math.abs(t.amount))}</div></div>`});
-  body.innerHTML=h;modal.classList.add('active');
-}
-function closeModal(){document.getElementById('cat-modal').classList.remove('active')}
-
-// Reassign category modal
-function openReassign(txId){
-  const tx=S.transactions.find(t=>t.id===txId);if(!tx)return;
-  S.reassignIdx=txId;
-  const modal=document.getElementById('reassign-modal'),body=document.getElementById('reassign-body');
-  document.getElementById('reassign-title').textContent='Changer la catégorie';
-  const sup=tx.supplier;
-  const sameSup=sup?S.transactions.filter(t=>t.supplier.toLowerCase()===sup.toLowerCase()):[];
-  let h=`<div style="margin-bottom:16px;padding:14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
-    <div style="font-weight:600;font-size:14px;margin-bottom:4px">${tx.label}</div>
-    <div style="font-size:12px;color:var(--text-muted);font-family:var(--mono)">${tx.date} · ${fmtD(Math.abs(tx.amount))}</div>
-    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Catégorie actuelle: <strong>${tx.categoryParent}</strong></div>
-    ${sup?`<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Fournisseur: "${sup}" (${sameSup.length} opérations)</div>`:''}
-  </div>
-  <div style="font-weight:700;font-size:12px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Nouvelle catégorie</div>`;
-  ALL_CATS.forEach(cat=>{
-    const col=COLORS[cat]||'#6b7080',icon=ICONS[cat]||'📦';
-    const active=cat===tx.categoryParent;
-    h+=`<div onclick="doReassign(${txId},'${esc(cat)}')" style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid ${active?'var(--accent)':'var(--border)'};background:${active?'rgba(124,108,240,0.08)':'transparent'};transition:all 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${active?'rgba(124,108,240,0.08)':'transparent'}'">
-      <span style="font-size:16px">${icon}</span>
-      <span style="font-weight:600;font-size:13px;flex:1">${cat}</span>
-      <span style="width:10px;height:10px;border-radius:50%;background:${col}"></span>
-    </div>`;
-  });
-  if(sup){h+=`<div class="alert alert-warning" style="margin-top:14px">⚡ La règle s'appliquera à <strong>toutes les ${sameSup.length} opérations</strong> du fournisseur "${sup}"</div>`}
-  body.innerHTML=h;modal.classList.add('active');
-}
-
-function doReassign(txId,newCat){
-  const tx=S.transactions.find(t=>t.id===txId);if(!tx)return;
-  const sup=tx.supplier.toLowerCase();
-  // Save override rule
-  if(sup){S.catOverrides[sup]=newCat}
-  // Apply to all matching transactions
-  S.transactions.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=newCat});
-  save();closeReassign();render();
-  const count=S.transactions.filter(t=>t.supplier.toLowerCase()===sup).length;
-  toast('🏷️',`${count} opérations → ${newCat}`);
-}
-
-function closeReassign(){document.getElementById('reassign-modal').classList.remove('active')}
-
-function delRule(sup){
-  delete S.catOverrides[sup];
-  // Reload from seed to restore original categories for this supplier
-  const originals=seedToTx(SEED_RAW);
-  S.transactions.forEach(t=>{
-    if(t.supplier.toLowerCase()===sup.toLowerCase()){
-      const orig=originals.find(o=>o.id===t.id);
-      if(orig)t.categoryParent=orig.categoryParent;
-    }
-  });
-  // Re-apply remaining overrides
-  applyOverrides();save();render();
-  toast('🗑️','Règle supprimée');
-}
-
-// CSV Import (BoursoBank format)
-function parseBourso(text){
-  const lines=text.trim().split('\n'),out=[];
-  for(let i=1;i<lines.length;i++){
-    // Handle quoted fields
-    const row=[];let inQ=false,field='';
-    for(let j=0;j<lines[i].length;j++){
-      const c=lines[i][j];
-      if(c==='"'){inQ=!inQ}else if(c===';'&&!inQ){row.push(field.trim());field=''}else{field+=c}
-    }
-    row.push(field.trim());
-    if(row.length<7)continue;
-    const amt=parseFloat(row[6].replace(',','.'));if(isNaN(amt))continue;
-    const d=row[0],parts=d.split('-');if(parts.length<3)continue;
-    out.push({id:Date.now()+i+Math.random(),date:d,dateVal:row[1],label:row[2],category:row[3],categoryParent:row[4],supplier:(row[5]||'').toLowerCase(),amount:amt,month:parseInt(parts[1]),year:parseInt(parts[0])});
-  }
-  return out;
-}
-function onFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>doImport(ev.target.result);r.readAsText(f)}
-function importText(){const t=document.getElementById('csv-text').value.trim();if(t)doImport(t)}
-function doImport(csv){
-  try{const news=parseBourso(csv);if(!news.length){toast('⚠️','Aucune transaction');return}
-  const keys=new Set(S.transactions.map(t=>`${t.date}|${t.label}|${t.amount}`));
-  const uniq=news.filter(t=>!keys.has(`${t.date}|${t.label}|${t.amount}`));
-  S.transactions.push(...uniq);applyOverrides();save();render();
-  toast('✅',`${uniq.length} importées · ${news.length-uniq.length} doublons`);setTab('transactions');
-  }catch(err){toast('❌','Erreur: '+err.message)}
-}
-function resetAll(){
-  if(!confirm('Effacer toutes les données ?'))return;
-  localStorage.removeItem('finProV3');S.transactions=seedToTx(SEED_RAW);S.forecastAdj={};S.savingsEnabled=false;S.taxEnabled=false;S.savingsTarget=200;S.taxRate=0;S.salary=2300;S.catOverrides={...DEFAULT_OVERRIDES};applyOverrides();save();render();toast('🗑️','Réinitialisé');
-}
-
-// Drag & drop
-document.addEventListener('dragover',e=>{const z=document.getElementById('drop-zone');if(z){e.preventDefault();z.classList.add('dragover')}});
-document.addEventListener('dragleave',e=>{const z=document.getElementById('drop-zone');if(z)z.classList.remove('dragover')});
-document.addEventListener('drop',e=>{e.preventDefault();const z=document.getElementById('drop-zone');if(z)z.classList.remove('dragover');if(e.dataTransfer.files.length){const f=e.dataTransfer.files[0],r=new FileReader();r.onload=ev=>doImport(ev.target.result);r.readAsText(f)}});
-document.getElementById('cat-modal').addEventListener('click',e=>{if(e.target.id==='cat-modal')closeModal()});
-document.getElementById('reassign-modal').addEventListener('click',e=>{if(e.target.id==='reassign-modal')closeReassign()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeReassign()}});
-
-// INIT
-load();renderNav();render();
-</script>
-</body>
-</html>
+</script></body></html>
