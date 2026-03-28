@@ -2,669 +2,503 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mes Finances</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--surface3:#222233;--border:#2a2a3d;--text:#e8e8f0;--text2:#8888a8;--text3:#5555708a;--accent:#6c5ce7;--accent2:#a29bfe;--green:#00cec9;--green-bg:#00cec915;--red:#ff6b6b;--red-bg:#ff6b6b15;--orange:#fdcb6e;--orange-bg:#fdcb6e15;--blue:#74b9ff;--pink:#fd79a8;--radius:14px;--shadow:0 4px 24px rgba(0,0,0,0.3)}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.app{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:20px}
-.header{display:flex;align-items:center;justify-content:space-between;padding:28px 0 20px;margin-bottom:24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
-.header h1{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px}
-.header .date{color:var(--text2);font-size:13px;font-family:'Space Mono',monospace}
-.tabs{display:flex;gap:6px;margin-bottom:24px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border);overflow-x:auto}
-.tab{padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;border:none;background:none;font-family:inherit;white-space:nowrap}
-.tab:hover{color:var(--text);background:var(--surface2)}.tab.active{background:var(--accent);color:#fff}
-.grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,1fr)}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-1{grid-template-columns:1fr}
-@media(max-width:900px){.grid-4,.grid-3{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}}
-@media(max-width:768px){
-  .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.grid-4{grid-template-columns:repeat(2,1fr)}
-  .app{padding:10px}
-  .header{padding:16px 0 12px;margin-bottom:14px;gap:8px}
-  .header h1{font-size:18px}
-  .tabs{gap:2px;padding:3px}
-  .tab{padding:8px 12px;font-size:12px}
-  .card{padding:14px}.card-value{font-size:20px}.card-title{font-size:10px;margin-bottom:6px;letter-spacing:1px}.card-sub{font-size:11px}.card-icon{font-size:16px}
-  .chart-card{padding:14px}.chart-card h3{font-size:14px;margin-bottom:10px}
-  .section-title{font-size:12px;margin:18px 0 10px}
-  .expense-row{padding:10px 12px;gap:6px}.expense-row .cat{font-size:13px;min-width:0}.expense-row .amt{font-size:13px}
-  .badge{padding:2px 8px;font-size:10px}
-  .form-row{gap:8px}.form-group{min-width:0}
-  input,select{padding:10px 12px;font-size:14px;border-radius:8px}
-  .alert-box{padding:12px 14px;gap:8px}.alert-box .msg{font-size:12px}.alert-box .icon{font-size:16px}
-  .month-selector{gap:4px}.month-btn{padding:6px 12px;font-size:12px;border-radius:6px}
-  .tx-item{padding:8px 10px;font-size:12px}.tx-item .tx-label{max-width:160px}.tx-item .tx-amt{min-width:65px;font-size:12px}.tx-item .tx-date{min-width:50px;font-size:10px}
-  .drop-zone{padding:32px 16px}.drop-zone .dz-icon{font-size:36px}.drop-zone .dz-title{font-size:14px}
-  .insight-card{padding:12px}.insight-card .insight-text{font-size:12px}
-  .toggle-group{padding:2px}.toggle-btn{padding:6px 12px;font-size:11px}
-  .savings-bar-label{font-size:10px}
-  .toast{bottom:12px;right:12px;left:12px;padding:12px 16px;font-size:13px}
-  .data-count{font-size:11px;padding:3px 10px}
-  button.primary{padding:10px 18px;font-size:13px}
-  .preview-container{max-height:200px}
-}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
-.card-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:10px;font-weight:500}
-.card-value{font-family:'Space Mono',monospace;font-size:26px;font-weight:700}
-.card-sub{font-size:12px;color:var(--text2);margin-top:6px}.card-icon{font-size:20px;float:right;margin-top:-4px}
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--surface3:#222233;--border:#2a2a3d;--text:#e8e8f0;--text2:#8888a8;--accent:#6c5ce7;--accent2:#a29bfe;--green:#00cec9;--green-bg:#00cec915;--red:#ff6b6b;--red-bg:#ff6b6b15;--orange:#fdcb6e;--orange-bg:#fdcb6e15;--radius:16px;--shadow:0 4px 24px rgba(0,0,0,0.4)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+.app{max-width:1400px;margin:0 auto;padding:16px;padding-bottom:100px}
+.header{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header h1{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .subtitle{color:var(--text2);font-size:12px;font-family:'Space Mono',monospace}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0;margin-bottom:20px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:70px;padding:12px 8px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);transition:all .2s;border:none;background:var(--surface);font-family:inherit;text-align:center;white-space:nowrap;border:1px solid var(--border)}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 12px rgba(108,92,231,0.3)}
+.grid{display:grid;gap:12px}.grid-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:380px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden}
+.card:active{transform:scale(0.98)}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.card-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text2);font-weight:600}
+.card-value{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;margin:4px 0}
+.card-delta{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.big-number{font-family:'Space Mono',monospace;font-size:32px;font-weight:700;text-align:center;padding:20px 0}
 .positive{color:var(--green)}.negative{color:var(--red)}.warning{color:var(--orange)}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
-.chart-card h3{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin:28px 0 14px;padding-left:2px}
-.expense-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;background:var(--surface2);margin-bottom:6px;transition:background .15s;flex-wrap:wrap;gap:4px}
-.expense-row:hover{background:var(--surface3)}.expense-row .cat{font-size:14px;font-weight:500;min-width:160px}
-.expense-row .amt{font-family:'Space Mono',monospace;font-size:14px;font-weight:700}
-.expense-row .bar-bg{flex:1;height:6px;background:var(--surface3);border-radius:3px;margin:0 16px;min-width:60px}
-.expense-row .bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-red{background:var(--red-bg);color:var(--red)}.badge-green{background:var(--green-bg);color:var(--green)}.badge-orange{background:var(--orange-bg);color:var(--orange)}
-input,select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;width:100%;transition:border-color .2s}
-input:focus,select:focus{outline:none;border-color:var(--accent)}select{cursor:pointer}
-label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-weight:500}
-button.primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;transition:all .2s}
-button.primary:hover{background:var(--accent2);transform:translateY(-1px)}
-button.secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 20px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500}
-button.danger{background:var(--red-bg);color:var(--red);border:1px solid #ff6b6b30;border-radius:10px;padding:10px 20px;cursor:pointer;font-family:inherit;font-size:13px}
-.form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}.form-group{flex:1;min-width:140px}
-.alert-box{background:var(--red-bg);border:1px solid #ff6b6b30;border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
-.alert-box.warn{background:var(--orange-bg);border-color:#fdcb6e30}.alert-box.success{background:var(--green-bg);border-color:#00cec930}
-.alert-box .icon{font-size:20px;flex-shrink:0}.alert-box .msg{font-size:13px;line-height:1.5}.alert-box .msg strong{font-weight:600}
-.toggle-group{display:flex;gap:4px;background:var(--surface2);border-radius:8px;padding:3px}
-.toggle-btn{padding:6px 16px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;background:none;color:var(--text2);transition:all .2s}
-.toggle-btn.active{background:var(--accent);color:#fff}
-.tx-list{max-height:400px;overflow-y:auto}.tx-list::-webkit-scrollbar{width:4px}.tx-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.tx-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}
-.tx-item:last-child{border:none}.tx-item .tx-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px}
-.tx-item .tx-cat{color:var(--text2);font-size:11px;margin-left:12px;min-width:100px}
-.tx-item .tx-date{color:var(--text3);font-size:11px;min-width:80px;font-family:'Space Mono',monospace}
-.tx-item .tx-amt{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;min-width:80px;text-align:right}
-.savings-bar-container{width:100%;height:24px;background:var(--surface3);border-radius:12px;overflow:hidden;position:relative}
-.savings-bar-fill{height:100%;border-radius:12px;transition:width .8s ease;background:linear-gradient(90deg,var(--accent),var(--green))}
-.savings-bar-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:'Space Mono',monospace}
-.month-selector{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.month-btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:all .2s}
+.section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);margin-left:8px}
+.list-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all .2s}
+.list-item:active{background:var(--surface2);transform:scale(0.98)}
+.list-icon{width:40px;height:40px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.list-content{flex:1;min-width:0}
+.list-title{font-size:14px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-sub{font-size:12px;color:var(--text2)}
+.list-amount{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;flex-shrink:0;text-align:right}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.badge-red{background:var(--red-bg);color:var(--red);border-color:var(--red)}.badge-green{background:var(--green-bg);color:var(--green);border-color:var(--green)}.badge-orange{background:var(--orange-bg);color:var(--orange);border-color:var(--orange)}
+input,select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:16px;width:100%;transition:all .2s;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--accent);background:var(--surface3)}
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.form-group{margin-bottom:16px}
+.form-row{display:flex;gap:12px}.form-row .form-group{flex:1}
+.btn{width:100%;padding:16px;border-radius:12px;border:none;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(0.96)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red)}
+.btn-success{background:var(--green-bg);color:var(--green);border:1px solid var(--green)}
+.alert-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px}
+.alert-box.danger{background:var(--red-bg);border-color:var(--red)}
+.alert-box.warning{background:var(--orange-bg);border-color:var(--orange)}
+.alert-box.success{background:var(--green-bg);border-color:var(--green)}
+.alert-icon{font-size:24px;flex-shrink:0}
+.alert-content{flex:1}
+.alert-title{font-weight:700;margin-bottom:2px;font-size:14px}
+.alert-text{font-size:13px;color:var(--text2);line-height:1.4}
+.month-selector{display:flex;gap:8px;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.month-selector::-webkit-scrollbar{display:none}
+.month-btn{padding:10px 20px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;white-space:nowrap;transition:all .2s}
 .month-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.fade-in{animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.insight-card{background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.insight-card .emoji{font-size:18px;margin-bottom:6px}.insight-card .insight-text{font-size:13px;line-height:1.5;color:var(--text2)}
-.insight-card .insight-text strong{color:var(--text)}
-.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:all .3s;position:relative}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(108,92,231,0.05)}.drop-zone.drag-over{transform:scale(1.01)}
-.drop-zone .dz-icon{font-size:48px;margin-bottom:12px;opacity:.7}.drop-zone:hover .dz-icon{opacity:1}
-.drop-zone .dz-title{font-size:16px;font-weight:600;margin-bottom:6px}.drop-zone .dz-sub{font-size:13px;color:var(--text2)}
-.drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.preview-table{width:100%;border-collapse:collapse;font-size:12px}.preview-table th{text-align:left;padding:8px 10px;background:var(--surface3);color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:10px;position:sticky;top:0}
-.preview-table td{padding:8px 10px;border-bottom:1px solid var(--border)}.preview-table tr:hover td{background:var(--surface2)}
-.preview-container{max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:10px}
-.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 24px;box-shadow:0 8px 32px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px;font-size:14px;transform:translateY(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.toggle-group{display:flex;background:var(--surface2);border-radius:10px;padding:4px;border:1px solid var(--border)}
+.toggle-btn{flex:1;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;background:transparent;color:var(--text2);transition:all .2s}
+.toggle-btn.active{background:var(--accent);color:#fff}
+.progress-container{margin:20px 0}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
+.progress-bar{height:12px;background:var(--surface2);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.progress-fill{height:100%;border-radius:6px;transition:width 0.5s ease;background:linear-gradient(90deg,var(--accent),var(--green))}
+.progress-fill.warning{background:linear-gradient(90deg,var(--orange),var(--red))}
+.progress-fill.danger{background:var(--red)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.stat-item{text-align:center;padding:12px 8px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+.stat-value{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;display:block;margin-bottom:2px}
+.stat-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+.suggestion-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;border-left:4px solid var(--accent)}
+.suggestion-card.warning{border-left-color:var(--orange)}
+.suggestion-card.danger{border-left-color:var(--red)}
+.suggestion-card.success{border-left-color:var(--green)}
+.suggestion-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.suggestion-icon{font-size:24px}
+.suggestion-title{font-weight:700;font-size:15px}
+.suggestion-text{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.suggestion-action{font-size:12px;color:var(--accent);font-weight:600}
+.slider-container{margin:16px 0;padding:16px;background:var(--surface2);border-radius:12px;border:1px solid var(--border)}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.slider-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.slider-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.slider-value{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+input[type=range]{width:100%;height:6px;-webkit-appearance:none;background:var(--surface3);border-radius:3px;outline:none;padding:0;margin:12px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--text);cursor:pointer;border:3px solid var(--surface);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--text);cursor:pointer;border:3px solid var(--surface);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:4px}
+.tx-list{max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tx-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.tx-item:last-child{border-bottom:none;border-radius:0 0 var(--radius) var(--radius)}
+.tx-item:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.tx-date{color:var(--text2);font-size:12px;font-family:'Space Mono',monospace;min-width:50px}
+.tx-info{flex:1;min-width:0;margin:0 12px}
+.tx-label{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin-bottom:2px}
+.tx-cat{font-size:11px;color:var(--text2)}
+.tx-amount{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;min-width:80px;text-align:right}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.5}
+.empty-text{font-size:15px;line-height:1.6}
+.hidden{display:none!important}
+.fade-in{animation:fadeIn 0.3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.toast{position:fixed;bottom:24px;left:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:flex;align-items:center;gap:12px;font-size:14px;z-index:1000;transform:translateY(200%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
 .toast.show{transform:translateY(0)}
-.data-count{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;color:var(--text2);font-family:'Space Mono',monospace}
-.data-count .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}.hidden{display:none!important}
-.cat-row{cursor:pointer;position:relative}
-.cat-row:hover{background:var(--surface3);transform:translateX(2px)}
-.cat-row .chevron{color:var(--text3);font-size:18px;font-weight:700;margin-left:4px;transition:color .2s}
-.cat-row:hover .chevron{color:var(--accent2)}
-.cat-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:16px;animation:slideUp .3s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.cat-modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding-left:12px;margin-bottom:16px}
-@media(max-width:768px){.cat-modal{padding:14px}.cat-modal-header{margin-bottom:12px}}
-
-/* Nouveaux styles pour la prévision */
-.forecast-card{background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.forecast-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
-.forecast-header .month-badge{background:var(--accent);color:#fff;padding:8px 16px;border-radius:20px;font-family:'Space Mono',monospace;font-size:14px;font-weight:600}
-.forecast-header .status{font-size:13px;color:var(--text2)}
-.forecast-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
-@media(max-width:768px){.forecast-grid{grid-template-columns:1fr}}
-.forecast-metric{text-align:center;padding:16px;background:var(--surface);border-radius:12px;border:1px solid var(--border)}
-.forecast-metric .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:8px}
-.forecast-metric .value{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;margin-bottom:4px}
-.forecast-metric .delta{font-size:12px;color:var(--text2)}
-.suggestion-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px}
-.suggestion-card .icon{font-size:24px;flex-shrink:0}
-.suggestion-card .content{flex:1}
-.suggestion-card .title{font-size:14px;font-weight:600;margin-bottom:4px}
-.suggestion-card .desc{font-size:12px;color:var(--text2);line-height:1.5}
-.suggestion-card .action{font-size:11px;color:var(--accent);margin-top:8px;font-weight:500}
-.progress-ring{width:120px;height:120px;margin:0 auto 16px}
-.progress-ring-bg{fill:none;stroke:var(--surface3);stroke-width:8}
-.progress-ring-fill{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 0.5s ease}
-.progress-ring-fill.warning{stroke:var(--orange)}
-.progress-ring-fill.danger{stroke:var(--red)}
-.progress-text{font-family:'Space Mono',monospace;font-size:14px;font-weight:600;text-anchor:middle;fill:var(--text)}
-.scenario-card{background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:12px;border-left:4px solid var(--accent)}
-.scenario-card.optimistic{border-left-color:var(--green)}
-.scenario-card.pessimistic{border-left-color:var(--red)}
-.scenario-card .scenario-title{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.scenario-card .scenario-value{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;margin-bottom:4px}
-.scenario-card .scenario-desc{font-size:12px;color:var(--text2)}
+.toast-icon{font-size:20px}
+/* Desktop only */
+@media(min-width:769px){
+.app{padding:24px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.chart-container{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px}
+}
 </style>
 </head>
 <body>
-<div class="grain"></div>
 <div class="app" id="app"></div>
-<div class="toast" id="toast"><span class="toast-icon"></span><span class="toast-msg"></span></div>
-<script>
-const SEED=JSON.parse("[{\"d\": \"2026-01-30\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-01-30\", \"l\": \"SnP*AAL\", \"c\": \"Non catégorisé\", \"a\": -10}, {\"d\": \"2026-01-30\", \"l\": \"HELLOASSO\", \"c\": \"Cadeaux et solidarité\", \"a\": -5}, {\"d\": \"2026-01-30\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -130}, {\"d\": \"2026-01-30\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -120}, {\"d\": \"2026-01-29\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-01-29\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-01-29\", \"l\": \"RELAIS DE PACE\", \"c\": \"Auto & Moto\", \"a\": -10.9}, {\"d\": \"2026-01-29\", \"l\": \"SNCF OUIGO\", \"c\": \"Voyages & Transports\", \"a\": -54}, {\"d\": \"2026-01-29\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -25.97}, {\"d\": \"2026-01-28\", \"l\": \"EDF\", \"c\": \"Logement\", \"a\": -4.39}, {\"d\": \"2026-01-27\", \"l\": \"FRESH FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -12.5}, {\"d\": \"2026-01-27\", \"l\": \"BOUCHERIE VILLE\", \"c\": \"Vie quotidienne\", \"a\": -20.89}, {\"d\": \"2026-01-27\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -25.12}, {\"d\": \"2026-01-27\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -12.99}, {\"d\": \"2026-01-27\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -48.68}, {\"d\": \"2026-01-27\", \"l\": \"SC-SCEM PHO\", \"c\": \"Loisirs et sorties\", \"a\": -8}, {\"d\": \"2026-01-26\", \"l\": \"SP MECCA BOOKS\", \"c\": \"Non catégorisé\", \"a\": -21.9}, {\"d\": \"2026-01-26\", \"l\": \"NAJAMINSTITUTE\", \"c\": \"Non catégorisé\", \"a\": -11.2}, {\"d\": \"2026-01-26\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -11.28}, {\"d\": \"2026-01-26\", \"l\": \"LECLERC CARBURANT\", \"c\": \"Auto & Moto\", \"a\": -25.03}, {\"d\": \"2026-01-26\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -7.93}, {\"d\": \"2026-01-26\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -65.43}, {\"d\": \"2026-01-26\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -4.98}, {\"d\": \"2026-01-26\", \"l\": \"HOSTINGER\", \"c\": \"Abonnements & téléphonie\", \"a\": -16.79}, {\"d\": \"2026-01-26\", \"l\": \"BOULANGERIE\", \"c\": \"Vie quotidienne\", \"a\": -2.5}, {\"d\": \"2026-01-26\", \"l\": \"LA POSTE EXAM\", \"c\": \"Vie quotidienne\", \"a\": -30}, {\"d\": \"2026-01-26\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -8.1}, {\"d\": \"2026-01-26\", \"l\": \"VIR PAPA\", \"c\": \"Virements émis\", \"a\": -30}, {\"d\": \"2026-01-26\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -27.18}, {\"d\": \"2026-01-23\", \"l\": \"PHARMACIE MACE\", \"c\": \"Santé\", \"a\": -2.09}, {\"d\": \"2026-01-23\", \"l\": \"DR LEGRU\", \"c\": \"Santé\", \"a\": -30}, {\"d\": \"2026-01-22\", \"l\": \"RETRAIT DAB\", \"c\": \"Retraits cash\", \"a\": -100}, {\"d\": \"2026-01-22\", \"l\": \"AMAZON\", \"c\": \"Vie quotidienne\", \"a\": -15.91}, {\"d\": \"2026-01-21\", \"l\": \"LA POSTE EXAM\", \"c\": \"Vie quotidienne\", \"a\": -30}, {\"d\": \"2026-01-20\", \"l\": \"LA MIE CALINE\", \"c\": \"Vie quotidienne\", \"a\": -4.1}, {\"d\": \"2026-01-20\", \"l\": \"LECLERC CARBURANT\", \"c\": \"Auto & Moto\", \"a\": -30}, {\"d\": \"2026-01-20\", \"l\": \"DR LEGRU\", \"c\": \"Santé\", \"a\": -30}, {\"d\": \"2026-01-19\", \"l\": \"RETRAIT DAB\", \"c\": \"Retraits cash\", \"a\": -150}, {\"d\": \"2026-01-19\", \"l\": \"MONMEZIERES\", \"c\": \"Loisirs et sorties\", \"a\": -12.3}, {\"d\": \"2026-01-19\", \"l\": \"O BROZER S FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -8.7}, {\"d\": \"2026-01-19\", \"l\": \"PPG OFFREAVANTAGE\", \"c\": \"Vie quotidienne\", \"a\": -20.8}, {\"d\": \"2026-01-19\", \"l\": \"CARREFOUR CESSON\", \"c\": \"Vie quotidienne\", \"a\": -25.81}, {\"d\": \"2026-01-19\", \"l\": \"BOUTIQUE COIFFEUR\", \"c\": \"Vie quotidienne\", \"a\": -30.58}, {\"d\": \"2026-01-19\", \"l\": \"HORODATEURS\", \"c\": \"Auto & Moto\", \"a\": -1.6}, {\"d\": \"2026-01-19\", \"l\": \"HORODATEURS\", \"c\": \"Auto & Moto\", \"a\": -2}, {\"d\": \"2026-01-19\", \"l\": \"BARBERKING\", \"c\": \"Non catégorisé\", \"a\": -15}, {\"d\": \"2026-01-19\", \"l\": \"DR LEGRU\", \"c\": \"Santé\", \"a\": -30}, {\"d\": \"2026-01-19\", \"l\": \"BOULANG LA ROTONDE\", \"c\": \"Vie quotidienne\", \"a\": -4.7}, {\"d\": \"2026-01-16\", \"l\": \"PACE LAVAGE\", \"c\": \"Auto & Moto\", \"a\": -10}, {\"d\": \"2026-01-16\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -8.71}, {\"d\": \"2026-01-16\", \"l\": \"VILLA D OR\", \"c\": \"Loisirs et sorties\", \"a\": -13.9}, {\"d\": \"2026-01-16\", \"l\": \"ENERGIE MUTUELLE\", \"c\": \"Santé\", \"a\": -64.75}, {\"d\": \"2026-01-16\", \"l\": \"ACM IARD\", \"c\": \"Auto & Moto\", \"a\": -18.33}, {\"d\": \"2026-01-15\", \"l\": \"AMOUR DE PIZZA\", \"c\": \"Loisirs et sorties\", \"a\": -28}, {\"d\": \"2026-01-15\", \"l\": \"SYNDICAT UNSA\", \"c\": \"Loisirs et sorties\", \"a\": -15}, {\"d\": \"2026-01-14\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -30}, {\"d\": \"2026-01-14\", \"l\": \"MOZAIK\", \"c\": \"Non catégorisé\", \"a\": -8.9}, {\"d\": \"2026-01-14\", \"l\": \"MOZAIK\", \"c\": \"Non catégorisé\", \"a\": -9.9}, {\"d\": \"2026-01-14\", \"l\": \"CARREFOUR EXPRESS\", \"c\": \"Vie quotidienne\", \"a\": -4.71}, {\"d\": \"2026-01-14\", \"l\": \"AU COMPTOIR DES\", \"c\": \"Loisirs et sorties\", \"a\": -2.6}, {\"d\": \"2026-01-14\", \"l\": \"LIDL\", \"c\": \"Vie quotidienne\", \"a\": -13.72}, {\"d\": \"2026-01-13\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -3.08}, {\"d\": \"2026-01-13\", \"l\": \"CHEQUE\", \"c\": \"Chèques\", \"a\": -75}, {\"d\": \"2026-01-12\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -9.73}, {\"d\": \"2026-01-12\", \"l\": \"CARREFOUR CESSON\", \"c\": \"Vie quotidienne\", \"a\": -2.69}, {\"d\": \"2026-01-12\", \"l\": \"CARREFOUR CESSON\", \"c\": \"Vie quotidienne\", \"a\": -36.19}, {\"d\": \"2026-01-12\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -16.86}, {\"d\": \"2026-01-12\", \"l\": \"MICROSOFT\", \"c\": \"Abonnements & téléphonie\", \"a\": -10}, {\"d\": \"2026-01-12\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -15.86}, {\"d\": \"2026-01-12\", \"l\": \"CA CONSUMER FINANCE\", \"c\": \"Emprunts (hors immobilier)\", \"a\": -100}, {\"d\": \"2026-01-09\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -20}, {\"d\": \"2026-01-09\", \"l\": \"SARL GBP\", \"c\": \"Loisirs et sorties\", \"a\": -3.95}, {\"d\": \"2026-01-09\", \"l\": \"VILLA D OR\", \"c\": \"Loisirs et sorties\", \"a\": -13.9}, {\"d\": \"2026-01-09\", \"l\": \"FDJ JEUX\", \"c\": \"Loisirs et sorties\", \"a\": -170}, {\"d\": \"2026-01-08\", \"l\": \"NOTION LABS\", \"c\": \"Abonnements & téléphonie\", \"a\": -28.2}, {\"d\": \"2026-01-08\", \"l\": \"LE SULTAN\", \"c\": \"Loisirs et sorties\", \"a\": -7.6}, {\"d\": \"2026-01-08\", \"l\": \"PACE LAVAGE\", \"c\": \"Auto & Moto\", \"a\": -10}, {\"d\": \"2026-01-08\", \"l\": \"TOPWG NOUNOU\", \"c\": \"Non catégorisé\", \"a\": -6.99}, {\"d\": \"2026-01-07\", \"l\": \"CARREFOUR EXPRESS\", \"c\": \"Vie quotidienne\", \"a\": -2.95}, {\"d\": \"2026-01-07\", \"l\": \"OPENAI CHATGPT\", \"c\": \"Abonnements & téléphonie\", \"a\": -23}, {\"d\": \"2026-01-06\", \"l\": \"NORAUTO\", \"c\": \"Auto & Moto\", \"a\": -10.47}, {\"d\": \"2026-01-06\", \"l\": \"SAHIN RESTAURANT\", \"c\": \"Loisirs et sorties\", \"a\": -154.96}, {\"d\": \"2026-01-06\", \"l\": \"NCD FOOD\", \"c\": \"Non catégorisé\", \"a\": -10}, {\"d\": \"2026-01-06\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -6.84}, {\"d\": \"2026-01-06\", \"l\": \"BARBERKING\", \"c\": \"Non catégorisé\", \"a\": -20}, {\"d\": \"2026-01-06\", \"l\": \"UBER\", \"c\": \"Voyages & Transports\", \"a\": -19.9}, {\"d\": \"2026-01-06\", \"l\": \"BOULANGER ELEC\", \"c\": \"Vie quotidienne\", \"a\": -50.04}, {\"d\": \"2026-01-06\", \"l\": \"BOULANGERIE\", \"c\": \"Vie quotidienne\", \"a\": -5.7}, {\"d\": \"2026-01-06\", \"l\": \"CANAL PLUS\", \"c\": \"Abonnements & téléphonie\", \"a\": -34.99}, {\"d\": \"2026-01-06\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -7.26}, {\"d\": \"2026-01-06\", \"l\": \"FLOA CREDIT\", \"c\": \"Emprunts (hors immobilier)\", \"a\": -39.25}, {\"d\": \"2026-01-06\", \"l\": \"ACTIVE ASSURANCES\", \"c\": \"Auto & Moto\", \"a\": -141.52}, {\"d\": \"2026-01-05\", \"l\": \"HOSTINGER\", \"c\": \"Abonnements & téléphonie\", \"a\": -5.04}, {\"d\": \"2026-01-05\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -28.48}, {\"d\": \"2026-01-05\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -89.48}, {\"d\": \"2026-01-05\", \"l\": \"HOSTINGER\", \"c\": \"Abonnements & téléphonie\", \"a\": -12.19}, {\"d\": \"2026-01-05\", \"l\": \"CONTROLE TECHNIQUE\", \"c\": \"Auto & Moto\", \"a\": -69}, {\"d\": \"2026-01-05\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -93.99}, {\"d\": \"2026-01-05\", \"l\": \"APPLE\", \"c\": \"Vie quotidienne\", \"a\": -4}, {\"d\": \"2026-01-05\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -22.5}, {\"d\": \"2026-01-05\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -50}, {\"d\": \"2026-01-05\", \"l\": \"CHEQUE\", \"c\": \"Chèques\", \"a\": -200}, {\"d\": \"2026-01-02\", \"l\": \"FRAIS REFAB CB\", \"c\": \"Services financiers\", \"a\": -10}, {\"d\": \"2026-01-02\", \"l\": \"PACE LAVAGE\", \"c\": \"Auto & Moto\", \"a\": -10}, {\"d\": \"2026-01-02\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -25.68}, {\"d\": \"2026-01-02\", \"l\": \"CHP ST GREGOIRE\", \"c\": \"Santé\", \"a\": -2.5}, {\"d\": \"2026-01-02\", \"l\": \"NCD FOOD\", \"c\": \"Non catégorisé\", \"a\": -10}, {\"d\": \"2026-02-26\", \"l\": \"HLM LES FOYERS LOYER\", \"c\": \"Logement\", \"a\": -600}, {\"d\": \"2026-02-26\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -50}, {\"d\": \"2026-02-26\", \"l\": \"HOSTINGER\", \"c\": \"Abonnements & téléphonie\", \"a\": -16.79}, {\"d\": \"2026-02-26\", \"l\": \"THE RIVER\", \"c\": \"Loisirs et sorties\", \"a\": -23.5}, {\"d\": \"2026-02-26\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -27.18}, {\"d\": \"2026-02-25\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -100}, {\"d\": \"2026-02-23\", \"l\": \"NORAUTO\", \"c\": \"Auto & Moto\", \"a\": -13.47}, {\"d\": \"2026-02-23\", \"l\": \"LECLERC CARBURANT\", \"c\": \"Auto & Moto\", \"a\": -20}, {\"d\": \"2026-02-23\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -78.95}, {\"d\": \"2026-02-23\", \"l\": \"RIVEX\", \"c\": \"Vie quotidienne\", \"a\": -76.28}, {\"d\": \"2026-02-23\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-02-23\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -3.71}, {\"d\": \"2026-02-23\", \"l\": \"RIVEX\", \"c\": \"Vie quotidienne\", \"a\": -5.23}, {\"d\": \"2026-02-23\", \"l\": \"LIDL\", \"c\": \"Vie quotidienne\", \"a\": -9}, {\"d\": \"2026-02-19\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -3.96}, {\"d\": \"2026-02-18\", \"l\": \"RESTAURANT LE K\", \"c\": \"Loisirs et sorties\", \"a\": -21.2}, {\"d\": \"2026-02-18\", \"l\": \"SARL OPI\", \"c\": \"Vie quotidienne\", \"a\": -7}, {\"d\": \"2026-02-18\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -5.4}, {\"d\": \"2026-02-18\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -395}, {\"d\": \"2026-02-17\", \"l\": \"PHARMACIE DU CH\", \"c\": \"Santé\", \"a\": -11.8}, {\"d\": \"2026-02-17\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -8.54}, {\"d\": \"2026-02-17\", \"l\": \"LE SOLEIL\", \"c\": \"Loisirs et sorties\", \"a\": -12}, {\"d\": \"2026-02-17\", \"l\": \"ACM IARD\", \"c\": \"Auto & Moto\", \"a\": -18.33}, {\"d\": \"2026-02-16\", \"l\": \"EL BARAKA\", \"c\": \"Vie quotidienne\", \"a\": -84.64}, {\"d\": \"2026-02-16\", \"l\": \"AU COMPTOIR DES\", \"c\": \"Loisirs et sorties\", \"a\": -3.3}, {\"d\": \"2026-02-16\", \"l\": \"COMPTOIRS BIO\", \"c\": \"Vie quotidienne\", \"a\": -1.25}, {\"d\": \"2026-02-16\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -9.75}, {\"d\": \"2026-02-16\", \"l\": \"SUMUP CENTRE\", \"c\": \"Auto & Moto\", \"a\": -5}, {\"d\": \"2026-02-16\", \"l\": \"NAOUFAL SAINDOU\", \"c\": \"Virements émis\", \"a\": -10}, {\"d\": \"2026-02-16\", \"l\": \"ENERGIE MUTUELLE\", \"c\": \"Santé\", \"a\": -64.75}, {\"d\": \"2026-02-13\", \"l\": \"VILLA D OR\", \"c\": \"Loisirs et sorties\", \"a\": -14.9}, {\"d\": \"2026-02-13\", \"l\": \"PACE LAVAGE\", \"c\": \"Auto & Moto\", \"a\": -10}, {\"d\": \"2026-02-13\", \"l\": \"UBER\", \"c\": \"Voyages & Transports\", \"a\": -1}, {\"d\": \"2026-02-13\", \"l\": \"UBER\", \"c\": \"Voyages & Transports\", \"a\": -28.98}, {\"d\": \"2026-02-12\", \"l\": \"SCARABEE\", \"c\": \"Vie quotidienne\", \"a\": -8.05}, {\"d\": \"2026-02-12\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -21.31}, {\"d\": \"2026-02-12\", \"l\": \"ETHNIC FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -10}, {\"d\": \"2026-02-11\", \"l\": \"MOZAIK\", \"c\": \"Non catégorisé\", \"a\": -8.9}, {\"d\": \"2026-02-11\", \"l\": \"PHARMACIE MACE\", \"c\": \"Santé\", \"a\": -15.52}, {\"d\": \"2026-02-10\", \"l\": \"DERSIM\", \"c\": \"Loisirs et sorties\", \"a\": -7.5}, {\"d\": \"2026-02-10\", \"l\": \"CANAL PLUS\", \"c\": \"Abonnements & téléphonie\", \"a\": -34.99}, {\"d\": \"2026-02-10\", \"l\": \"CA CONSUMER FINANCE\", \"c\": \"Emprunts (hors immobilier)\", \"a\": -100}, {\"d\": \"2026-02-09\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -20}, {\"d\": \"2026-02-09\", \"l\": \"O BROZER S FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -11.2}, {\"d\": \"2026-02-09\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -10.79}, {\"d\": \"2026-02-09\", \"l\": \"O BROZER S FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -7.9}, {\"d\": \"2026-02-09\", \"l\": \"NAOUFAL SAINDOU\", \"c\": \"Virements émis\", \"a\": -25}, {\"d\": \"2026-02-09\", \"l\": \"MARINE TANFIN\", \"c\": \"Virements émis\", \"a\": -194.95}, {\"d\": \"2026-02-06\", \"l\": \"LES DELICES DE\", \"c\": \"Vie quotidienne\", \"a\": -3}, {\"d\": \"2026-02-06\", \"l\": \"LECLERC LAVAGE\", \"c\": \"Vie quotidienne\", \"a\": -8}, {\"d\": \"2026-02-06\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -4.57}, {\"d\": \"2026-02-06\", \"l\": \"FLOA CREDIT\", \"c\": \"Non catégorisé\", \"a\": -39.25}, {\"d\": \"2026-02-05\", \"l\": \"CANVA\", \"c\": \"Non catégorisé\", \"a\": -16}, {\"d\": \"2026-02-05\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -11.06}, {\"d\": \"2026-02-05\", \"l\": \"CHEQUE\", \"c\": \"Chèques\", \"a\": -70}, {\"d\": \"2026-02-05\", \"l\": \"CHEQUE\", \"c\": \"Chèques\", \"a\": -200}, {\"d\": \"2026-02-05\", \"l\": \"ACTIVE ASSURANCES\", \"c\": \"Auto & Moto\", \"a\": -141.52}, {\"d\": \"2026-02-04\", \"l\": \"HLM LES FOYERS\", \"c\": \"Cadeaux et solidarité\", \"a\": -530}, {\"d\": \"2026-02-04\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -30}, {\"d\": \"2026-02-04\", \"l\": \"PITAYA\", \"c\": \"Non catégorisé\", \"a\": -16.4}, {\"d\": \"2026-02-04\", \"l\": \"O BROZER S FOOD\", \"c\": \"Loisirs et sorties\", \"a\": -10.7}, {\"d\": \"2026-02-03\", \"l\": \"OPENROUTER\", \"c\": \"Non catégorisé\", \"a\": -9.12}, {\"d\": \"2026-02-03\", \"l\": \"LECLERC CARBURANT\", \"c\": \"Auto & Moto\", \"a\": -47.04}, {\"d\": \"2026-02-03\", \"l\": \"DOMISERVE\", \"c\": \"Autres dépenses\", \"a\": -39}, {\"d\": \"2026-02-03\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-02-03\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -96.36}, {\"d\": \"2026-02-03\", \"l\": \"BARBERKING\", \"c\": \"Non catégorisé\", \"a\": -20}, {\"d\": \"2026-02-03\", \"l\": \"NAVIGO\", \"c\": \"Voyages & Transports\", \"a\": -2.55}, {\"d\": \"2026-02-03\", \"l\": \"SELECTA\", \"c\": \"Vie quotidienne\", \"a\": -3.7}, {\"d\": \"2026-02-03\", \"l\": \"APPLE\", \"c\": \"Vie quotidienne\", \"a\": -4}, {\"d\": \"2026-02-02\", \"l\": \"CLAUDE.AI\", \"c\": \"Non catégorisé\", \"a\": -108}, {\"d\": \"2026-02-02\", \"l\": \"SC-COMPTOIR DE Z\", \"c\": \"Vie quotidienne\", \"a\": -13.8}, {\"d\": \"2026-02-02\", \"l\": \"SC-LE PANIER DE\", \"c\": \"Vie quotidienne\", \"a\": -12}, {\"d\": \"2026-02-02\", \"l\": \"U EXPRESS\", \"c\": \"Vie quotidienne\", \"a\": -1.15}, {\"d\": \"2026-02-02\", \"l\": \"U EXPRESS\", \"c\": \"Vie quotidienne\", \"a\": -9.22}, {\"d\": \"2026-02-02\", \"l\": \"NAVIGO\", \"c\": \"Voyages & Transports\", \"a\": -5.1}, {\"d\": \"2026-02-02\", \"l\": \"SELECTA\", \"c\": \"Vie quotidienne\", \"a\": -3.7}, {\"d\": \"2026-02-02\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -3.4}, {\"d\": \"2026-02-02\", \"l\": \"LE FEU DE BOIS\", \"c\": \"Loisirs et sorties\", \"a\": -20.7}, {\"d\": \"2026-02-02\", \"l\": \"COCHET EVA MAELYS\", \"c\": \"Virements émis\", \"a\": -20}, {\"d\": \"2026-02-02\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -44.99}, {\"d\": \"2026-03-25\", \"l\": \"CHEZ THEO\", \"c\": \"Loisirs et sorties\", \"a\": -6.5}, {\"d\": \"2026-03-25\", \"l\": \"BOULANG PATIS\", \"c\": \"Vie quotidienne\", \"a\": -1.6}, {\"d\": \"2026-03-25\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-03-25\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -33}, {\"d\": \"2026-03-25\", \"l\": \"GRAND PERE JULES\", \"c\": \"Non catégorisé\", \"a\": -4.8}, {\"d\": \"2026-03-23\", \"l\": \"AU COMPTOIR DES\", \"c\": \"Loisirs et sorties\", \"a\": -5.45}, {\"d\": \"2026-03-23\", \"l\": \"SIF DONS\", \"c\": \"Cadeaux et solidarité\", \"a\": -27}, {\"d\": \"2026-03-19\", \"l\": \"RIVEX\", \"c\": \"Vie quotidienne\", \"a\": -16.67}, {\"d\": \"2026-03-19\", \"l\": \"EL BARAKA\", \"c\": \"Vie quotidienne\", \"a\": -54.05}, {\"d\": \"2026-03-19\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -14.04}, {\"d\": \"2026-03-17\", \"l\": \"RETRAIT DAB\", \"c\": \"Retraits cash\", \"a\": -60}, {\"d\": \"2026-03-17\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -18.64}, {\"d\": \"2026-03-16\", \"l\": \"ANTHROPIC\", \"c\": \"Non catégorisé\", \"a\": -12}, {\"d\": \"2026-03-16\", \"l\": \"ANTHROPIC\", \"c\": \"Non catégorisé\", \"a\": -6}, {\"d\": \"2026-03-16\", \"l\": \"ANTHROPIC\", \"c\": \"Non catégorisé\", \"a\": -6}, {\"d\": \"2026-03-16\", \"l\": \"RETRAIT DAB\", \"c\": \"Retraits cash\", \"a\": -100}, {\"d\": \"2026-03-16\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -154.44}, {\"d\": \"2026-03-16\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -368}, {\"d\": \"2026-03-16\", \"l\": \"SAINDOU NAIDA\", \"c\": \"Virements émis\", \"a\": -25}, {\"d\": \"2026-03-16\", \"l\": \"NAOUFAL SAINDOU\", \"c\": \"Virements émis\", \"a\": -5}, {\"d\": \"2026-03-16\", \"l\": \"ENERGIE MUTUELLE\", \"c\": \"Santé\", \"a\": -64.75}, {\"d\": \"2026-03-13\", \"l\": \"AU COMPTOIR DES\", \"c\": \"Loisirs et sorties\", \"a\": -2.4}, {\"d\": \"2026-03-13\", \"l\": \"MARCHE DE L ORI\", \"c\": \"Vie quotidienne\", \"a\": -26.75}, {\"d\": \"2026-03-13\", \"l\": \"PACE LAVAGE\", \"c\": \"Auto & Moto\", \"a\": -10}, {\"d\": \"2026-03-12\", \"l\": \"RETRAIT DAB\", \"c\": \"Retraits cash\", \"a\": -50}, {\"d\": \"2026-03-12\", \"l\": \"HORODATEURS\", \"c\": \"Auto & Moto\", \"a\": -1.4}, {\"d\": \"2026-03-11\", \"l\": \"CANAL PLUS\", \"c\": \"Abonnements & téléphonie\", \"a\": -34.99}, {\"d\": \"2026-03-11\", \"l\": \"PHARMACIE LE CENTRE\", \"c\": \"Santé\", \"a\": -15.39}, {\"d\": \"2026-03-11\", \"l\": \"LIDL\", \"c\": \"Vie quotidienne\", \"a\": -4.18}, {\"d\": \"2026-03-10\", \"l\": \"MATW MEALS\", \"c\": \"Non catégorisé\", \"a\": -10}, {\"d\": \"2026-03-10\", \"l\": \"ANTHROPIC\", \"c\": \"Non catégorisé\", \"a\": -6}, {\"d\": \"2026-03-10\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -6.53}, {\"d\": \"2026-03-10\", \"l\": \"GIFI\", \"c\": \"Vie quotidienne\", \"a\": -12.47}, {\"d\": \"2026-03-10\", \"l\": \"AMAZON\", \"c\": \"Vie quotidienne\", \"a\": -13.98}, {\"d\": \"2026-03-10\", \"l\": \"INTERMARCHE\", \"c\": \"Vie quotidienne\", \"a\": -1.52}, {\"d\": \"2026-03-10\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -16.03}, {\"d\": \"2026-03-10\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -9.97}, {\"d\": \"2026-03-10\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -6.38}, {\"d\": \"2026-03-10\", \"l\": \"AMOUR DE PIZZA\", \"c\": \"Loisirs et sorties\", \"a\": -9.4}, {\"d\": \"2026-03-10\", \"l\": \"AMOUR DE PIZZA\", \"c\": \"Loisirs et sorties\", \"a\": -25.7}, {\"d\": \"2026-03-10\", \"l\": \"CA CONSUMER FINANCE\", \"c\": \"Emprunts (hors immobilier)\", \"a\": -100}, {\"d\": \"2026-03-09\", \"l\": \"ANTHROPIC\", \"c\": \"Non catégorisé\", \"a\": -6}, {\"d\": \"2026-03-09\", \"l\": \"COFIDIS AMAZON\", \"c\": \"Emprunts (hors immobilier)\", \"a\": -34.26}, {\"d\": \"2026-03-09\", \"l\": \"CARREFOUR CESSON\", \"c\": \"Vie quotidienne\", \"a\": -10.83}, {\"d\": \"2026-03-09\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -3.29}, {\"d\": \"2026-03-09\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -18.9}, {\"d\": \"2026-03-09\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -1.58}, {\"d\": \"2026-03-09\", \"l\": \"LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -34.74}, {\"d\": \"2026-03-09\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -1.05}, {\"d\": \"2026-03-09\", \"l\": \"CARREFOUR CITY\", \"c\": \"Vie quotidienne\", \"a\": -11.89}, {\"d\": \"2026-03-09\", \"l\": \"SARL TO ELEC\", \"c\": \"Vie quotidienne\", \"a\": -81.82}, {\"d\": \"2026-03-09\", \"l\": \"ACTION\", \"c\": \"Vie quotidienne\", \"a\": -22.36}, {\"d\": \"2026-03-09\", \"l\": \"BOULANGERIE\", \"c\": \"Vie quotidienne\", \"a\": -2.55}, {\"d\": \"2026-03-06\", \"l\": \"FLOA CREDIT\", \"c\": \"Non catégorisé\", \"a\": -39.25}, {\"d\": \"2026-03-05\", \"l\": \"CANVA\", \"c\": \"Non catégorisé\", \"a\": -32}, {\"d\": \"2026-03-05\", \"l\": \"DOMISERVE\", \"c\": \"Autres dépenses\", \"a\": -24.43}, {\"d\": \"2026-03-05\", \"l\": \"ACTIVE ASSURANCES\", \"c\": \"Auto & Moto\", \"a\": -141.52}, {\"d\": \"2026-03-04\", \"l\": \"EURL BOUVIER\", \"c\": \"Vie quotidienne\", \"a\": -10.8}, {\"d\": \"2026-03-04\", \"l\": \"DOMISERVE\", \"c\": \"Autres dépenses\", \"a\": -40}, {\"d\": \"2026-03-04\", \"l\": \"KEOLIS RENNES\", \"c\": \"Voyages & Transports\", \"a\": -1.7}, {\"d\": \"2026-03-04\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -8.48}, {\"d\": \"2026-03-04\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -9.99}, {\"d\": \"2026-03-04\", \"l\": \"NAOUFAL SAINDOU\", \"c\": \"Virements émis\", \"a\": -26}, {\"d\": \"2026-03-03\", \"l\": \"APPLE\", \"c\": \"Vie quotidienne\", \"a\": -4}, {\"d\": \"2026-03-03\", \"l\": \"BARBERKING\", \"c\": \"Non catégorisé\", \"a\": -20}, {\"d\": \"2026-03-03\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -44.99}, {\"d\": \"2026-03-02\", \"l\": \"RAILWAY\", \"c\": \"Vie quotidienne\", \"a\": -4.24}, {\"d\": \"2026-03-02\", \"l\": \"CLAUDE.AI\", \"c\": \"Non catégorisé\", \"a\": -108}, {\"d\": \"2026-03-02\", \"l\": \"AMOUR DE PIZZA\", \"c\": \"Loisirs et sorties\", \"a\": -28}, {\"d\": \"2026-03-02\", \"l\": \"PHARMACIE DU CH\", \"c\": \"Santé\", \"a\": -12.9}, {\"d\": \"2026-03-02\", \"l\": \"LECLERC CARBURANT\", \"c\": \"Auto & Moto\", \"a\": -60.95}, {\"d\": \"2026-03-02\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -14.93}, {\"d\": \"2026-03-02\", \"l\": \"E.LECLERC\", \"c\": \"Vie quotidienne\", \"a\": -281.79}, {\"d\": \"2026-03-02\", \"l\": \"GRAND FRAIS\", \"c\": \"Vie quotidienne\", \"a\": -28.18}, {\"d\": \"2026-03-02\", \"l\": \"BRICO DEPOT\", \"c\": \"Vie quotidienne\", \"a\": -56.51}, {\"d\": \"2026-03-02\", \"l\": \"NAOUFAL SAINDOU\", \"c\": \"Virements émis\", \"a\": -20}, {\"d\": \"2026-03-02\", \"l\": \"SFR\", \"c\": \"Abonnements & téléphonie\", \"a\": -25.96}, {\"d\": \"2026-03-02\", \"l\": \"EDF\", \"c\": \"Logement\", \"a\": -4.39}]");
-const PM={"Alimentation":"Vie quotidienne","Vie Quotidienne - Autres":"Vie quotidienne","Vie quotidienne":"Vie quotidienne","Bricolage et jardinage":"Vie quotidienne","Electronique et informatique":"Vie quotidienne","Vêtements et accessoires":"Vie quotidienne","Bien-être et soins (coiffeur, parfums…)":"Vie quotidienne","Mobilier, électroménager, décoration…":"Vie quotidienne","Livres, CD/DVD, bijoux, jouets…":"Vie quotidienne","Restaurants, bars, discothèques…":"Loisirs et sorties","Divertissement - culture (ciné, théâtre, concerts…)":"Loisirs et sorties","Club / association (sport, hobby, art…)":"Loisirs et sorties","Dépenses Jeux et paris":"Loisirs et sorties","Carburant":"Auto & Moto","Parking":"Auto & Moto","Entretien - Réparation":"Auto & Moto","Assurances (Auto/Moto)":"Auto & Moto","Auto / Moto - Autres":"Auto & Moto","Téléphonie (fixe et mobile)":"Abonnements & téléphonie","Multimedia à domicile (TV, internet, téléphonie…)":"Abonnements & téléphonie","Abonnements & téléphonie":"Abonnements & téléphonie","Médecins et frais médicaux":"Santé","Pharmacie et laboratoire":"Santé","Complémentaires santé":"Santé","Virements émis":"Virements émis","Loyers, Charges":"Logement","Energie (électricité, gaz, fuel, chauffage…)":"Logement","Crédit conso":"Emprunts (hors immobilier)","Retraits cash":"Retraits cash","Chèques":"Chèques","Transports quotidiens (métro, bus…)":"Voyages & Transports","Transports longue distance (avions, trains…)":"Voyages & Transports","Taxis":"Voyages & Transports","Solidarité - Autres":"Cadeaux et solidarité","Dons et Cadeaux":"Cadeaux et solidarité","Frais bancaires et de gestion (dont agios)":"Services financiers","Autres dépenses":"Autres dépenses","Non catégorisé":"Non catégorisé"};
-const CC={"Vie quotidienne":"#6c5ce7","Loisirs et sorties":"#fd79a8","Auto & Moto":"#fdcb6e","Abonnements & téléphonie":"#74b9ff","Santé":"#00cec9","Virements émis":"#a29bfe","Logement":"#55efc4","Emprunts (hors immobilier)":"#ff7675","Non catégorisé":"#636e72","Retraits cash":"#b2bec3","Voyages & Transports":"#e17055","Chèques":"#dfe6e9","Cadeaux et solidarité":"#ffeaa7","Services financiers":"#81ecec","Autres dépenses":"#fab1a0"};
-const MN={1:"Janvier",2:"Février",3:"Mars",4:"Avril",5:"Mai",6:"Juin",7:"Juillet",8:"Août",9:"Septembre",10:"Octobre",11:"Novembre",12:"Décembre"};
-const IC={"Salaire":"#00cec9","Prime":"#55efc4","Freelance":"#74b9ff","Remboursement":"#a29bfe","Virement reçu":"#fdcb6e","CAF / Aides":"#81ecec","Vente":"#ffeaa7","Autre revenu":"#fab1a0"};
-let S={tab:'dashboard',mo:0,sal:2300,tax:11,sGoal:200,sMode:'monthly',manual:[],imported:[],log:[],inc:[],forecast:{active:false,month:4,salary:2300,adjusted:{}}};
-const mob=()=>window.innerWidth<768;
-function allTx(){return[...SEED.map(r=>({date:r.d,label:r.l,categoryParent:r.c,amount:r.a,month:+r.d.split('-')[1]})),...S.imported,...S.manual,...S.inc]}
-async function save(){try{await window.storage.set('fin-v3',JSON.stringify({m:S.manual,i:S.imported,l:S.log,s:S.sal,t:S.tax,sg:S.sGoal,sm:S.sMode,ic:S.inc,fc:S.forecast}))}catch(e){}}
-async function load(){try{const r=await window.storage.get('fin-v3');if(r&&r.value){const d=JSON.parse(r.value);S.manual=d.m||[];S.imported=d.i||[];S.log=d.l||[];S.sal=d.s??2300;S.tax=d.t??11;S.sGoal=d.sg??200;S.sMode=d.sm??'monthly';S.inc=d.ic||[];S.forecast=d.fc||{active:false,month:4,salary:2300,adjusted:{}}}}catch(e){}}
-function parseCSV(text){
-  const lines=text.replace(/^\uFEFF/,'').split('\n').filter(l=>l.trim());
-  if(lines.length<2)return{rows:[],err:'Fichier vide'};
-  const h=lines[0],sep=h.includes(';')?';':h.includes(',')?',':'\t';
-  const cols=h.split(sep).map(c=>c.trim().replace(/^"|"$/g,'').toLowerCase());
-  const iD=cols.findIndex(c=>c==='dateop'||c==='date'||c==='dateval');
-  const iL=cols.findIndex(c=>c==='label'||c.includes('libell'));
-  const iC=cols.findIndex(c=>c==='category'&&!c.includes('parent'));
-  const iCP=cols.findIndex(c=>c==='categoryparent');
-  const iA=cols.findIndex(c=>c==='amount'||c==='montant');
-  if(iD===-1||iA===-1)return{rows:[],err:'Colonnes introuvables: '+cols.join(', ')};
-  const rows=[];
-  for(let i=1;i<lines.length;i++){try{
-    const p=splitL(lines[i],sep),date=(p[iD]||'').replace(/^"|"$/g,'').trim();
-    let lbl=(p[iL]||'').replace(/^"|"$/g,'').trim();
-    const rC=iC!==-1?(p[iC]||'').replace(/^"|"$/g,'').trim():'';
-    const rCP=iCP!==-1?(p[iCP]||'').replace(/^"|"$/g,'').trim():'';
-    const amt=parseFloat((p[iA]||'').replace(/^"|"$/g,'').replace(/\s/g,'').replace(',','.'));
-    if(!date||isNaN(amt))continue;
-    let cat=rCP||PM[rC]||rC||'Non catégorisé';if(!CC[cat])cat='Non catégorisé';
-    lbl=lbl.replace(/CARTE \d{2}\/\d{2}\/\d{2}\s*/i,'').replace(/CB\*\d+/gi,'').replace(/PRLV SEPA\s*/i,'').replace(/VIR INST\s*/i,'').trim().slice(0,40)||'Opération';
-    rows.push({date,label:lbl,categoryParent:cat,amount:amt,month:+date.split('-')[1]});
-  }catch(e){}}
-  return{rows};
-}
-function splitL(line,sep){const p=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){q=!q;c+=ch}else if(ch===sep&&!q){p.push(c);c=''}else c+=ch}p.push(c);return p}
-function dedup(nr){const ex=new Set(allTx().map(t=>t.date+'|'+t.amount+'|'+t.label.slice(0,8).toLowerCase()));let a=0,s=0;const u=[];nr.forEach(r=>{const k=r.date+'|'+r.amount+'|'+r.label.slice(0,8).toLowerCase();if(ex.has(k))s++;else{u.push(r);a++;ex.add(k)}});return{unique:u,added:a,skipped:s}}
-const fmt=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n);
-const fS=n=>Math.abs(n).toFixed(0)+'€';const abs=Math.abs;
-function gF(){const a=allTx();return S.mo===0?a:a.filter(d=>d.month===S.mo)}
-function gM(){return[...new Set(allTx().map(d=>d.month))].sort((a,b)=>a-b)}
-function gCT(d){const t={};d.filter(d=>d.amount<0).forEach(d=>{t[d.categoryParent]=(t[d.categoryParent]||0)+abs(d.amount)});return Object.entries(t).sort((a,b)=>b[1]-a[1])}
-function gMT(){const r={};gM().forEach(m=>{const d=allTx().filter(d=>d.month===m);const ei=d.filter(d=>d.amount>0).reduce((s,d)=>s+d.amount,0);r[m]={e:abs(d.filter(d=>d.amount<0).reduce((s,d)=>s+d.amount,0)),i:S.sal+ei}});return r}
-function toast(ic,msg){const t=document.getElementById('toast');t.querySelector('.toast-icon').textContent=ic;t.querySelector('.toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
-let ch={};function dC(){Object.values(ch).forEach(c=>c.destroy&&c.destroy());ch={}}
+<div class="toast" id="toast"><span class="toast-icon"></span><span id="toast-msg"></span></div>
 
-// Fonctions pour les prévisions
-function getAvgExpensesByCat(){
+<script>
+const SEED=[{"d":"2026-01-30","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-01-30","l":"SnP*AAL","c":"Non catégorisé","a":-10},{"d":"2026-01-30","l":"HELLOASSO","c":"Cadeaux et solidarité","a":-5},{"d":"2026-01-30","l":"SAINDOU NAIDA","c":"Virements émis","a":-130},{"d":"2026-01-30","l":"SAINDOU NAIDA","c":"Virements émis","a":-120},{"d":"2026-01-29","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-01-29","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-01-29","l":"RELAIS DE PACE","c":"Auto & Moto","a":-10.9},{"d":"2026-01-29","l":"SNCF OUIGO","c":"Voyages & Transports","a":-54},{"d":"2026-01-29","l":"SFR","c":"Abonnements & téléphonie","a":-25.97},{"d":"2026-01-28","l":"EDF","c":"Logement","a":-4.39},{"d":"2026-01-27","l":"FRESH FOOD","c":"Loisirs et sorties","a":-12.5},{"d":"2026-01-27","l":"BOUCHERIE VILLE","c":"Vie quotidienne","a":-20.89},{"d":"2026-01-27","l":"LECLERC","c":"Vie quotidienne","a":-25.12},{"d":"2026-01-27","l":"LECLERC","c":"Vie quotidienne","a":-12.99},{"d":"2026-01-27","l":"GRAND FRAIS","c":"Vie quotidienne","a":-48.68},{"d":"2026-01-27","l":"SC-SCEM PHO","c":"Loisirs et sorties","a":-8},{"d":"2026-01-26","l":"SP MECCA BOOKS","c":"Non catégorisé","a":-21.9},{"d":"2026-01-26","l":"NAJAMINSTITUTE","c":"Non catégorisé","a":-11.2},{"d":"2026-01-26","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-11.28},{"d":"2026-01-26","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-25.03},{"d":"2026-01-26","l":"LECLERC","c":"Vie quotidienne","a":-7.93},{"d":"2026-01-26","l":"LECLERC","c":"Vie quotidienne","a":-65.43},{"d":"2026-01-26","l":"LECLERC","c":"Vie quotidienne","a":-4.98},{"d":"2026-01-26","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-16.79},{"d":"2026-01-26","l":"BOULANGERIE","c":"Vie quotidienne","a":-2.5},{"d":"2026-01-26","l":"LA POSTE EXAM","c":"Vie quotidienne","a":-30},{"d":"2026-01-26","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-8.1},{"d":"2026-01-26","l":"VIR PAPA","c":"Virements émis","a":-30},{"d":"2026-01-26","l":"SFR","c":"Abonnements & téléphonie","a":-27.18},{"d":"2026-01-23","l":"PHARMACIE MACE","c":"Santé","a":-2.09},{"d":"2026-01-23","l":"DR LEGRU","c":"Santé","a":-30},{"d":"2026-01-22","l":"RETRAIT DAB","c":"Retraits cash","a":-100},{"d":"2026-01-22","l":"AMAZON","c":"Vie quotidienne","a":-15.91},{"d":"2026-01-21","l":"LA POSTE EXAM","c":"Vie quotidienne","a":-30},{"d":"2026-01-20","l":"LA MIE CALINE","c":"Vie quotidienne","a":-4.1},{"d":"2026-01-20","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-30},{"d":"2026-01-20","l":"DR LEGRU","c":"Santé","a":-30},{"d":"2026-01-19","l":"RETRAIT DAB","c":"Retraits cash","a":-150},{"d":"2026-01-19","l":"MONMEZIERES","c":"Loisirs et sorties","a":-12.3},{"d":"2026-01-19","l":"O BROZER S FOOD","c":"Loisirs et sorties","a":-8.7},{"d":"2026-01-19","l":"PPG OFFREAVANTAGE","c":"Vie quotidienne","a":-20.8},{"d":"2026-01-19","l":"CARREFOUR CESSON","c":"Vie quotidienne","a":-25.81},{"d":"2026-01-19","l":"BOUTIQUE COIFFEUR","c":"Vie quotidienne","a":-30.58},{"d":"2026-01-19","l":"HORODATEURS","c":"Auto & Moto","a":-1.6},{"d":"2026-01-19","l":"HORODATEURS","c":"Auto & Moto","a":-2},{"d":"2026-01-19","l":"BARBERKING","c":"Non catégorisé","a":-15},{"d":"2026-01-19","l":"DR LEGRU","c":"Santé","a":-30},{"d":"2026-01-19","l":"BOULANG LA ROTONDE","c":"Vie quotidienne","a":-4.7},{"d":"2026-01-16","l":"PACE LAVAGE","c":"Auto & Moto","a":-10},{"d":"2026-01-16","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-8.71},{"d":"2026-01-16","l":"VILLA D OR","c":"Loisirs et sorties","a":-13.9},{"d":"2026-01-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75},{"d":"2026-01-16","l":"ACM IARD","c":"Auto & Moto","a":-18.33},{"d":"2026-01-15","l":"AMOUR DE PIZZA","c":"Loisirs et sorties","a":-28},{"d":"2026-01-15","l":"SYNDICAT UNSA","c":"Loisirs et sorties","a":-15},{"d":"2026-01-14","l":"SAINDOU NAIDA","c":"Virements émis","a":-30},{"d":"2026-01-14","l":"MOZAIK","c":"Non catégorisé","a":-8.9},{"d":"2026-01-14","l":"MOZAIK","c":"Non catégorisé","a":-9.9},{"d":"2026-01-14","l":"CARREFOUR EXPRESS","c":"Vie quotidienne","a":-4.71},{"d":"2026-01-14","l":"AU COMPTOIR DES","c":"Loisirs et sorties","a":-2.6},{"d":"2026-01-14","l":"LIDL","c":"Vie quotidienne","a":-13.72},{"d":"2026-01-13","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-3.08},{"d":"2026-01-13","l":"CHEQUE","c":"Chèques","a":-75},{"d":"2026-01-12","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-9.73},{"d":"2026-01-12","l":"CARREFOUR CESSON","c":"Vie quotidienne","a":-2.69},{"d":"2026-01-12","l":"CARREFOUR CESSON","c":"Vie quotidienne","a":-36.19},{"d":"2026-01-12","l":"GRAND FRAIS","c":"Vie quotidienne","a":-16.86},{"d":"2026-01-12","l":"MICROSOFT","c":"Abonnements & téléphonie","a":-10},{"d":"2026-01-12","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-15.86},{"d":"2026-01-12","l":"CA CONSUMER FINANCE","c":"Emprunts (hors immobilier)","a":-100},{"d":"2026-01-09","l":"SAINDOU NAIDA","c":"Virements émis","a":-20},{"d":"2026-01-09","l":"SARL GBP","c":"Loisirs et sorties","a":-3.95},{"d":"2026-01-09","l":"VILLA D OR","c":"Loisirs et sorties","a":-13.9},{"d":"2026-01-09","l":"FDJ JEUX","c":"Loisirs et sorties","a":-170},{"d":"2026-01-08","l":"NOTION LABS","c":"Abonnements & téléphonie","a":-28.2},{"d":"2026-01-08","l":"LE SULTAN","c":"Loisirs et sorties","a":-7.6},{"d":"2026-01-08","l":"PACE LAVAGE","c":"Auto & Moto","a":-10},{"d":"2026-01-08","l":"TOPWG NOUNOU","c":"Non catégorisé","a":-6.99},{"d":"2026-01-07","l":"CARREFOUR EXPRESS","c":"Vie quotidienne","a":-2.95},{"d":"2026-01-07","l":"OPENAI CHATGPT","c":"Abonnements & téléphonie","a":-23},{"d":"2026-01-06","l":"NORAUTO","c":"Auto & Moto","a":-10.47},{"d":"2026-01-06","l":"SAHIN RESTAURANT","c":"Loisirs et sorties","a":-154.96},{"d":"2026-01-06","l":"NCD FOOD","c":"Non catégorisé","a":-10},{"d":"2026-01-06","l":"LECLERC","c":"Vie quotidienne","a":-6.84},{"d":"2026-01-06","l":"BARBERKING","c":"Non catégorisé","a":-20},{"d":"2026-01-06","l":"UBER","c":"Voyages & Transports","a":-19.9},{"d":"2026-01-06","l":"BOULANGER ELEC","c":"Vie quotidienne","a":-50.04},{"d":"2026-01-06","l":"BOULANGERIE","c":"Vie quotidienne","a":-5.7},{"d":"2026-01-06","l":"CANAL PLUS","c":"Abonnements & téléphonie","a":-34.99},{"d":"2026-01-06","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-7.26},{"d":"2026-01-06","l":"FLOA CREDIT","c":"Emprunts (hors immobilier)","a":-39.25},{"d":"2026-01-06","l":"ACTIVE ASSURANCES","c":"Auto & Moto","a":-141.52},{"d":"2026-01-05","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-5.04},{"d":"2026-01-05","l":"LECLERC","c":"Vie quotidienne","a":-28.48},{"d":"2026-01-05","l":"GRAND FRAIS","c":"Vie quotidienne","a":-89.48},{"d":"2026-01-05","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-12.19},{"d":"2026-01-05","l":"CONTROLE TECHNIQUE","c":"Auto & Moto","a":-69},{"d":"2026-01-05","l":"LECLERC","c":"Vie quotidienne","a":-93.99},{"d":"2026-01-05","l":"APPLE","c":"Vie quotidienne","a":-4},{"d":"2026-01-05","l":"SAINDOU NAIDA","c":"Virements émis","a":-22.5},{"d":"2026-01-05","l":"SAINDOU NAIDA","c":"Virements émis","a":-50},{"d":"2026-01-05","l":"CHEQUE","c":"Chèques","a":-200},{"d":"2026-01-02","l":"FRAIS REFAB CB","c":"Services financiers","a":-10},{"d":"2026-01-02","l":"PACE LAVAGE","c":"Auto & Moto","a":-10},{"d":"2026-01-02","l":"LECLERC","c":"Vie quotidienne","a":-25.68},{"d":"2026-01-02","l":"CHP ST GREGOIRE","c":"Santé","a":-2.5},{"d":"2026-01-02","l":"NCD FOOD","c":"Non catégorisé","a":-10},{"d":"2026-02-26","l":"HLM LES FOYERS LOYER","c":"Logement","a":-600},{"d":"2026-02-26","l":"SAINDOU NAIDA","c":"Virements émis","a":-50},{"d":"2026-02-26","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-16.79},{"d":"2026-02-26","l":"THE RIVER","c":"Loisirs et sorties","a":-23.5},{"d":"2026-02-26","l":"SFR","c":"Abonnements & téléphonie","a":-27.18},{"d":"2026-02-25","l":"SAINDOU NAIDA","c":"Virements émis","a":-100},{"d":"2026-02-23","l":"NORAUTO","c":"Auto & Moto","a":-13.47},{"d":"2026-02-23","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-20},{"d":"2026-02-23","l":"LECLERC","c":"Vie quotidienne","a":-78.95},{"d":"2026-02-23","l":"RIVEX","c":"Vie quotidienne","a":-76.28},{"d":"2026-02-23","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-02-23","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-3.71},{"d":"2026-02-23","l":"RIVEX","c":"Vie quotidienne","a":-5.23},{"d":"2026-02-23","l":"LIDL","c":"Vie quotidienne","a":-9},{"d":"2026-02-19","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-3.96},{"d":"2026-02-18","l":"RESTAURANT LE K","c":"Loisirs et sorties","a":-21.2},{"d":"2026-02-18","l":"SARL OPI","c":"Vie quotidienne","a":-7},{"d":"2026-02-18","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-5.4},{"d":"2026-02-18","l":"SAINDOU NAIDA","c":"Virements émis","a":-395},{"d":"2026-02-17","l":"PHARMACIE DU CH","c":"Santé","a":-11.8},{"d":"2026-02-17","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-8.54},{"d":"2026-02-17","l":"LE SOLEIL","c":"Loisirs et sorties","a":-12},{"d":"2026-02-17","l":"ACM IARD","c":"Auto & Moto","a":-18.33},{"d":"2026-02-16","l":"EL BARAKA","c":"Vie quotidienne","a":-84.64},{"d":"2026-02-16","l":"AU COMPTOIR DES","c":"Loisirs et sorties","a":-3.3},{"d":"2026-02-16","l":"COMPTOIRS BIO","c":"Vie quotidienne","a":-1.25},{"d":"2026-02-16","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-9.75},{"d":"2026-02-16","l":"SUMUP CENTRE","c":"Auto & Moto","a":-5},{"d":"2026-02-16","l":"NAOUFAL SAINDOU","c":"Virements émis","a":-10},{"d":"2026-02-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75},{"d":"2026-02-13","l":"VILLA D OR","c":"Loisirs et sorties","a":-14.9},{"d":"2026-02-13","l":"PACE LAVAGE","c":"Auto & Moto","a":-10},{"d":"2026-02-13","l":"UBER","c":"Voyages & Transports","a":-1},{"d":"2026-02-13","l":"UBER","c":"Voyages & Transports","a":-28.98},{"d":"2026-02-12","l":"SCARABEE","c":"Vie quotidienne","a":-8.05},{"d":"2026-02-12","l":"GRAND FRAIS","c":"Vie quotidienne","a":-21.31},{"d":"2026-02-12","l":"ETHNIC FOOD","c":"Loisirs et sorties","a":-10},{"d":"2026-02-11","l":"MOZAIK","c":"Non catégorisé","a":-8.9},{"d":"2026-02-11","l":"PHARMACIE MACE","c":"Santé","a":-15.52},{"d":"2026-02-10","l":"DERSIM","c":"Loisirs et sorties","a":-7.5},{"d":"2026-02-10","l":"CANAL PLUS","c":"Abonnements & téléphonie","a":-34.99},{"d":"2026-02-10","l":"CA CONSUMER FINANCE","c":"Emprunts (hors immobilier)","a":-100},{"d":"2026-02-09","l":"SAINDOU NAIDA","c":"Virements émis","a":-20},{"d":"2026-02-09","l":"O BROZER S FOOD","c":"Loisirs et sorties","a":-11.2},{"d":"2026-02-09","l":"LECLERC","c":"Vie quotidienne","a":-10.79},{"d":"2026-02-09","l":"O BROZER S FOOD","c":"Loisirs et sorties","a":-7.9},{"d":"2026-02-09","l":"NAOUFAL SAINDOU","c":"Virements émis","a":-25},{"d":"2026-02-09","l":"MARINE TANFIN","c":"Virements émis","a":-194.95},{"d":"2026-02-06","l":"LES DELICES DE","c":"Vie quotidienne","a":-3},{"d":"2026-02-06","l":"LECLERC LAVAGE","c":"Vie quotidienne","a":-8},{"d":"2026-02-06","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-4.57},{"d":"2026-02-06","l":"FLOA CREDIT","c":"Non catégorisé","a":-39.25},{"d":"2026-02-05","l":"CANVA","c":"Non catégorisé","a":-16},{"d":"2026-02-05","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-11.06},{"d":"2026-02-05","l":"CHEQUE","c":"Chèques","a":-70},{"d":"2026-02-05","l":"CHEQUE","c":"Chèques","a":-200},{"d":"2026-02-05","l":"ACTIVE ASSURANCES","c":"Auto & Moto","a":-141.52},{"d":"2026-02-04","l":"HLM LES FOYERS","c":"Cadeaux et solidarité","a":-530},{"d":"2026-02-04","l":"SAINDOU NAIDA","c":"Virements émis","a":-30},{"d":"2026-02-04","l":"PITAYA","c":"Non catégorisé","a":-16.4},{"d":"2026-02-04","l":"O BROZER S FOOD","c":"Loisirs et sorties","a":-10.7},{"d":"2026-02-03","l":"OPENROUTER","c":"Non catégorisé","a":-9.12},{"d":"2026-02-03","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-47.04},{"d":"2026-02-03","l":"DOMISERVE","c":"Autres dépenses","a":-39},{"d":"2026-02-03","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-02-03","l":"LECLERC","c":"Vie quotidienne","a":-96.36},{"d":"2026-02-03","l":"BARBERKING","c":"Non catégorisé","a":-20},{"d":"2026-02-03","l":"NAVIGO","c":"Voyages & Transports","a":-2.55},{"d":"2026-02-03","l":"SELECTA","c":"Vie quotidienne","a":-3.7},{"d":"2026-02-03","l":"APPLE","c":"Vie quotidienne","a":-4},{"d":"2026-02-02","l":"CLAUDE.AI","c":"Non catégorisé","a":-108},{"d":"2026-02-02","l":"SC-COMPTOIR DE Z","c":"Vie quotidienne","a":-13.8},{"d":"2026-02-02","l":"SC-LE PANIER DE","c":"Vie quotidienne","a":-12},{"d":"2026-02-02","l":"U EXPRESS","c":"Vie quotidienne","a":-1.15},{"d":"2026-02-02","l":"U EXPRESS","c":"Vie quotidienne","a":-9.22},{"d":"2026-02-02","l":"NAVIGO","c":"Voyages & Transports","a":-5.1},{"d":"2026-02-02","l":"SELECTA","c":"Vie quotidienne","a":-3.7},{"d":"2026-02-02","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-3.4},{"d":"2026-02-02","l":"LE FEU DE BOIS","c":"Loisirs et sorties","a":-20.7},{"d":"2026-02-02","l":"COCHET EVA MAELYS","c":"Virements émis","a":-20},{"d":"2026-02-02","l":"SFR","c":"Abonnements & téléphonie","a":-44.99},{"d":"2026-03-25","l":"CHEZ THEO","c":"Loisirs et sorties","a":-6.5},{"d":"2026-03-25","l":"BOULANG PATIS","c":"Vie quotidienne","a":-1.6},{"d":"2026-03-25","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-03-25","l":"LECLERC","c":"Vie quotidienne","a":-33},{"d":"2026-03-25","l":"GRAND PERE JULES","c":"Non catégorisé","a":-4.8},{"d":"2026-03-23","l":"AU COMPTOIR DES","c":"Loisirs et sorties","a":-5.45},{"d":"2026-03-23","l":"SIF DONS","c":"Cadeaux et solidarité","a":-27},{"d":"2026-03-19","l":"RIVEX","c":"Vie quotidienne","a":-16.67},{"d":"2026-03-19","l":"EL BARAKA","c":"Vie quotidienne","a":-54.05},{"d":"2026-03-19","l":"LECLERC","c":"Vie quotidienne","a":-14.04},{"d":"2026-03-17","l":"RETRAIT DAB","c":"Retraits cash","a":-60},{"d":"2026-03-17","l":"LECLERC","c":"Vie quotidienne","a":-18.64},{"d":"2026-03-16","l":"ANTHROPIC","c":"Non catégorisé","a":-12},{"d":"2026-03-16","l":"ANTHROPIC","c":"Non catégorisé","a":-6},{"d":"2026-03-16","l":"ANTHROPIC","c":"Non catégorisé","a":-6},{"d":"2026-03-16","l":"RETRAIT DAB","c":"Retraits cash","a":-100},{"d":"2026-03-16","l":"LECLERC","c":"Vie quotidienne","a":-154.44},{"d":"2026-03-16","l":"SAINDOU NAIDA","c":"Virements émis","a":-368},{"d":"2026-03-16","l":"SAINDOU NAIDA","c":"Virements émis","a":-25},{"d":"2026-03-16","l":"NAOUFAL SAINDOU","c":"Virements émis","a":-5},{"d":"2026-03-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75},{"d":"2026-03-13","l":"AU COMPTOIR DES","c":"Loisirs et sorties","a":-2.4},{"d":"2026-03-13","l":"MARCHE DE L ORI","c":"Vie quotidienne","a":-26.75},{"d":"2026-03-13","l":"PACE LAVAGE","c":"Auto & Moto","a":-10},{"d":"2026-03-12","l":"RETRAIT DAB","c":"Retraits cash","a":-50},{"d":"2026-03-12","l":"HORODATEURS","c":"Auto & Moto","a":-1.4},{"d":"2026-03-11","l":"CANAL PLUS","c":"Abonnements & téléphonie","a":-34.99},{"d":"2026-03-11","l":"PHARMACIE LE CENTRE","c":"Santé","a":-15.39},{"d":"2026-03-11","l":"LIDL","c":"Vie quotidienne","a":-4.18},{"d":"2026-03-10","l":"MATW MEALS","c":"Non catégorisé","a":-10},{"d":"2026-03-10","l":"ANTHROPIC","c":"Non catégorisé","a":-6},{"d":"2026-03-10","l":"LECLERC","c":"Vie quotidienne","a":-6.53},{"d":"2026-03-10","l":"GIFI","c":"Vie quotidienne","a":-12.47},{"d":"2026-03-10","l":"AMAZON","c":"Vie quotidienne","a":-13.98},{"d":"2026-03-10","l":"INTERMARCHE","c":"Vie quotidienne","a":-1.52},{"d":"2026-03-10","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-16.03},{"d":"2026-03-10","l":"GRAND FRAIS","c":"Vie quotidienne","a":-9.97},{"d":"2026-03-10","l":"GRAND FRAIS","c":"Vie quotidienne","a":-6.38},{"d":"2026-03-10","l":"AMOUR DE PIZZA","c":"Loisirs et sorties","a":-9.4},{"d":"2026-03-10","l":"AMOUR DE PIZZA","c":"Loisirs et sorties","a":-25.7},{"d":"2026-03-10","l":"CA CONSUMER FINANCE","c":"Emprunts (hors immobilier)","a":-100},{"d":"2026-03-09","l":"ANTHROPIC","c":"Non catégorisé","a":-6},{"d":"2026-03-09","l":"COFIDIS AMAZON","c":"Emprunts (hors immobilier)","a":-34.26},{"d":"2026-03-09","l":"CARREFOUR CESSON","c":"Vie quotidienne","a":-10.83},{"d":"2026-03-09","l":"BRICO DEPOT","c":"Vie quotidienne","a":-3.29},{"d":"2026-03-09","l":"BRICO DEPOT","c":"Vie quotidienne","a":-18.9},{"d":"2026-03-09","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-1.58},{"d":"2026-03-09","l":"LECLERC","c":"Vie quotidienne","a":-34.74},{"d":"2026-03-09","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-1.05},{"d":"2026-03-09","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-11.89},{"d":"2026-03-09","l":"SARL TO ELEC","c":"Vie quotidienne","a":-81.82},{"d":"2026-03-09","l":"ACTION","c":"Vie quotidienne","a":-22.36},{"d":"2026-03-09","l":"BOULANGERIE","c":"Vie quotidienne","a":-2.55},{"d":"2026-03-06","l":"FLOA CREDIT","c":"Non catégorisé","a":-39.25},{"d":"2026-03-05","l":"CANVA","c":"Non catégorisé","a":-32},{"d":"2026-03-05","l":"DOMISERVE","c":"Autres dépenses","a":-24.43},{"d":"2026-03-05","l":"ACTIVE ASSURANCES","c":"Auto & Moto","a":-141.52},{"d":"2026-03-04","l":"EURL BOUVIER","c":"Vie quotidienne","a":-10.8},{"d":"2026-03-04","l":"DOMISERVE","c":"Autres dépenses","a":-40},{"d":"2026-03-04","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7},{"d":"2026-03-04","l":"BRICO DEPOT","c":"Vie quotidienne","a":-8.48},{"d":"2026-03-04","l":"BRICO DEPOT","c":"Vie quotidienne","a":-9.99},{"d":"2026-03-04","l":"NAOUFAL SAINDOU","c":"Virements émis","a":-26},{"d":"2026-03-03","l":"APPLE","c":"Vie quotidienne","a":-4},{"d":"2026-03-03","l":"BARBERKING","c":"Non catégorisé","a":-20},{"d":"2026-03-03","l":"SFR","c":"Abonnements & téléphonie","a":-44.99},{"d":"2026-03-02","l":"RAILWAY","c":"Vie quotidienne","a":-4.24},{"d":"2026-03-02","l":"CLAUDE.AI","c":"Non catégorisé","a":-108},{"d":"2026-03-02","l":"AMOUR DE PIZZA","c":"Loisirs et sorties","a":-28},{"d":"2026-03-02","l":"PHARMACIE DU CH","c":"Santé","a":-12.9},{"d":"2026-03-02","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-60.95},{"d":"2026-03-02","l":"BRICO DEPOT","c":"Vie quotidienne","a":-14.93},{"d":"2026-03-02","l":"E.LECLERC","c":"Vie quotidienne","a":-281.79},{"d":"2026-03-02","l":"GRAND FRAIS","c":"Vie quotidienne","a":-28.18},{"d":"2026-03-02","l":"BRICO DEPOT","c":"Vie quotidienne","a":-56.51},{"d":"2026-03-02","l":"NAOUFAL SAINDOU","c":"Virements émis","a":-20},{"d":"2026-03-02","l":"SFR","c":"Abonnements & téléphonie","a":-25.96},{"d":"2026-03-02","l":"EDF","c":"Logement","a":-4.39}];
+
+const CC={"Vie quotidienne":"#6c5ce7","Loisirs et sorties":"#fd79a8","Auto & Moto":"#fdcb6e","Abonnements & téléphonie":"#74b9ff","Santé":"#00cec9","Virements émis":"#a29bfe","Logement":"#55efc4","Emprunts (hors immobilier)":"#ff7675","Non catégorisé":"#636e72","Retraits cash":"#b2bec3","Voyages & Transports":"#e17055","Chèques":"#dfe6e9","Cadeaux et solidarité":"#ffeaa7","Services financiers":"#81ecec","Autres dépenses":"#fab1a0"};
+const MN={1:"Jan",2:"Fév",3:"Mars",4:"Avr",5:"Mai",6:"Juin",7:"Juil",8:"Août",9:"Sept",10:"Oct",11:"Nov",12:"Déc"};
+const ICONS={"Vie quotidienne":"🛒","Loisirs et sorties":"🎉","Auto & Moto":"🚗","Abonnements & téléphonie":"📱","Santé":"💊","Virements émis":"📤","Logement":"🏠","Emprunts (hors immobilier)":"💳","Non catégorisé":"❓","Retraits cash":"💵","Voyages & Transports":"🚆","Chèques":"📝","Cadeaux et solidarité":"🎁","Services financiers":"🏦","Autres dépenses":"📦"};
+
+let S={tab:'dashboard',mo:3,sal:2300,tax:11,sGoal:200,sMode:'monthly',manual:[],imported:[],forecast:{month:4,salary:2300,adjusted:{}}};
+
+function allTx(){return[...SEED.map(r=>({date:r.d,label:r.l,categoryParent:r.c,amount:r.a,month:+r.d.split('-')[1]})),...S.imported,...S.manual]}
+function gM(){return[...new Set(allTx().map(d=>d.month))].sort((a,b)=>a-b)}
+function gF(){const a=allTx();return S.mo===0?a:a.filter(d=>d.month===S.mo)}
+function fmt(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n)}
+function abs(n){return Math.abs(n)}
+function toast(ic,msg){const t=document.getElementById('toast');t.querySelector('.toast-icon').textContent=ic;t.querySelector('#toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+function save(){localStorage.setItem('fin-data',JSON.stringify(S))}
+function load(){try{const d=JSON.parse(localStorage.getItem('fin-data'));if(d)Object.assign(S,d)}catch(e){}}
+
+function getCatTotals(){
+  const d=gF().filter(x=>x.amount<0);
+  const t={};
+  d.forEach(x=>{t[x.categoryParent]=(t[x.categoryParent]||0)+abs(x.amount)});
+  return Object.entries(t).sort((a,b)=>b[1]-a[1]);
+}
+
+function getAvgByCat(){
   const months=gM();
   if(months.length===0)return{};
-  const byMonth={};
+  const totals={};
   months.forEach(m=>{
-    const d=allTx().filter(x=>x.month===m&&x.amount<0);
-    byMonth[m]=gCT(d);
-  });
-  const avg={};
-  const catTotals={};
-  months.forEach(m=>{
-    byMonth[m].forEach(([cat,amt])=>{
-      if(!catTotals[cat])catTotals[cat]=[];
-      catTotals[cat].push(amt);
+    const monthData=allTx().filter(x=>x.month===m&&x.amount<0);
+    const cats={};
+    monthData.forEach(x=>{cats[x.categoryParent]=(cats[x.categoryParent]||0)+abs(x.amount)});
+    Object.entries(cats).forEach(([cat,amt])=>{
+      if(!totals[cat])totals[cat]=[];
+      totals[cat].push(amt);
     });
   });
-  Object.keys(catTotals).forEach(cat=>{
-    const vals=catTotals[cat];
+  const avg={};
+  Object.entries(totals).forEach(([cat,vals])=>{
     avg[cat]=vals.reduce((a,b)=>a+b,0)/months.length;
   });
   return avg;
 }
 
-function getFixedExpenses(){
-  const months=gM();
-  if(months.length<2)return{};
-  const byCat={};
-  const allCats=[...new Set(allTx().filter(x=>x.amount<0).map(x=>x.categoryParent))];
-  allCats.forEach(cat=>{
-    const monthly=[];
-    months.forEach(m=>{
-      const total=allTx().filter(x=>x.month===m&&x.categoryParent===cat&&x.amount<0).reduce((s,x)=>s+abs(x.amount),0);
-      monthly.push(total);
-    });
-    const variance=Math.max(...monthly)-Math.min(...monthly);
-    const avg=monthly.reduce((a,b)=>a+b,0)/monthly.length;
-    if(variance/avg<0.15)byCat[cat]=avg;
-  });
-  return byCat;
-}
-
 function render(){
-  dC();const app=document.getElementById('app'),ms=gM(),n=allTx().length,m=mob();
-  app.innerHTML=`<div class="header"><div><h1>💰 MES FINANCES</h1><div class="date" style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap"><span class="data-count"><span class="dot"></span>${n} op. · ${ms.length} mois</span></div></div><div class="month-selector">${ms.map(m=>`<button class="month-btn ${S.mo===m?'active':''}" onclick="setMo(${m})">${(MN[m]||'M'+m).slice(0,3)}</button>`).join('')}<button class="month-btn ${S.mo===0?'active':''}" onclick="setMo(0)">Tout</button></div></div>
-  <div class="tabs">${[['dashboard','📊','Vue d\'ensemble'],['details','📋','Détail'],['budget','🎯','Budget'],['forecast','👀','Prévision'],['import','📥','Import'],['add','➕','Ajouter']].map(([k,ic,lb])=>`<button class="tab ${S.tab===k?'active':''}" onclick="setT('${k}')">${ic}${m?'':' '+lb}</button>`).join('')}</div>
-  <div id="tc" class="fade-in"></div>`;
-  ({dashboard:rDash,details:rDet,budget:rBud,forecast:rFore,import:rImp,add:rAdd})[S.tab](document.getElementById('tc'));
-}
-
-function rDash(el){
-  const d=gF(),ex=d.filter(d=>d.amount<0),tE=abs(ex.reduce((s,d)=>s+d.amount,0)),mc=S.mo===0?gM().length:1,ei=d.filter(d=>d.amount>0).reduce((s,d)=>s+d.amount,0),tI=S.sal*mc+ei,bal=tI-tE;
-  const ct=gCT(d),mx=ct.length?ct[0][1]:1;
-  const fix=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Auto & Moto','Santé'];
-  const fT=ct.filter(([c])=>fix.includes(c)).reduce((s,[,v])=>s+v,0);
-  const m=mob();
-  el.innerHTML=`${bal<0?`<div class="alert-box"><span class="icon">🚨</span><div class="msg"><strong>Dépassement de ${fmt(abs(bal))}</strong> sur ${mc} mois.</div></div>`:''}
-  <div class="grid grid-2" style="margin-bottom:12px">
-    <div class="card"><div class="card-icon">💵</div><div class="card-title">Revenus</div><div class="card-value positive">${fmt(tI)}</div><div class="card-sub">${ei>0?fmt(S.sal*mc)+' + extras':mc+' mois'}</div></div>
-    <div class="card"><div class="card-icon">🔥</div><div class="card-title">Dépenses</div><div class="card-value negative">${fmt(tE)}</div><div class="card-sub">${fmt(tE/mc)}/mois</div></div>
-    <div class="card"><div class="card-icon">${bal>=0?'✅':'⚠️'}</div><div class="card-title">Solde</div><div class="card-value ${bal>=0?'positive':'negative'}">${fmt(bal)}</div></div>
-    <div class="card"><div class="card-icon">📉</div><div class="card-title">Solde/mois</div><div class="card-value ${bal<0?'negative':'positive'}">${fmt(bal/mc)}</div></div>
-  </div>
-  ${m?'':`<div class="grid grid-3" style="margin-bottom:16px">
-    <div class="insight-card"><div class="emoji">⚡</div><div class="insight-text">Charges fixes: <strong>${fmt(fT/mc)}/mois</strong></div></div>
-    <div class="insight-card"><div class="emoji">🎯</div><div class="insight-text">Variable: <strong>${fmt((tE-fT)/mc)}/mois</strong></div></div>
-    <div class="insight-card"><div class="emoji">📊</div><div class="insight-text">${ex.length} opérations</div></div>
-  </div>`}
-  ${m?'':`<div class="grid grid-2" style="margin-bottom:16px">
-    <div class="chart-card"><h3>📊 Répartition</h3><canvas id="catC" height="280"></canvas></div>
-    <div class="chart-card"><h3>📈 Évolution</h3><canvas id="moC" height="280"></canvas></div>
-  </div>`}
-  ${m?`<div class="section-title">Par mois</div>${Object.entries(gMT()).map(([mo,v])=>{const dd=v.i-v.e;return`<div class="expense-row"><span class="cat" style="min-width:50px">${(MN[mo]||mo).slice(0,3)}</span><span class="amt positive">${fS(v.i)}</span><span class="amt negative">${fS(v.e)}</span><span class="badge ${dd<0?'badge-red':'badge-green'}">${dd>=0?'+':''}${fS(dd)}</span></div>`}).join('')}`:''}
-  <div class="section-title">Catégories</div>
-  ${ct.map(([c,t])=>{const pct=(t/mx*100).toFixed(0);const col=CC[c]||'#636e72';const esc=c.replace(/'/g,"\\'");return m?
-    `<div class="expense-row cat-row" onclick="showCat('${esc}')"><span style="width:8px;height:8px;border-radius:2px;background:${col};flex-shrink:0"></span><span class="cat" style="min-width:0;flex:1;font-size:13px">${c}</span><span class="amt negative" style="font-size:13px">${fS(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}">${fS(t/mc)}/m</span><span class="chevron">›</span></div>`:
-    `<div class="expense-row cat-row" onclick="showCat('${esc}')"><span class="cat">${c}</span><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="amt negative">${fmt(t)}</span><span class="badge ${t/mc>300?'badge-red':t/mc>100?'badge-orange':'badge-green'}" style="margin-left:8px">${fmt(t/mc)}/m</span><span class="chevron">›</span></div>`}).join('')}
-  <div id="catModal" class="cat-modal hidden"></div>`;
-  if(!m){
-    const tc=ct.slice(0,8),oT=ct.slice(8).reduce((s,[,v])=>s+v,0),lb=tc.map(([c])=>c),vl=tc.map(([,v])=>v);
-    if(oT>0){lb.push('Autres');vl.push(oT)}
-    ch.cat=new Chart(document.getElementById('catC'),{type:'doughnut',data:{labels:lb,datasets:[{data:vl,backgroundColor:lb.map(l=>CC[l]||'#636e72'),borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8888a8',font:{size:11,family:'DM Sans'},padding:8,boxWidth:12}},tooltip:{callbacks:{label:c=>`${c.label}: ${fmt(c.raw)}`}}},cutout:'65%'}});
-    const mt=gMT();ch.mo=new Chart(document.getElementById('moC'),{type:'bar',data:{labels:Object.keys(mt).map(m=>MN[m]||'M'+m),datasets:[{label:'Revenus',data:Object.values(mt).map(v=>v.i),backgroundColor:'#00cec960',borderColor:'#00cec9',borderWidth:2,borderRadius:6},{label:'Dépenses',data:Object.values(mt).map(v=>v.e),backgroundColor:'#ff6b6b60',borderColor:'#ff6b6b',borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8888a8',font:{size:11,family:'DM Sans'}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.raw)}`}}},scales:{y:{grid:{color:'#2a2a3d'},ticks:{color:'#8888a8',callback:v=>fS(v)}},x:{grid:{display:false},ticks:{color:'#8888a8'}}}}});
-  }
-}
-
-function rDet(el){
-  const d=gF().sort((a,b)=>b.date<a.date?-1:1),ms=gM(),m=mob();
-  const ec=d.filter(x=>x.amount<0).length,ic=d.filter(x=>x.amount>0).length;
-  const cols=['#6c5ce7','#00cec9','#fd79a8','#fdcb6e','#74b9ff','#55efc4','#e17055','#a29bfe'];
-  el.innerHTML=`<div class="chart-card" style="margin-bottom:16px"><h3>📋 ${ec} dépenses${ic?' + '+ic+' entrées':''}</h3><input type="text" placeholder="Rechercher…" oninput="fTx(this.value)" style="margin-bottom:12px"><div class="tx-list" id="txL">${d.map(d=>`<div class="tx-item" data-s="${(d.label+' '+d.categoryParent).toLowerCase()}"><span class="tx-date">${d.date.slice(5)}</span><span class="tx-label" title="${d.label}">${d.label}</span>${m?'':`<span class="tx-cat">${d.categoryParent.slice(0,18)}</span>`}<span class="tx-amt ${d.amount<0?'negative':'positive'}">${d.amount>0?'+':''}${fmt(abs(d.amount))}</span></div>`).join('')}</div></div>
-  ${m?'':`<div class="chart-card"><h3>📈 Cumulées/mois</h3><canvas id="cuC" height="300"></canvas></div>`}`;
-  if(!m){
-    const ds=ms.map((m,i)=>{const md=allTx().filter(d=>d.month===m&&d.amount<0).sort((a,b)=>a.date.localeCompare(b.date));let cu=0;const bd={};md.forEach(d=>{cu+=abs(d.amount);bd[parseInt(d.date.slice(8))]=Math.round(cu)});return{label:MN[m]||'M'+m,data:Object.entries(bd).map(([x,y])=>({x:+x,y})),borderColor:cols[i%cols.length],backgroundColor:cols[i%cols.length]+'20',fill:true,tension:.3,pointRadius:2,borderWidth:2}});
-    ch.cu=new Chart(document.getElementById('cuC'),{type:'line',data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8888a8',font:{size:11,family:'DM Sans'}}},tooltip:{callbacks:{label:c=>`${c.dataset.label} J${c.raw.x}: ${fmt(c.raw.y)}`}}},scales:{x:{type:'linear',title:{display:true,text:'Jour',color:'#8888a8'},grid:{color:'#2a2a3d'},ticks:{color:'#8888a8'},min:1,max:31},y:{grid:{color:'#2a2a3d'},ticks:{color:'#8888a8',callback:v=>fS(v)}}}}});
-  }
-}
-
-function rBud(el){
-  const mc=S.mo===0?gM().length:1,avg=abs(gF().filter(d=>d.amount<0).reduce((s,d)=>s+d.amount,0))/mc;
-  const ei=gF().filter(d=>d.amount>0).reduce((s,d)=>s+d.amount,0)/mc;
-  const ti=S.sal+ei,tM=ti*12*(S.tax/100)/12,sT=S.sMode==='monthly'?S.sGoal:S.sGoal/12,av=ti-tM-sT,df=av-avg;
-  const m=mob();
-  el.innerHTML=`<div class="grid grid-2" style="margin-bottom:16px">
-    <div class="chart-card"><h3>💵 Revenus & Impôts</h3>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"><div class="form-row"><div class="form-group"><label>Salaire net</label><input type="number" value="${S.sal}" onchange="S.sal=+this.value;save();render()"></div><div class="form-group"><label>Taux (%)</label><input type="number" value="${S.tax}" min="0" max="45" onchange="S.tax=+this.value;save();render()"></div></div></div>
-      <div class="expense-row" style="background:var(--surface3)"><span class="cat">Revenus/mois</span><span class="amt positive">${fmt(ti)}</span></div>
-      <div class="expense-row" style="background:var(--red-bg)"><span class="cat">🏛️ Impôt/an</span><span class="amt negative">${fmt(ti*12*S.tax/100)}</span></div>
-      <div class="expense-row" style="background:var(--orange-bg)"><span class="cat">💰 Réserver/mois</span><span class="amt warning">${fmt(tM)}</span></div>
-    </div>
-    <div class="chart-card"><h3>🎯 Épargne</h3>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"><div class="form-row"><div class="form-group"><label>Objectif</label><input type="number" value="${S.sGoal}" onchange="S.sGoal=+this.value;save();render()"></div><div class="form-group"><label>Format</label><div class="toggle-group"><button class="toggle-btn ${S.sMode==='monthly'?'active':''}" onclick="S.sMode='monthly';save();render()">Mens.</button><button class="toggle-btn ${S.sMode==='annual'?'active':''}" onclick="S.sMode='annual';save();render()">Annuel</button></div></div></div></div>
-      <div class="expense-row" style="background:var(--green-bg)"><span class="cat">Cible/mois</span><span class="amt positive">${fmt(sT)}</span></div>
-      <div class="expense-row" style="background:var(--surface3)"><span class="cat">Disponible</span><span class="amt ${av>0?'positive':'negative'}">${fmt(av)}</span></div>
-      <div style="margin-top:12px"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">Réel vs budget</div><div class="savings-bar-container"><div class="savings-bar-fill" style="width:${Math.min(100,avg/Math.max(av,1)*100).toFixed(0)}%;${avg>av?'background:linear-gradient(90deg,var(--red),var(--orange))':''}"></div><div class="savings-bar-label">${fS(avg)} / ${fS(av)}</div></div></div>
-    </div>
-  </div>
-  ${m?'':`<div class="chart-card" style="margin-bottom:16px"><h3>🧮 Répartition</h3><canvas id="buC" height="200"></canvas></div>`}
-  ${df<0?`<div class="alert-box"><span class="icon">⚠️</span><div class="msg"><strong>Dépassement ${fmt(abs(df))}/mois</strong></div></div>`:`<div class="alert-box success"><span class="icon">✅</span><div class="msg"><strong>Marge ${fmt(df)}/mois</strong></div></div>`}`;
-  if(!m){
-    ch.bu=new Chart(document.getElementById('buC'),{type:'bar',data:{labels:['Tes revenus'],datasets:[{label:'Impôts',data:[tM],backgroundColor:'#ff6b6b80',borderRadius:4},{label:'Épargne',data:[sT],backgroundColor:'#00cec980',borderRadius:4},{label:'Budget',data:[Math.max(0,av)],backgroundColor:'#6c5ce780',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8888a8',font:{size:11,family:'DM Sans'}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.raw)}`}}},scales:{x:{stacked:true,grid:{color:'#2a2a3d'},ticks:{color:'#8888a8',callback:v=>fS(v)}},y:{stacked:true,grid:{display:false},ticks:{color:'#8888a8'}}}}});
-  }
-}
-
-// NOUVELLE FONCTION DE PRÉVISION
-function rFore(el){
-  const m=mob();
-  const avgExp=getAvgExpensesByCat();
-  const fixed=getFixedExpenses();
-  const totalAvg=Object.values(avgExp).reduce((a,b)=>a+b,0);
-  const totalFixed=Object.values(fixed).reduce((a,b)=>a+b,0);
-  const variableAvg=totalAvg-totalFixed;
-  
-  // Déterminer le mois suivant
+  const app=document.getElementById('app');
   const ms=gM();
-  const nextMonth=ms.length>0?Math.max(...ms)+1:3;
-  const nextMonthName=MN[nextMonth]||'Mois '+nextMonth;
+  const isMobile=window.innerWidth<769;
   
-  // Initialiser la prévision si pas active
-  if(!S.forecast.active){
-    S.forecast={active:true,month:nextMonth,salary:S.sal,adjusted:{...avgExp}};
+  let html=`<div class="header">
+    <div class="header-top">
+      <h1>💰 MES FINANCES</h1>
+      <span class="badge">${allTx().length} opérations</span>
+    </div>
+    <div class="subtitle">${ms.length} mois d'historique · Salaire: ${fmt(S.sal)}</div>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab ${S.tab=='dashboard'?'active':''}" onclick="S.tab='dashboard';render()">📊 Vue</button>
+    <button class="tab ${S.tab=='forecast'?'active':''}" onclick="S.tab='forecast';render()">🔮 Prévoir</button>
+    <button class="tab ${S.tab=='add'?'active':''}" onclick="S.tab='add';render()">➕ Ajouter</button>
+    <button class="tab ${S.tab=='details'?'active':''}" onclick="S.tab='details';render()">📋 Liste</button>
+  </div>
+  
+  <div id="content" class="fade-in">`;
+  
+  if(S.tab=='dashboard')html+=renderDashboard();
+  else if(S.tab=='forecast')html+=renderForecast();
+  else if(S.tab=='add')html+=renderAdd();
+  else if(S.tab=='details')html+=renderDetails();
+  
+  html+=`</div>`;
+  app.innerHTML=html;
+}
+
+function renderDashboard(){
+  const d=gF();
+  const expenses=d.filter(x=>x.amount<0);
+  const income=d.filter(x=>x.amount>0);
+  const totalExp=expenses.reduce((s,x)=>s+abs(x.amount),0);
+  const totalInc=income.reduce((s,x)=>s+x.amount,0)+(S.mo===0?S.sal*gM().length:S.sal);
+  const balance=totalInc-totalExp;
+  const cats=getCatTotals();
+  
+  let html=`<div class="grid grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-label">Revenus</span><span class="positive">📈</span></div>
+      <div class="card-value positive">${fmt(totalInc)}</div>
+      <div class="card-delta">ce mois</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-label">Dépenses</span><span class="negative">📉</span></div>
+      <div class="card-value negative">${fmt(totalExp)}</div>
+      <div class="card-delta">${expenses.length} transactions</div>
+    </div>
+  </div>
+  
+  <div class="card" style="margin-top:12px;text-align:center;padding:24px;background:linear-gradient(135deg,var(--surface),var(--surface2))">
+    <div class="card-label" style="margin-bottom:8px">SOLDE</div>
+    <div class="big-number ${balance>=0?'positive':'negative'}" style="font-size:36px">${fmt(balance)}</div>
+    <div class="badge ${balance>=0?'badge-green':'badge-red'}" style="margin-top:8px;display:inline-flex">
+      ${balance>=0?'✅ Budget respecté':'🚨 Dépassement'}
+    </div>
+  </div>`;
+  
+  if(cats.length>0){
+    html+=`<div class="section-title">Top catégories</div>`;
+    cats.slice(0,5).forEach(([cat,amt])=>{
+      const pct=Math.round((amt/totalExp)*100);
+      html+=`<div class="list-item" onclick="S.tab='details';S.filterCat='${cat}';render()">
+        <div class="list-icon" style="background:${CC[cat]||'#636e72'}20;color:${CC[cat]||'#636e72'}">${ICONS[cat]||'📦'}</div>
+        <div class="list-content">
+          <div class="list-title">${cat}</div>
+          <div class="list-sub">${pct}% du total</div>
+        </div>
+        <div class="list-amount negative">${fmt(amt)}</div>
+      </div>`;
+    });
+  }
+  
+  return html;
+}
+
+function renderForecast(){
+  const avg=getAvgByCat();
+  const totalAvg=Object.values(avg).reduce((a,b)=>a+b,0);
+  const nextMonth=Math.max(...gM())+1;
+  const monthName=MN[nextMonth]||'Mois '+nextMonth;
+  
+  if(!S.forecast.adjusted||Object.keys(S.forecast.adjusted).length===0){
+    S.forecast={month:nextMonth,salary:S.sal,adjusted:{...avg}};
   }
   
   const f=S.forecast;
-  const tI=f.salary;
-  const tM=tI*12*(S.tax/100)/12;
-  const sT=S.sMode==='monthly'?S.sGoal:S.sGoal/12;
-  const av=tI-tM-sT;
+  const taxAmount=f.salary*(S.tax/100);
+  const saveAmount=S.sMode==='monthly'?S.sGoal:S.sGoal/12;
+  const available=f.salary-taxAmount-saveAmount;
+  const projected=Object.values(f.adjusted).reduce((a,b)=>a+b,0);
+  const remaining=available-projected;
+  const usedPct=Math.min(100,(projected/available)*100);
   
-  // Calcul avec ajustements
-  const adjustedTotal=Object.entries(f.adjusted).reduce((sum,[cat,amt])=>sum+(amt||0),0);
-  const remaining=av-adjustedTotal;
-  const pctUsed=Math.min(100,(adjustedTotal/av)*100);
-  
-  el.innerHTML=`
-  <div class="forecast-card">
-    <div class="forecast-header">
-      <div class="month-badge">${nextMonthName} 2026</div>
-      <div class="status">Prévision basée sur ${ms.length} mois d'historique</div>
-    </div>
-    
-    <div class="forecast-grid">
-      <div class="forecast-metric">
-        <div class="label">Salaire prévu</div>
-        <div class="value positive">${fmt(tI)}</div>
-        <div class="delta"><input type="number" value="${f.salary}" onchange="updateForecastSalary(this.value)" style="width:100px;text-align:center;padding:4px 8px;font-size:12px"></div>
-      </div>
-      <div class="forecast-metric">
-        <div class="label">Budget dispo</div>
-        <div class="value ${av>0?'positive':'negative'}">${fmt(av)}</div>
-        <div class="delta">après impôts & épargne</div>
-      </div>
-      <div class="forecast-metric">
-        <div class="label">Prévision dépenses</div>
-        <div class="value ${remaining>=0?'positive':'negative'}">${fmt(adjustedTotal)}</div>
-        <div class="delta">${remaining>=0?`+${fmt(remaining)}`:`-${fmt(Math.abs(remaining))}`} restant</div>
-      </div>
-    </div>
-    
-    <div style="margin-bottom:20px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:12px;color:var(--text2)">Utilisation du budget</span>
-        <span style="font-family:'Space Mono',monospace;font-size:14px;font-weight:600;color:${pctUsed>90?'var(--red)':pctUsed>75?'var(--orange)':'var(--green)'}">${pctUsed.toFixed(0)}%</span>
-      </div>
-      <div class="savings-bar-container" style="height:32px">
-        <div class="savings-bar-fill ${pctUsed>90?'danger':pctUsed>75?'warning':''}" style="width:${pctUsed}%"></div>
-        <div class="savings-bar-label" style="font-size:12px">${fS(adjustedTotal)} / ${fS(av)}</div>
-      </div>
+  let html=`<div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none">
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:13px;opacity:0.9;margin-bottom:4px">PRÉVISION</div>
+      <div style="font-family:'Space Mono',monospace;font-size:28px;font-weight:700">${monthName} 2026</div>
     </div>
   </div>
   
   <div class="grid grid-2" style="margin-bottom:16px">
-    <div class="chart-card">
-      <h3>📊 Répartition prévue</h3>
-      <canvas id="foreCatC" height="${m?200:280}"></canvas>
+    <div class="card" style="padding:12px">
+      <div class="card-label">Salaire prévu</div>
+      <input type="number" value="${f.salary}" onchange="S.forecast.salary=+this.value;render()" style="margin-top:8px;font-size:18px;padding:12px;text-align:center;font-weight:700">
     </div>
-    <div class="chart-card">
-      <h3>⚡ Scénarios</h3>
-      <div class="scenario-card optimistic">
-        <div class="scenario-title">🌟 Scénario optimiste</div>
-        <div class="scenario-value positive">+${fmt(av-totalFixed-(variableAvg*0.7))}</div>
-        <div class="scenario-desc">Si tu réduis tes dépenses variables de 30%</div>
-      </div>
-      <div class="scenario-card">
-        <div class="scenario-title">📊 Scénario habituel</div>
-        <div class="scenario-value ${remaining>=0?'positive':'negative'}">${remaining>=0?'+':''}${fmt(remaining)}</div>
-        <div class="scenario-desc">Basé sur tes habitudes moyennes</div>
-      </div>
-      <div class="scenario-card pessimistic">
-        <div class="scenario-title">⚠️ Scénario pessimiste</div>
-        <div class="scenario-value negative">${fmt(av-totalFixed-(variableAvg*1.2))}</div>
-        <div class="scenario-desc">Si tes dépenses variables augmentent de 20%</div>
-      </div>
+    <div class="card" style="padding:12px;background:${remaining>=0?'var(--green-bg)':'var(--red-bg)'};border-color:${remaining>=0?'var(--green)':'var(--red)'}">
+      <div class="card-label" style="${remaining>=0?'color:var(--green)':'color:var(--red)'}">Reste prévisionnel</div>
+      <div class="card-value ${remaining>=0?'positive':'negative'}" style="font-size:28px;margin-top:4px">${fmt(remaining)}</div>
     </div>
   </div>
   
-  <div class="section-title">💡 Où économiser ?</div>
-  ${generateSuggestions(avgExp, f.adjusted, av)}
-  
-  <div class="section-title">🎚️ Ajuste tes dépenses</div>
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
-    ${Object.entries(avgExp).sort((a,b)=>b[1]-a[1]).map(([cat,avg])=>{
-      const current=f.adjusted[cat]||avg;
-      const isFixed=fixed[cat]!==undefined;
-      const col=CC[cat]||'#636e72';
-      return `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-        <div style="width:12px;height:12px;border-radius:50%;background:${col};flex-shrink:0"></div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:500;${isFixed?'color:var(--text2)':''}">${cat}${isFixed?' (fixe)':''}</span>
-            <span style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text2)">Moy: ${fmt(avg)}</span>
-          </div>
-          <input type="range" min="0" max="${avg*2}" value="${current}" step="5" 
-            oninput="updateForecastCat('${cat.replace(/'/g,"\\'")}',this.value)" 
-            style="width:100%;margin-bottom:4px;accent-color:${col}" ${isFixed?'disabled':''}>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2)">
-            <span>0€</span>
-            <span style="font-weight:600;color:var(--text)">${fmt(current)}</span>
-            <span>${fmt(avg*2)}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join('')}
-  </div>
-  
-  <div style="margin-top:16px;display:flex;gap:12px">
-    <button class="primary" onclick="resetForecast()" style="flex:1;background:var(--surface3);color:var(--text)">🔄 Réinitialiser</button>
-    <button class="primary" onclick="saveForecast()" style="flex:1">💾 Sauvegarder</button>
+  <div class="card" style="margin-bottom:16px">
+    <div class="progress-container" style="margin:0">
+      <div class="progress-header">
+        <span>Utilisation du budget</span>
+        <span style="font-family:'Space Mono',monospace">${usedPct.toFixed(0)}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill ${usedPct>90?'danger':usedPct>75?'warning':''}" style="width:${usedPct}%"></div>
+      </div>
+      <div class="stat-grid" style="margin-top:12px;margin-bottom:0">
+        <div class="stat-item"><span class="stat-value">${fmt(available)}</span><span class="stat-label">Dispo</span></div>
+        <div class="stat-item"><span class="stat-value negative">${fmt(projected)}</span><span class="stat-label">Prévu</span></div>
+        <div class="stat-item"><span class="stat-value ${remaining>=0?'positive':'negative'}">${fmt(remaining)}</span><span class="stat-label">Reste</span></div>
+      </div>
+    </div>
   </div>`;
   
-  // Graphique de répartition
-  const cats=Object.entries(f.adjusted).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const other=Object.entries(f.adjusted).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(8).reduce((s,[,v])=>s+v,0);
-  const labels=cats.map(([c])=>c);
-  const values=cats.map(([,v])=>v);
-  if(other>0){labels.push('Autres');values.push(other);}
-  
-  ch.foreCat=new Chart(document.getElementById('foreCatC'),{
-    type:'doughnut',
-    data:{
-      labels:labels,
-      datasets:[{
-        data:values,
-        backgroundColor:labels.map(l=>CC[l]||'#636e72'),
-        borderWidth:0,
-        hoverOffset:8
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{position:m?'bottom':'right',labels:{color:'#8888a8',font:{size:11,family:'DM Sans'},padding:8,boxWidth:12}},
-        tooltip:{callbacks:{label:c=>`${c.label}: ${fmt(c.raw)} (${(c.raw/adjustedTotal*100).toFixed(0)}%)`}}
-      },
-      cutout:'60%'
-    }
-  });
-}
-
-function generateSuggestions(avgExp, adjusted, budget){
-  const suggestions=[];
-  const total=Object.values(adjusted).reduce((a,b)=>a+b,0);
-  const remaining=budget-total;
-  
-  // Trouver les catégories les plus élevées
-  const sorted=Object.entries(adjusted).sort((a,b)=>b[1]-a[1]);
-  const topCat=sorted[0];
-  
+  // Alertes et suggestions
   if(remaining<0){
-    suggestions.push({
-      icon:'🚨',
-      title:'Alerte dépassement',
-      desc:`Tu dépasses ton budget de ${fmt(Math.abs(remaining))}. Il faut impérativement couper dans les dépenses variables.`,
-      action:'Réduis les curseurs ci-dessous'
-    });
+    html+=`<div class="alert-box danger">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-content">
+        <div class="alert-title">Dépassement de ${fmt(abs(remaining))}</div>
+        <div class="alert-text">Tu dépasses ton budget de ${fmt(abs(remaining))}. Réduis les dépenses variables ci-dessous.</div>
+      </div>
+    </div>`;
   }else if(remaining<100){
-    suggestions.push({
-      icon:'⚠️',
-      title:'Marge très faible',
-      desc:`Il ne te reste que ${fmt(remaining)}. Un imprévu pourrait te mettre dans le rouge.`,
-      action:'Prévois une marge de sécurité de 100€ minimum'
-    });
-  }
-  
-  if(topCat&&topCat[1]>400){
-    suggestions.push({
-      icon:'✂️',
-      title:`Réduis "${topCat[0]}"`,
-      desc:`C'est ta plus grosse dépense (${fmt(topCat[1])}/mois en moyenne). Une réduction de 20% te ferait économiser ${fmt(topCat[1]*0.2)}.`,
-      action:`Objectif: passer à ${fmt(topCat[1]*0.8)}`
-    });
-  }
-  
-  // Détecter les dépenses superflues
-  const loisirs=adjusted['Loisirs et sorties']||0;
-  if(loisirs>150){
-    suggestions.push({
-      icon:'🎯',
-      title:'Loisirs à optimiser',
-      desc:`Tu dépenses ${fmt(loisirs)} en loisirs. Privilégie les activités gratuites ce mois-ci.`,
-      action:'Budget cible: 100€'
-    });
-  }
-  
-  const courses=adjusted['Vie quotidienne']||0;
-  if(courses>600){
-    suggestions.push({
-      icon:'🛒',
-      title:'Courses alimentaires',
-      desc:`Tes courses représentent ${fmt(courses)}. En faisant attention aux promotions et en évitant le gaspillage, tu peux économiser 15%.`,
-      action:'Économie potentielle: '+fmt(courses*0.15)
-    });
-  }
-  
-  if(suggestions.length===0){
-    suggestions.push({
-      icon:'✅',
-      title:'Tout va bien !',
-      desc:`Tu as une marge confortable de ${fmt(remaining)}. Tu peux atteindre ton objectif d'épargne.`,
-      action:'Continue sur cette lancée'
-    });
-  }
-  
-  return suggestions.map(s=>`
-    <div class="suggestion-card">
-      <div class="icon">${s.icon}</div>
-      <div class="content">
-        <div class="title">${s.title}</div>
-        <div class="desc">${s.desc}</div>
-        <div class="action">${s.action}</div>
+    html+=`<div class="alert-box warning">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <div class="alert-title">Marge très faible</div>
+        <div class="alert-text">Il ne te reste que ${fmt(remaining)}. Prévois une marge de sécurité.</div>
       </div>
+    </div>`;
+  }
+  
+  // Scénarios
+  const fixedCats=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Santé'];
+  const fixedTotal=Object.entries(f.adjusted).filter(([c])=>fixedCats.includes(c)).reduce((s,[,a])=>s+a,0);
+  const varTotal=projected-fixedTotal;
+  
+  html+=`<div class="section-title">Scénarios</div>
+  <div class="grid grid-2" style="margin-bottom:16px">
+    <div class="card" style="background:var(--green-bg);border-color:var(--green);padding:16px">
+      <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:4px">🌟 OPTIMISTE</div>
+      <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--green)">+${fmt(available-fixedTotal-(varTotal*0.7))}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">-30% variables</div>
     </div>
-  `).join('');
+    <div class="card" style="background:var(--red-bg);border-color:var(--red);padding:16px">
+      <div style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:4px">⚠️ PESSIMISTE</div>
+      <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--red)">${fmt(available-fixedTotal-(varTotal*1.2))}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">+20% variables</div>
+    </div>
+  </div>`;
+  
+  // Sliders par catégorie
+  html+=`<div class="section-title">Ajuster les dépenses</div>`;
+  Object.entries(f.adjusted).sort((a,b)=>b[1]-a[1]).forEach(([cat,current])=>{
+    const avgVal=avg[cat]||current;
+    const isFixed=fixedCats.includes(cat);
+    const color=CC[cat]||'#636e72';
+    html+=`<div class="slider-container" style="${isFixed?'opacity:0.7':''}">
+      <div class="slider-header">
+        <div class="slider-title">
+          <span class="slider-dot" style="background:${color}"></span>
+          ${cat} ${isFixed?'🔒':''}
+        </div>
+        <div class="slider-value" style="color:${color}">${fmt(current)}</div>
+      </div>
+      <input type="range" min="0" max="${avgVal*2.5}" value="${current}" step="5" 
+        ${isFixed?'disabled':`oninput="S.forecast.adjusted['${cat}']=+this.value;render()"`}
+        style="accent-color:${color}">
+      <div class="range-labels">
+        <span>0€</span>
+        <span>Moy: ${fmt(avgVal)}</span>
+        <span>${fmt(avgVal*2.5)}</span>
+      </div>
+    </div>`;
+  });
+  
+  html+=`<button class="btn btn-primary" onclick="saveForecast()" style="margin-top:8px">💾 Sauvegarder cette prévision</button>`;
+  
+  return html;
 }
 
-window.updateForecastSalary=function(val){
-  S.forecast.salary=parseFloat(val)||0;
-  render();
-};
-
-window.updateForecastCat=function(cat,val){
-  S.forecast.adjusted[cat]=parseFloat(val)||0;
-  render();
-};
-
-window.resetForecast=function(){
-  const avg=getAvgExpensesByCat();
-  S.forecast.adjusted={...avg};
-  render();
-};
-
-window.saveForecast=function(){
-  save();
-  toast('✅','Prévision sauvegardée !');
-};
-
-function rImp(el){
-  const m=mob();
-  el.innerHTML=`<div class="chart-card" style="margin-bottom:16px"><h3>📥 Importer un relevé</h3>
-    <p style="color:var(--text2);font-size:13px;margin-bottom:8px;line-height:1.5">${m?'Sélectionne ton CSV.':'Glisse ton CSV BoursoBank ici.'} <strong>100% local</strong>, doublons ignorés.</p>
-    <div class="drop-zone" id="dz"><input type="file" accept=".csv,.tsv,.txt" onchange="hF(event)"><div class="dz-icon">📄</div><div class="dz-title">${m?'Appuie pour choisir':'Dépose ton CSV ici'}</div><div class="dz-sub">Format BoursoBank (.csv)</div></div>
-    <div id="ipv" class="hidden" style="margin-top:16px"></div></div>
-  ${S.log.length?`<div class="chart-card"><h3 style="display:flex;justify-content:space-between;align-items:center">📝 Historique<button class="danger" onclick="S.log=[];save();render()" style="font-size:11px;padding:6px 12px">Effacer</button></h3><div style="background:var(--surface2);border-radius:10px;padding:12px;max-height:180px;overflow-y:auto">${S.log.slice().reverse().map(l=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span>${l.ok?'✅':'❌'}</span><span style="flex:1;color:var(--text2)"><strong style="color:var(--text)">${l.f}</strong><br>${l.ok?l.a+' ajoutées':l.e}</span></div>`).join('')}</div></div>`:''}`;
-  const dz=document.getElementById('dz');
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
-  dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');if(e.dataTransfer.files.length)pF(e.dataTransfer.files[0])});
-}
-window.hF=e=>{if(e.target.files.length)pF(e.target.files[0])};
-function pF(file){
-  if(!file.name.match(/\.(csv|tsv|txt)$/i))return toast('❌','Format non supporté');
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const res=parseCSV(e.target.result);
-    if(res.err){toast('❌',res.err);S.log.push({f:file.name,d:new Date().toLocaleDateString('fr-FR'),ok:false,e:res.err});save();render();return}
-    const{unique,added,skipped}=dedup(res.rows),pv=document.getElementById('ipv');
-    pv.classList.remove('hidden');
-    const tA=abs(unique.filter(r=>r.amount<0).reduce((s,r)=>s+r.amount,0)),ms=[...new Set(unique.map(r=>r.month))].sort();
-    pv.innerHTML=`<div class="alert-box success" style="margin-bottom:12px"><span class="icon">✅</span><div class="msg"><strong>${file.name}</strong><br>${res.rows.length} op. · <strong>${added} nouvelles</strong> · ${skipped} doublons${tA?' · '+fmt(tA):''}</div></div>
-    ${added>0?`${mob()?'':`<div class="preview-container"><table class="preview-table"><thead><tr><th>Date</th><th>Libellé</th><th>Cat.</th><th>Mt</th></tr></thead><tbody>${unique.slice(0,12).map(r=>`<tr><td style="font-family:'Space Mono',monospace;font-size:11px">${r.date}</td><td>${r.label}</td><td style="color:${CC[r.categoryParent]||'#636e72'};font-size:11px">${r.categoryParent}</td><td style="font-family:'Space Mono',monospace;color:${r.amount<0?'var(--red)':'var(--green)'}">${fmt(r.amount)}</td></tr>`).join('')}</tbody></table></div>`}
-    <div style="display:flex;gap:12px;margin-top:16px"><button class="primary" id="cfB">✅ Confirmer (${added})</button><button class="secondary" id="ccB">Annuler</button></div>`:`<div style="color:var(--text2);padding:12px 0">Tout est déjà importé.</div>`}`;
-    if(added>0){
-      document.getElementById('cfB').onclick=()=>{S.imported.push(...unique);S.log.push({f:file.name,d:new Date().toLocaleDateString('fr-FR'),ok:true,a:added,s:skipped});save();toast('✅',added+' importées !');render()};
-      document.getElementById('ccB').onclick=()=>pv.classList.add('hidden');
-    }
-  };
-  reader.readAsText(file,'utf-8');
-}
-
-function rAdd(el){
-  const me=S.manual,mi=S.inc;
-  el.innerHTML=`<div class="grid grid-2" style="margin-bottom:16px">
-    <div class="chart-card">
-      <h3 style="color:var(--red)">📉 Dépense</h3>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div><label>Libellé</label><input type="text" id="aL" placeholder="Ex: Course Lidl"></div>
-        <div class="form-row"><div class="form-group"><label>Montant (€)</label><input type="number" id="aA" placeholder="25.50" step="0.01"></div><div class="form-group"><label>Date</label><input type="date" id="aD" value="${new Date().toISOString().slice(0,10)}"></div></div>
-        <div><label>Catégorie</label><select id="aC">${Object.keys(CC).map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
-        <button class="primary" onclick="addE()" style="width:100%;background:var(--red)">➖ Ajouter</button>
+function renderAdd(){
+  return `<div class="card" style="margin-bottom:16px;border-left:4px solid var(--red)">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--red)">➖ Nouvelle dépense</div>
+    <div class="form-group">
+      <label>Libellé</label>
+      <input type="text" id="expLabel" placeholder="Ex: Courses Lidl" style="font-size:16px">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Montant (€)</label>
+        <input type="number" id="expAmt" placeholder="25.00" step="0.01" style="font-size:18px;font-weight:700">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="expDate" value="${new Date().toISOString().slice(0,10)}">
       </div>
     </div>
-    <div class="chart-card">
-      <h3 style="color:var(--green)">📈 Entrée d'argent</h3>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div><label>Libellé</label><input type="text" id="iL" placeholder="Ex: Prime"></div>
-        <div class="form-row"><div class="form-group"><label>Montant (€)</label><input type="number" id="iA" placeholder="500" step="0.01"></div><div class="form-group"><label>Date</label><input type="date" id="iD" value="${new Date().toISOString().slice(0,10)}"></div></div>
-        <div><label>Type</label><select id="iC">${Object.keys(IC).map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
-        <button class="primary" onclick="addInc()" style="width:100%;background:var(--green);color:#0a0a0f">➕ Ajouter</button>
-      </div>
+    <div class="form-group">
+      <label>Catégorie</label>
+      <select id="expCat" style="font-size:16px">
+        ${Object.keys(CC).map(c=>`<option value="${c}">${c}</option>`).join('')}
+      </select>
     </div>
+    <button class="btn btn-danger" onclick="addExpense()">Ajouter la dépense</button>
   </div>
-  ${me.length||mi.length?`<div class="grid grid-2">
-    ${me.length?`<div class="chart-card"><h3>📝 Dépenses (${me.length})</h3><div class="tx-list">${me.map((d,i)=>`<div class="tx-item"><span class="tx-date">${d.date.slice(5)}</span><span class="tx-label">${d.label}</span><span class="tx-amt negative">${fmt(abs(d.amount))}</span><button onclick="rmM(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;margin-left:4px">✕</button></div>`).join('')}</div></div>`:'<div></div>'}
-    ${mi.length?`<div class="chart-card"><h3>📝 Entrées (${mi.length})</h3><div class="tx-list">${mi.map((d,i)=>`<div class="tx-item"><span class="tx-date">${d.date.slice(5)}</span><span class="tx-label">${d.label}</span><span class="tx-amt positive">+${fmt(d.amount)}</span><button onclick="rmInc(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;margin-left:4px">✕</button></div>`).join('')}</div></div>`:'<div></div>'}
-  </div>`:''}`;
+  
+  <div class="card" style="border-left:4px solid var(--green)">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--green)">➕ Revenu exceptionnel</div>
+    <div class="form-group">
+      <label>Libellé</label>
+      <input type="text" id="incLabel" placeholder="Ex: Prime, Remboursement..." style="font-size:16px">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Montant (€)</label>
+        <input type="number" id="incAmt" placeholder="500.00" step="0.01" style="font-size:18px;font-weight:700;color:var(--green)">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="incDate" value="${new Date().toISOString().slice(0,10)}">
+      </div>
+    </div>
+    <button class="btn btn-success" onclick="addIncome()">Ajouter le revenu</button>
+  </div>`;
 }
 
-window.setT=t=>{S.tab=t;render()};window.setMo=m=>{S.mo=m;render()};
-window.showCat=cat=>{
-  const d=gF().filter(x=>x.amount<0&&x.categoryParent===cat).sort((a,b)=>b.date<a.date?-1:1);
-  const total=abs(d.reduce((s,x)=>s+x.amount,0));
-  const col=CC[cat]||'#636e72';
-  const mc=S.mo===0?gM().length:1;
-  const m=mob();
-  const bySupp={};d.forEach(x=>{const k=x.label;bySupp[k]=(bySupp[k]||0)+abs(x.amount)});
-  const topSupp=Object.entries(bySupp).sort((a,b)=>b[1]-a[1]).slice(0,5);
+function renderDetails(){
+  let d=gF().sort((a,b)=>b.date.localeCompare(a.date));
+  if(S.filterCat)d=d.filter(x=>x.categoryParent===S.filterCat);
+  
+  let html=`<div style="margin-bottom:16px;display:flex;gap:8px;overflow-x:auto;padding:4px 0">
+    <button class="month-btn ${S.mo===0?'active':''}" onclick="S.mo=0;S.filterCat=null;render()">Tout</button>
+    ${gM().map(m=>`<button class="month-btn ${S.mo===m?'active':''}" onclick="S.mo=${m};S.filterCat=null;render()">${MN[m]}</button>`).join('')}
+  </div>`;
+  
+  if(S.filterCat){
+    html+=`<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span class="badge" style="background:${CC[S.filterCat]||'#636e72'}20;color:${CC[S.filterCat]||'#636e72'};border-color:${CC[S.filterCat]||'#636e72'}">
+        ${ICONS[S.filterCat]||'📦'} ${S.filterCat}
+      </span>
+      <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px" onclick="S.filterCat=null;render()">✕ Retirer filtre</button>
+    </div>`;
+  }
+  
+  if(d.length===0){
+    html+=`<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-text">Aucune transaction pour cette période</div>
+    </div>`;
+  }else{
+    html+=`<div class="tx-list">`;
+    d.forEach(x=>{
+      const isExp=x.amount<0;
+      html+=`<div class="tx-item">
+        <div class="tx-date">${x.date.slice(5)}</div>
+        <div class="tx-info">
+          <span class="tx-label">${x.label}</span>
+          <span class="tx-cat">${ICONS[x.categoryParent]||''} ${x.categoryParent}</span>
+        </div>
+        <div class="tx-amount ${isExp?'negative':'positive'}">${isExp?'':'+'}${fmt(abs(x.amount))}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  
+  const manualCount=S.manual.length;
+  if(manualCount>0){
+    html+=`<div style="margin-top:24px;text-align:center">
+      <button class="btn btn-secondary" onclick="S.manual=[];save();render()" style="font-size:13px;padding:12px 24px">
+        🗑️ Effacer mes ${manualCount} ajouts manuels
+      </button>
+    </div>`;
+  }
+  
+  return html;
+}
 
-  const modal=document.getElementById('catModal');
-  modal.classList.remove('hidden');
-  modal.innerHTML=`
-    <div class="cat-modal-header" style="border-left:4px solid ${col}">
-      <div><h3 style="margin:0;font-size:${m?'16px':'18px'}">${cat}</h3>
-        <div style="color:var(--text2);font-size:13px;margin-top:4px">${d.length} opérations · ${fmt(total)} total · ${fmt(total/mc)}/mois</div>
-      </div>
-      <button onclick="closeCat()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">✕</button>
-    </div>
-    ${topSupp.length>1?`<div style="margin-bottom:12px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Top fournisseurs</div>${topSupp.map(([name,amt])=>{const pct=(amt/topSupp[0][1]*100).toFixed(0);return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:12px;min-width:${m?'100px':'140px'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span><div style="flex:1;height:4px;background:var(--surface3);border-radius:2px"><div style="width:${pct}%;height:100%;background:${col};border-radius:2px"></div></div><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);min-width:60px;text-align:right">${fmt(amt)}</span></div>`}).join('')}</div>`:''}
-    <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Détail des opérations</div>
-    <div class="tx-list" style="max-height:${m?'300px':'400px'}">${d.map(x=>`<div class="tx-item"><span class="tx-date">${x.date.slice(5)}</span><span class="tx-label">${x.label}</span><span class="tx-amt negative">${fmt(abs(x.amount))}</span></div>`).join('')}</div>`;
-  modal.scrollIntoView({behavior:'smooth',block:'nearest'});
-};
-window.closeCat=()=>{document.getElementById('catModal').classList.add('hidden');};
-window.addE=()=>{const l=document.getElementById('aL').value.trim(),a=parseFloat(document.getElementById('aA').value),c=document.getElementById('aC').value,d=document.getElementById('aD').value;if(!l||!a)return toast('⚠️','Remplis libellé et montant');S.manual.push({date:d,label:l,categoryParent:c,amount:-abs(a),month:+d.split('-')[1]});save();toast('✅',l+' ajouté');render()};
-window.addInc=()=>{const l=document.getElementById('iL').value.trim(),a=parseFloat(document.getElementById('iA').value),c=document.getElementById('iC').value,d=document.getElementById('iD').value;if(!l||!a)return toast('⚠️','Remplis libellé et montant');S.inc.push({date:d,label:l,categoryParent:c,amount:abs(a),month:+d.split('-')[1]});save();toast('✅','+'+fmt(a)+' — '+l);render()};
-window.rmM=i=>{S.manual.splice(i,1);save();render()};
-window.rmInc=i=>{S.inc.splice(i,1);save();render()};
-window.fTx=v=>{const s=v.toLowerCase();document.querySelectorAll('#txL .tx-item').forEach(el=>{el.style.display=el.dataset.s.includes(s)?'':'none'})};
-(async()=>{await load();render()})();
+function addExpense(){
+  const l=document.getElementById('expLabel').value.trim();
+  const a=parseFloat(document.getElementById('expAmt').value);
+  const d=document.getElementById('expDate').value;
+  const c=document.getElementById('expCat').value;
+  if(!l||!a){toast('⚠️','Remplis tous les champs');return}
+  S.manual.push({date:d,label:l,categoryParent:c,amount:-abs(a),month:+d.split('-')[1]});
+  save();
+  toast('✅','Dépense ajoutée');
+  S.tab='dashboard';
+  render();
+}
+
+function addIncome(){
+  const l=document.getElementById('incLabel').value.trim();
+  const a=parseFloat(document.getElementById('incAmt').value);
+  const d=document.getElementById('incDate').value;
+  if(!l||!a){toast('⚠️','Remplis tous les champs');return}
+  S.manual.push({date:d,label:l,categoryParent:'Revenu',amount:abs(a),month:+d.split('-')[1]});
+  save();
+  toast('✅','Revenu ajouté');
+  S.tab='dashboard';
+  render();
+}
+
+function saveForecast(){
+  save();
+  toast('✅','Prévision sauvegardée');
+}
+
+// Init
+load();
+render();
 </script>
 </body>
 </html>
