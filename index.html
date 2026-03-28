@@ -3,33 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Finances Pro - Prévision Mensuelle</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Finances Pro - BoursoBank</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#050508;
-  --surface:rgba(20,20,30,0.6);
+  --surface:rgba(20,20,30,0.8);
   --surface-solid:#12121a;
-  --surface-hover:rgba(30,30,45,0.8);
   --border:rgba(255,255,255,0.08);
-  --border-strong:rgba(255,255,255,0.15);
   --text:#f0f0f5;
   --text-secondary:#8888a0;
   --accent:#6c5ce7;
   --accent-light:#a29bfe;
-  --accent-glow:rgba(108,92,231,0.4);
   --success:#00cec9;
   --success-bg:rgba(0,206,201,0.15);
   --danger:#ff6b6b;
   --danger-bg:rgba(255,107,107,0.15);
   --warning:#fdcb6e;
   --warning-bg:rgba(253,203,110,0.15);
-  --info:#74b9ff;
-  --glass:blur(20px) saturate(180%);
   --radius:16px;
-  --radius-sm:10px;
   --shadow:0 8px 32px rgba(0,0,0,0.4);
-  --shadow-glow:0 0 40px var(--accent-glow);
 }
 
 *{
@@ -45,7 +38,6 @@ body{
   color:var(--text);
   min-height:100vh;
   line-height:1.5;
-  overflow-x:hidden;
   background-image:
     radial-gradient(circle at 20% 50%,rgba(108,92,231,0.15) 0%,transparent 50%),
     radial-gradient(circle at 80% 80%,rgba(0,206,201,0.1) 0%,transparent 40%);
@@ -58,28 +50,9 @@ body{
   padding-bottom:120px;
 }
 
-/* Header Premium */
+/* Header */
 .header{
   margin-bottom:24px;
-  position:relative;
-}
-
-.header-glow{
-  position:absolute;
-  top:-50px;
-  left:-50px;
-  width:200px;
-  height:200px;
-  background:var(--accent);
-  filter:blur(80px);
-  opacity:0.3;
-  pointer-events:none;
-  animation:pulse 4s ease-in-out infinite;
-}
-
-@keyframes pulse{
-  0%,100%{opacity:0.3;transform:scale(1);}
-  50%{opacity:0.5;transform:scale(1.1);}
 }
 
 .header-top{
@@ -87,41 +60,21 @@ body{
   justify-content:space-between;
   align-items:center;
   margin-bottom:8px;
-  position:relative;
-  z-index:1;
 }
 
 .header h1{
-  font-size:28px;
+  font-size:26px;
   font-weight:700;
   background:linear-gradient(135deg,var(--text) 0%,var(--accent-light) 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  letter-spacing:-0.5px;
 }
 
 .header-stats{
-  display:flex;
-  gap:12px;
   font-size:12px;
   color:var(--text-secondary);
   font-family:'JetBrains Mono',monospace;
 }
-
-.badge{
-  background:var(--surface);
-  border:1px solid var(--border);
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:600;
-  color:var(--text-secondary);
-  backdrop-filter:var(--glass);
-}
-
-.badge-success{background:var(--success-bg);color:var(--success);border-color:var(--success);}
-.badge-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger);}
-.badge-warning{background:var(--warning-bg);color:var(--warning);border-color:var(--warning);}
 
 /* Navigation */
 .nav{
@@ -132,10 +85,10 @@ body{
   background:var(--surface);
   border:1px solid var(--border);
   border-radius:var(--radius);
-  backdrop-filter:var(--glass);
   position:sticky;
   top:20px;
   z-index:100;
+  backdrop-filter:blur(20px);
   box-shadow:var(--shadow);
 }
 
@@ -146,43 +99,17 @@ body{
   background:transparent;
   color:var(--text-secondary);
   font-family:inherit;
-  font-size:13px;
+  font-size:12px;
   font-weight:600;
   cursor:pointer;
-  border-radius:var(--radius-sm);
-  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-  position:relative;
-  overflow:hidden;
-}
-
-.nav-btn::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent-light));
-  opacity:0;
-  transition:opacity 0.3s;
-  border-radius:var(--radius-sm);
-}
-
-.nav-btn span{
-  position:relative;
-  z-index:1;
+  border-radius:12px;
+  transition:all 0.3s;
 }
 
 .nav-btn.active{
+  background:var(--accent);
   color:#fff;
   box-shadow:0 4px 12px rgba(108,92,231,0.3);
-}
-
-.nav-btn.active::before{
-  opacity:1;
-}
-
-.nav-btn:not(.active):hover{
-  background:var(--surface-hover);
-  color:var(--text);
-  transform:translateY(-1px);
 }
 
 /* Cards */
@@ -192,14 +119,8 @@ body{
   border-radius:var(--radius);
   padding:20px;
   margin-bottom:16px;
-  backdrop-filter:var(--glass);
+  backdrop-filter:blur(20px);
   box-shadow:var(--shadow);
-  transition:transform 0.2s,box-shadow 0.2s;
-}
-
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow),0 0 0 1px var(--border-strong);
 }
 
 .card-header{
@@ -222,28 +143,16 @@ body{
   font-size:32px;
   font-weight:700;
   color:var(--text);
-  margin-top:4px;
 }
 
-.card-value.small{font-size:24px;}
-.card-value.large{font-size:42px;}
-
-/* Grid Systems */
 .grid-2{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:16px;
 }
 
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-
 @media(max-width:600px){
   .grid-2{grid-template-columns:1fr;}
-  .grid-3{grid-template-columns:repeat(2,1fr);}
 }
 
 /* Month Selector */
@@ -253,7 +162,6 @@ body{
   overflow-x:auto;
   padding:4px 0;
   margin-bottom:20px;
-  -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
   mask-image:linear-gradient(to right,transparent,black 20px,black calc(100% - 20px),transparent);
 }
@@ -272,445 +180,14 @@ body{
   font-weight:600;
   white-space:nowrap;
   transition:all 0.3s;
-  backdrop-filter:var(--glass);
-  position:relative;
-  overflow:hidden;
-}
-
-.month-chip::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent-light));
-  opacity:0;
-  transition:opacity 0.3s;
-  z-index:-1;
+  backdrop-filter:blur(10px);
 }
 
 .month-chip.active{
-  color:#fff;
-  border-color:transparent;
-  box-shadow:0 4px 16px var(--accent-glow);
-}
-
-.month-chip.active::after{
-  opacity:1;
-}
-
-.month-chip:hover:not(.active){
-  border-color:var(--accent-light);
-  color:var(--text);
-  transform:translateY(-1px);
-}
-
-/* Progress Bars */
-.progress-container{
-  margin:16px 0;
-}
-
-.progress-header{
-  display:flex;
-  justify-content:space-between;
-  font-size:12px;
-  color:var(--text-secondary);
-  margin-bottom:8px;
-  font-weight:600;
-}
-
-.progress-bar{
-  height:8px;
-  background:rgba(255,255,255,0.05);
-  border-radius:4px;
-  overflow:hidden;
-  position:relative;
-}
-
-.progress-fill{
-  height:100%;
-  border-radius:4px;
-  transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
-  position:relative;
-  overflow:hidden;
-}
-
-.progress-fill::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
-  animation:shimmer 2s infinite;
-}
-
-@keyframes shimmer{
-  0%{transform:translateX(-100%);}
-  100%{transform:translateX(100%);}
-}
-
-.progress-fill.success{background:var(--success);}
-.progress-fill.warning{background:var(--warning);}
-.progress-fill.danger{background:var(--danger);}
-.progress-fill.accent{background:linear-gradient(90deg,var(--accent),var(--accent-light));}
-
-/* Forecast Specific Styles */
-.forecast-hero{
-  background:linear-gradient(135deg,var(--accent) 0%,#5b4cdb 100%);
-  color:#fff;
-  border:none;
-  position:relative;
-  overflow:hidden;
-}
-
-.forecast-hero::before{
-  content:'';
-  position:absolute;
-  top:-50%;
-  left:-50%;
-  width:200%;
-  height:200%;
-  background:radial-gradient(circle,rgba(255,255,255,0.1) 1px,transparent 1px);
-  background-size:20px 20px;
-  opacity:0.3;
-  animation:moveGrid 20s linear infinite;
-}
-
-@keyframes moveGrid{
-  0%{transform:translate(0,0);}
-  100%{transform:translate(20px,20px);}
-}
-
-.forecast-hero .card-title{
-  color:rgba(255,255,255,0.8);
-}
-
-.forecast-hero .card-value{
-  color:#fff;
-  text-shadow:0 2px 4px rgba(0,0,0,0.2);
-}
-
-.forecast-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:16px;
-  margin-top:20px;
-}
-
-.category-card{
-  background:var(--surface-solid);
-  border:1px solid var(--border);
-  border-radius:var(--radius-sm);
-  padding:16px;
-  transition:all 0.3s;
-  position:relative;
-  overflow:hidden;
-}
-
-.category-card::before{
-  content:'';
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:4px;
-  background:var(--cat-color,var(--accent));
-  opacity:0;
-  transition:opacity 0.3s;
-}
-
-.category-card:hover{
-  transform:translateX(4px);
-  border-color:var(--cat-color,var(--accent));
-}
-
-.category-card:hover::before{
-  opacity:1;
-}
-
-.category-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.category-name{
-  font-size:14px;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.category-icon{
-  width:32px;
-  height:32px;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  background:var(--cat-color,var(--accent));
-  opacity:0.2;
-  color:var(--cat-color,var(--accent));
-}
-
-.category-amount{
-  font-family:'JetBrains Mono',monospace;
-  font-size:18px;
-  font-weight:700;
-}
-
-.category-slider{
-  -webkit-appearance:none;
-  width:100%;
-  height:6px;
-  border-radius:3px;
-  background:rgba(255,255,255,0.1);
-  outline:none;
-  margin:12px 0;
-  cursor:pointer;
-}
-
-.category-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  appearance:none;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  background:#fff;
-  border:3px solid var(--cat-color,var(--accent));
-  cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,0.3);
-  transition:transform 0.2s;
-}
-
-.category-slider::-webkit-slider-thumb:hover{
-  transform:scale(1.2);
-}
-
-.category-stats{
-  display:flex;
-  justify-content:space-between;
-  font-size:11px;
-  color:var(--text-secondary);
-}
-
-/* Alerts */
-.alert{
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  padding:16px;
-  border-radius:var(--radius-sm);
-  margin-bottom:16px;
-  border:1px solid transparent;
-  animation:slideIn 0.4s ease;
-}
-
-@keyframes slideIn{
-  from{
-    opacity:0;
-    transform:translateY(-10px);
-  }
-}
-
-.alert-success{
-  background:var(--success-bg);
-  border-color:var(--success);
-  color:var(--success);
-}
-
-.alert-danger{
-  background:var(--danger-bg);
-  border-color:var(--danger);
-  color:var(--danger);
-}
-
-.alert-warning{
-  background:var(--warning-bg);
-  border-color:var(--warning);
-  color:var(--warning);
-}
-
-.alert-icon{
-  font-size:20px;
-  flex-shrink:0;
-}
-
-.alert-content{
-  flex:1;
-}
-
-.alert-title{
-  font-weight:700;
-  margin-bottom:4px;
-  font-size:14px;
-}
-
-.alert-text{
-  font-size:13px;
-  opacity:0.9;
-  line-height:1.4;
-}
-
-/* Scenario Cards */
-.scenario-card{
-  position:relative;
-  padding:20px;
-  border-radius:var(--radius-sm);
-  border:1px solid var(--border);
-  background:var(--surface-solid);
-  overflow:hidden;
-  cursor:pointer;
-  transition:all 0.3s;
-}
-
-.scenario-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(0,0,0,0.3);
-}
-
-.scenario-card.optimist{
-  border-color:var(--success);
-  background:linear-gradient(135deg,var(--success-bg),transparent);
-}
-
-.scenario-card.pessimist{
-  border-color:var(--danger);
-  background:linear-gradient(135deg,var(--danger-bg),transparent);
-}
-
-.scenario-card.realistic{
-  border-color:var(--accent);
-  background:linear-gradient(135deg,rgba(108,92,231,0.1),transparent);
-}
-
-.scenario-label{
-  font-size:12px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  margin-bottom:8px;
-  opacity:0.8;
-}
-
-.scenario-value{
-  font-family:'JetBrains Mono',monospace;
-  font-size:28px;
-  font-weight:700;
-  margin-bottom:4px;
-}
-
-.scenario-desc{
-  font-size:12px;
-  color:var(--text-secondary);
-}
-
-/* Toggle */
-.toggle-group{
-  display:flex;
-  background:rgba(255,255,255,0.05);
-  border-radius:var(--radius-sm);
-  padding:4px;
-  border:1px solid var(--border);
-}
-
-.toggle-btn{
-  flex:1;
-  padding:10px;
-  border:none;
-  background:transparent;
-  color:var(--text-secondary);
-  font-family:inherit;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  border-radius:8px;
-  transition:all 0.3s;
-}
-
-.toggle-btn.active{
   background:var(--accent);
   color:#fff;
-  box-shadow:0 2px 8px rgba(108,92,231,0.3);
-}
-
-/* Inputs */
-input,select{
-  width:100%;
-  padding:14px 16px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid var(--border);
-  border-radius:var(--radius-sm);
-  color:var(--text);
-  font-family:inherit;
-  font-size:15px;
-  transition:all 0.3s;
-  outline:none;
-}
-
-input:focus,select:focus{
   border-color:var(--accent);
-  background:rgba(108,92,231,0.05);
-  box-shadow:0 0 0 3px rgba(108,92,231,0.1);
-}
-
-label{
-  display:block;
-  font-size:12px;
-  font-weight:600;
-  color:var(--text-secondary);
-  margin-bottom:6px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-
-.form-group{
-  margin-bottom:16px;
-}
-
-/* Buttons */
-.btn{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:var(--radius-sm);
-  font-family:inherit;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.3s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  position:relative;
-  overflow:hidden;
-}
-
-.btn-primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent-light));
-  color:#fff;
-  box-shadow:0 4px 16px var(--accent-glow);
-}
-
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px var(--accent-glow);
-}
-
-.btn-primary:active{
-  transform:translateY(0);
-}
-
-.btn-secondary{
-  background:var(--surface);
-  border:1px solid var(--border);
-  color:var(--text);
-}
-
-.btn-secondary:hover{
-  background:var(--surface-hover);
-  border-color:var(--border-strong);
+  box-shadow:0 4px 16px rgba(108,92,231,0.4);
 }
 
 /* Lists */
@@ -727,15 +204,14 @@ label{
   padding:16px;
   background:var(--surface-solid);
   border:1px solid var(--border);
-  border-radius:var(--radius-sm);
+  border-radius:12px;
   transition:all 0.2s;
   cursor:pointer;
 }
 
 .tx-item:hover{
-  background:var(--surface-hover);
+  background:rgba(255,255,255,0.05);
   transform:translateX(4px);
-  border-color:var(--border-strong);
 }
 
 .tx-icon{
@@ -759,18 +235,15 @@ label{
 .tx-label{
   font-weight:600;
   font-size:14px;
-  margin-bottom:2px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  margin-bottom:2px;
 }
 
 .tx-meta{
   font-size:12px;
   color:var(--text-secondary);
-  display:flex;
-  gap:8px;
-  align-items:center;
 }
 
 .tx-amount{
@@ -778,26 +251,453 @@ label{
   font-size:15px;
   font-weight:700;
   text-align:right;
+  flex-shrink:0;
 }
 
-.tx-amount.negative{color:var(--danger);}
-.tx-amount.positive{color:var(--success);}
+.negative{color:var(--danger);}
+.positive{color:var(--success);}
 
-/* Animations */
-@keyframes float{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-5px);}
+/* Category Cards */
+.cat-card{
+  background:var(--surface-solid);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
 }
 
-.animate-float{animation:float 3s ease-in-out infinite;}
-
-.fade-in{
-  animation:fadeIn 0.4s ease;
+.cat-card::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:var(--cat-color,var(--accent));
 }
 
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
+.cat-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--cat-color,var(--accent));
+}
+
+.cat-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.cat-name{
+  font-weight:600;
+  font-size:15px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.cat-amount{
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px;
+  font-weight:700;
+}
+
+.cat-bar{
+  height:6px;
+  background:rgba(255,255,255,0.1);
+  border-radius:3px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.cat-fill{
+  height:100%;
+  background:var(--cat-color,var(--accent));
+  border-radius:3px;
+  transition:width 0.5s;
+}
+
+/* Forecast Specific */
+.forecast-row{
+  background:var(--surface-solid);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:10px;
+}
+
+.forecast-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.forecast-cat{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:600;
+}
+
+.forecast-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:var(--cat-color);
+}
+
+.forecast-amount-wrapper{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.forecast-amount{
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;
+  font-weight:700;
+  padding:6px 12px;
+  border-radius:8px;
+  background:var(--surface);
+  cursor:pointer;
+  border:1px solid transparent;
+  transition:all 0.2s;
+  min-width:80px;
+  text-align:right;
+}
+
+.forecast-amount:hover{
+  border-color:var(--accent);
+}
+
+.forecast-amount.editing{
+  background:var(--bg);
+  border-color:var(--accent);
+  cursor:text;
+  outline:none;
+}
+
+.forecast-actions{
+  display:flex;
+  gap:6px;
+}
+
+.btn-icon{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  border:none;
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  transition:all 0.2s;
+}
+
+.btn-icon:hover{
+  background:var(--accent);
+  color:#fff;
+}
+
+.btn-icon.success{
+  background:var(--success);
+  color:#fff;
+}
+
+.btn-icon.danger{
+  background:var(--danger-bg);
+  color:var(--danger);
+}
+
+.forecast-slider{
+  width:100%;
+  height:6px;
+  -webkit-appearance:none;
+  background:var(--surface);
+  border-radius:3px;
+  outline:none;
+  margin:12px 0;
+}
+
+.forecast-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:#fff;
+  border:3px solid var(--cat-color,var(--accent));
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+
+.forecast-hint{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--text-secondary);
+}
+
+/* Scenarios */
+.scenario-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:16px 0;
+}
+
+.scenario-card{
+  padding:16px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.scenario-card:hover{
+  transform:translateY(-2px);
+}
+
+.scenario-card.optimist{
+  background:var(--success-bg);
+  border-color:var(--success);
+}
+
+.scenario-card.pessimist{
+  background:var(--danger-bg);
+  border-color:var(--danger);
+}
+
+.scenario-card.neutral{
+  background:rgba(108,92,231,0.1);
+  border-color:var(--accent);
+}
+
+.scenario-label{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  opacity:0.8;
+}
+
+.scenario-value{
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;
+  font-weight:700;
+}
+
+/* Progress */
+.progress-container{
+  margin:16px 0;
+}
+
+.progress-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+  font-size:13px;
+  color:var(--text-secondary);
+}
+
+.progress-bar{
+  height:8px;
+  background:rgba(255,255,255,0.05);
+  border-radius:4px;
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  border-radius:4px;
+  transition:width 0.5s;
+  background:linear-gradient(90deg,var(--accent),var(--accent-light));
+}
+
+.progress-fill.danger{background:var(--danger);}
+.progress-fill.warning{background:var(--warning);}
+.progress-fill.success{background:var(--success);}
+
+/* Inputs */
+input,select,textarea{
+  width:100%;
+  padding:14px 16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:15px;
+  outline:none;
+  transition:all 0.3s;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent);
+  background:rgba(108,92,231,0.05);
+}
+
+label{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+/* Buttons */
+.btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-light));
+  color:#fff;
+  box-shadow:0 4px 16px rgba(108,92,231,0.3);
+}
+
+.btn-secondary{
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+.btn-danger{
+  background:var(--danger-bg);
+  color:var(--danger);
+  border:1px solid var(--danger);
+}
+
+/* Upload Zone */
+.upload-zone{
+  border:2px dashed var(--border);
+  border-radius:var(--radius);
+  padding:40px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+  margin-bottom:16px;
+}
+
+.upload-zone:hover{
+  border-color:var(--accent);
+  background:rgba(108,92,231,0.05);
+}
+
+.upload-zone.dragover{
+  border-color:var(--accent);
+  background:rgba(108,92,231,0.1);
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(10px);
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.modal.active{
+  display:flex;
+}
+
+.modal-content{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  width:100%;
+  max-width:600px;
+  max-height:90vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.modal-header{
+  padding:20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.modal-body{
+  padding:20px;
+  overflow-y:auto;
+  flex:1;
+}
+
+.close-btn{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:none;
+  background:var(--surface-solid);
+  color:var(--text);
+  cursor:pointer;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Alert */
+.alert{
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:16px;
+  border:1px solid transparent;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.alert-success{
+  background:var(--success-bg);
+  border-color:var(--success);
+  color:var(--success);
+}
+
+.alert-danger{
+  background:var(--danger-bg);
+  border-color:var(--danger);
+  color:var(--danger);
+}
+
+.alert-warning{
+  background:var(--warning-bg);
+  border-color:var(--warning);
+  color:var(--warning);
 }
 
 /* Toast */
@@ -809,80 +709,21 @@ label{
   background:var(--surface);
   border:1px solid var(--border);
   padding:16px 24px;
-  border-radius:var(--radius);
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  border-radius:12px;
+  box-shadow:var(--shadow);
   display:flex;
   align-items:center;
   gap:12px;
   font-size:14px;
-  z-index:1000;
+  z-index:2000;
   opacity:0;
-  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  backdrop-filter:var(--glass);
-  min-width:300px;
-  justify-content:center;
+  transition:all 0.4s;
+  backdrop-filter:blur(20px);
 }
 
 .toast.show{
   transform:translateX(-50%) translateY(0);
   opacity:1;
-}
-
-/* Empty State */
-.empty{
-  text-align:center;
-  padding:60px 20px;
-  color:var(--text-secondary);
-}
-
-.empty-icon{
-  font-size:48px;
-  margin-bottom:16px;
-  opacity:0.5;
-}
-
-/* Recurring Badge */
-.recurring-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  font-size:10px;
-  padding:3px 8px;
-  border-radius:12px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-
-/* Tooltip */
-[data-tooltip]{
-  position:relative;
-}
-
-[data-tooltip]::after{
-  content:attr(data-tooltip);
-  position:absolute;
-  bottom:100%;
-  left:50%;
-  transform:translateX(-50%) translateY(-8px);
-  padding:8px 12px;
-  background:#000;
-  color:#fff;
-  font-size:12px;
-  border-radius:8px;
-  white-space:nowrap;
-  opacity:0;
-  pointer-events:none;
-  transition:all 0.2s;
-  z-index:10;
-  border:1px solid var(--border);
-}
-
-[data-tooltip]:hover::after{
-  opacity:1;
-  transform:translateX(-50%) translateY(-4px);
 }
 
 .hidden{display:none !important;}
@@ -891,23 +732,33 @@ label{
 <body>
 <div class="app" id="app">
   <div class="header">
-    <div class="header-glow"></div>
     <div class="header-top">
-      <h1>💰 Finance Pro</h1>
-      <div class="header-stats">
-        <span class="badge" id="op-count">0 opérations</span>
-      </div>
+      <h1>💰 Finances Pro</h1>
+      <div class="header-stats" id="stats-bar">Chargement...</div>
     </div>
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" onclick="setTab('dashboard')"><span>📊 Vue d'ensemble</span></button>
-    <button class="nav-btn" onclick="setTab('forecast')"><span>🔮 Prévision</span></button>
-    <button class="nav-btn" onclick="setTab('transactions')"><span>📝 Transactions</span></button>
-    <button class="nav-btn" onclick="setTab('add')"><span>➕ Ajouter</span></button>
+    <button class="nav-btn active" onclick="setTab('dashboard')">📊 Vue</button>
+    <button class="nav-btn" onclick="setTab('forecast')">🔮 Prévoir</button>
+    <button class="nav-btn" onclick="setTab('transactions')">📋 Opérations</button>
+    <button class="nav-btn" onclick="setTab('import')">📥 Import</button>
+    <button class="nav-btn" onclick="setTab('settings')">⚙️</button>
   </div>
 
-  <div id="content" class="fade-in"></div>
+  <div id="content"></div>
+</div>
+
+<!-- Modal pour détail catégorie -->
+<div class="modal" id="cat-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Détail catégorie</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">
@@ -916,856 +767,823 @@ label{
 </div>
 
 <script>
-// Données initiales (Seed)
-const SEED=[
-  {"d":"2026-01-30","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7,"t":"normal"},
-  {"d":"2026-01-30","l":"SnP*AAL","c":"Non catégorisé","a":-10,"t":"normal"},
-  {"d":"2026-01-30","l":"HELLOASSO","c":"Cadeaux et solidarité","a":-5,"t":"normal"},
-  {"d":"2026-01-30","l":"SAINDOU NAIDA","c":"Virements émis","a":-130,"t":"normal"},
-  {"d":"2026-01-29","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7,"t":"normal"},
-  {"d":"2026-01-29","l":"RELAIS DE PACE","c":"Auto & Moto","a":-10.9,"t":"normal"},
-  {"d":"2026-01-29","l":"SNCF OUIGO","c":"Voyages & Transports","a":-54,"t":"normal"},
-  {"d":"2026-01-29","l":"SFR","c":"Abonnements & téléphonie","a":-25.97,"t":"mensuel"},
-  {"d":"2026-01-28","l":"EDF","c":"Logement","a":-4.39,"t":"normal"},
-  {"d":"2026-01-27","l":"FRESH FOOD","c":"Loisirs et sorties","a":-12.5,"t":"normal"},
-  {"d":"2026-01-27","l":"BOUCHERIE VILLE","c":"Vie quotidienne","a":-20.89,"t":"normal"},
-  {"d":"2026-01-27","l":"LECLERC","c":"Vie quotidienne","a":-25.12,"t":"normal"},
-  {"d":"2026-01-27","l":"GRAND FRAIS","c":"Vie quotidienne","a":-48.68,"t":"normal"},
-  {"d":"2026-01-26","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-16.79,"t":"mensuel"},
-  {"d":"2026-01-26","l":"CARREFOUR CITY","c":"Vie quotidienne","a":-8.1,"t":"normal"},
-  {"d":"2026-01-26","l":"VIR PAPA","c":"Virements émis","a":-30,"t":"normal"},
-  {"d":"2026-01-26","l":"SFR","c":"Abonnements & téléphonie","a":-27.18,"t":"mensuel"},
-  {"d":"2026-01-23","l":"DR LEGRU","c":"Santé","a":-30,"t":"normal"},
-  {"d":"2026-01-22","l":"RETRAIT DAB","c":"Retraits cash","a":-100,"t":"normal"},
-  {"d":"2026-01-19","l":"RETRAIT DAB","c":"Retraits cash","a":-150,"t":"normal"},
-  {"d":"2026-01-19","l":"BARBERKING","c":"Non catégorisé","a":-15,"t":"normal"},
-  {"d":"2026-01-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75,"t":"mensuel"},
-  {"d":"2026-01-16","l":"ACM IARD","c":"Auto & Moto","a":-18.33,"t":"mensuel"},
-  {"d":"2026-01-15","l":"AMOUR DE PIZZA","c":"Loisirs et sorties","a":-28,"t":"normal"},
-  {"d":"2026-02-26","l":"HLM LES FOYERS LOYER","c":"Logement","a":-600,"t":"mensuel"},
-  {"d":"2026-02-26","l":"HOSTINGER","c":"Abonnements & téléphonie","a":-16.79,"t":"mensuel"},
-  {"d":"2026-02-26","l":"SFR","c":"Abonnements & téléphonie","a":-27.18,"t":"mensuel"},
-  {"d":"2026-02-23","l":"LECLERC","c":"Vie quotidienne","a":-78.95,"t":"normal"},
-  {"d":"2026-02-18","l":"RESTAURANT LE K","c":"Loisirs et sorties","a":-21.2,"t":"normal"},
-  {"d":"2026-02-17","l":"ACM IARD","c":"Auto & Moto","a":-18.33,"t":"mensuel"},
-  {"d":"2026-02-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75,"t":"mensuel"},
-  {"d":"2026-02-10","l":"CANAL PLUS","c":"Abonnements & téléphonie","a":-34.99,"t":"mensuel"},
-  {"d":"2026-02-10","l":"CA CONSUMER FINANCE","c":"Emprunts (hors immobilier)","a":-100,"t":"fractionne","months":3},
-  {"d":"2026-02-09","l":"MARINE TANFIN","c":"Virements émis","a":-194.95,"t":"normal"},
-  {"d":"2026-02-05","l":"ACTIVE ASSURANCES","c":"Auto & Moto","a":-141.52,"t":"mensuel"},
-  {"d":"2026-02-04","l":"HLM LES FOYERS","c":"Logement","a":-530,"t":"fractionne","months":6},
-  {"d":"2026-02-02","l":"SFR","c":"Abonnements & téléphonie","a":-44.99,"t":"mensuel"},
-  {"d":"2026-03-25","l":"KEOLIS RENNES","c":"Voyages & Transports","a":-1.7,"t":"normal"},
-  {"d":"2026-03-25","l":"LECLERC","c":"Vie quotidienne","a":-33,"t":"normal"},
-  {"d":"2026-03-19","l":"EL BARAKA","c":"Vie quotidienne","a":-54.05,"t":"normal"},
-  {"d":"2026-03-16","l":"ENERGIE MUTUELLE","c":"Santé","a":-64.75,"t":"mensuel"},
-  {"d":"2026-03-11","l":"CANAL PLUS","c":"Abonnements & téléphonie","a":-34.99,"t":"mensuel"},
-  {"d":"2026-03-10","l":"CA CONSUMER FINANCE","c":"Emprunts (hors immobilier)","a":-100,"t":"mensuel"},
-  {"d":"2026-03-05","l":"ACTIVE ASSURANCES","c":"Auto & Moto","a":-141.52,"t":"mensuel"},
-  {"d":"2026-03-03","l":"SFR","c":"Abonnements & téléphonie","a":-44.99,"t":"mensuel"},
-  {"d":"2026-03-02","l":"CLAUDE.AI","c":"Non catégorisé","a":-108,"t":"normal"},
-  {"d":"2026-03-02","l":"LECLERC CARBURANT","c":"Auto & Moto","a":-60.95,"t":"normal"},
-  {"d":"2026-03-02","l":"E.LECLERC","c":"Vie quotidienne","a":-281.79,"t":"normal"}
-];
+// Données CSV parsées (Janvier, Février, Mars 2026)
+const SEED_DATA = `dateOp;dateVal;label;category;categoryParent;amount
+2026-01-30;2026-01-30;KEOLIS RENNES;Transports;Voyages & Transports;-1,70
+2026-01-30;2026-01-30;SnP*AAL;Non catégorisé;Non catégorisé;-10,00
+2026-01-30;2026-01-30;HELLOASSO;Solidarité;Cadeaux et solidarité;-5,00
+2026-01-30;2026-01-30;VIR SAINDOU NAIDA;Virements;Virements émis;-130,00
+2026-01-30;2026-01-30;VIR SAINDOU NAIDA;Virements;Virements émis;-120,00
+2026-01-29;2026-01-29;KEOLIS RENNES;Transports;Voyages & Transports;-1,70
+2026-01-29;2026-01-29;RELAIS DE PACE;Carburant;Auto & Moto;-10,90
+2026-01-29;2026-01-29;SNCF OUIGO;Transports;Voyages & Transports;-54,00
+2026-01-29;2026-01-29;SFR;Téléphonie;Abonnements & téléphonie;-25,97
+2026-01-28;2026-01-28;EDF;Energie;Logement;-4,39
+2026-01-27;2026-01-27;FRESH FOOD;Restaurant;Loisirs et sorties;-12,50
+2026-01-27;2026-01-27;BOUCHERIE;Alimentation;Vie quotidienne;-20,89
+2026-01-27;2026-01-27;LECLERC;Alimentation;Vie quotidienne;-25,12
+2026-01-27;2026-01-27;GRAND FRAIS;Alimentation;Vie quotidienne;-48,68
+2026-01-26;2026-01-26;HOSTINGER;Abonnement;Abonnements & téléphonie;-16,79
+2026-01-26;2026-01-26;CARREFOUR CITY;Alimentation;Vie quotidienne;-8,10
+2026-01-26;2026-01-26;VIR PAPA;Virements;Virements émis;-30,00
+2026-01-26;2026-01-26;SFR;Téléphonie;Abonnements & téléphonie;-27,18
+2026-01-23;2026-01-23;DR LEGRU;Médecin;Santé;-30,00
+2026-01-22;2026-01-22;RETRAIT DAB;Retrait;Retraits cash;-100,00
+2026-01-19;2026-01-19;RETRAIT DAB;Retrait;Retraits cash;-150,00
+2026-01-19;2026-01-19;BARBERKING;Non catégorisé;Non catégorisé;-15,00
+2026-01-16;2026-01-16;ENERGIE MUTUELLE;Santé;Santé;-64,75
+2026-01-16;2026-01-16;ACM IARD;Assurance;Auto & Moto;-18,33
+2026-01-15;2026-01-15;AMOUR DE PIZZA;Restaurant;Loisirs et sorties;-28,00
+2026-02-26;2026-02-26;HLM LES FOYERS;Loyer;Logement;-600,00
+2026-02-26;2026-02-26;VIR SAINDOU NAIDA;Virements;Virements émis;-50,00
+2026-02-26;2026-02-26;HOSTINGER;Abonnement;Abonnements & téléphonie;-16,79
+2026-02-26;2026-02-26;THE RIVER;Restaurant;Loisirs et sorties;-23,50
+2026-02-26;2026-02-26;SFR;Téléphonie;Abonnements & téléphonie;-27,18
+2026-02-25;2026-02-25;VIR SAINDOU NAIDA;Virements;Virements émis;-100,00
+2026-02-23;2026-02-23;NORAUTO;Auto;Auto & Moto;-13,47
+2026-02-23;2026-02-23;LECLERC CARBURANT;Carburant;Auto & Moto;-20,00
+2026-02-23;2026-02-23;LECLERC;Alimentation;Vie quotidienne;-78,95
+2026-02-23;2026-02-23;RIVEX;Alimentation;Vie quotidienne;-76,28
+2026-02-23;2026-02-23;KEOLIS RENNES;Transports;Voyages & Transports;-1,70
+2026-02-18;2026-02-18;RESTAURANT LE K;Restaurant;Loisirs et sorties;-21,20
+2026-02-17;2026-02-17;PHARMACIE;Santé;Santé;-11,80
+2026-02-17;2026-02-17;ACM IARD;Assurance;Auto & Moto;-18,33
+2026-02-16;2026-02-16;EL BARAKA;Alimentation;Vie quotidienne;-84,64
+2026-02-16;2026-02-16;VIR NAOUFAL SAINDOU;Virements;Virements émis;-10,00
+2026-02-16;2026-02-16;ENERGIE MUTUELLE;Santé;Santé;-64,75
+2026-02-13;2026-02-13;VILLA D OR;Restaurant;Loisirs et sorties;-14,90
+2026-02-13;2026-02-13;PACE LAVAGE;Auto;Auto & Moto;-10,00
+2026-02-13;2026-02-13;UBER;Taxi;Voyages & Transports;-28,98
+2026-02-10;2026-02-10;CANAL PLUS;Multimédia;Abonnements & téléphonie;-34,99
+2026-02-10;2026-02-10;CA CONSUMER FINANCE;Crédit;Emprunts (hors immobilier);-100,00
+2026-02-09;2026-02-09;VIR SAINDOU NAIDA;Virements;Virements émis;-20,00
+2026-02-09;2026-02-09;MARINE TANFIN;Virements;Virements émis;-194,95
+2026-02-06;2026-02-06;FLOA CREDIT;Crédit;Non catégorisé;-39,25
+2026-02-05;2026-02-05;CANVA;Abonnement;Non catégorisé;-16,00
+2026-02-05;2026-02-05;CHÈQUE;Chèque;Chèques;-70,00
+2026-02-05;2026-02-05;CHÈQUE;Chèque;Chèques;-200,00
+2026-02-05;2026-02-05;ACTIVE ASSURANCES;Assurance;Auto & Moto;-141,52
+2026-02-04;2026-02-04;HLM LES FOYERS;Loyer;Cadeaux et solidarité;-530,00
+2026-02-04;2026-02-04;VIR SAINDOU NAIDA;Virements;Virements émis;-30,00
+2026-02-03;2026-02-03;LECLERC CARBURANT;Carburant;Auto & Moto;-47,04
+2026-02-03;2026-02-03;DOMISERVE;Services;Autres dépenses;-39,00
+2026-02-03;2026-02-03;LECLERC;Alimentation;Vie quotidienne;-96,36
+2026-02-03;2026-02-03;BARBERKING;Non catégorisé;Non catégorisé;-20,00
+2026-02-02;2026-02-02;CLAUDE.AI;Abonnement;Non catégorisé;-108,00
+2026-02-02;2026-02-02;SFR;Téléphonie;Abonnements & téléphonie;-44,99
+2026-03-30;2026-03-28;VIR SAINDOU NAIDA;Virements;Virements émis;-77,00
+2026-03-30;2026-03-28;HLM LES FOYERS;Loyer;Cadeaux et solidarité;-623,00
+2026-03-30;2026-03-30;SFR;Téléphonie;Abonnements & téléphonie;-27,30
+2026-03-30;2026-03-30;EDF;Energie;Logement;-4,39
+2026-03-27;2026-03-27;MOZAIK;Non catégorisé;Non catégorisé;-8,90
+2026-03-27;2026-03-27;GEFFRAY;Médecin;Santé;-2,80
+2026-03-27;2026-03-27;VIR SAINDOU NAIDA;Virements;Virements émis;-50,00
+2026-03-26;2026-03-26;HOSTINGER;Abonnement;Loisirs et sorties;-16,79
+2026-03-26;2026-03-26;SUPER U;Alimentation;Vie quotidienne;-53,66
+2026-03-26;2026-03-26;SFR;Téléphonie;Abonnements & téléphonie;-27,18
+2026-03-25;2026-03-25;CHEZ THEO;Restaurant;Loisirs et sorties;-6,50
+2026-03-25;2026-03-25;LECLERC;Alimentation;Vie quotidienne;-33,00
+2026-03-23;2026-03-23;AU COMPTOIR DES;Restaurant;Loisirs et sorties;-5,45
+2026-03-23;2026-03-23;SIF;Dons;Cadeaux et solidarité;-27,00
+2026-03-19;2026-03-19;RIVEX;Alimentation;Vie quotidienne;-16,67
+2026-03-19;2026-03-19;EL BARAKA;Alimentation;Vie quotidienne;-54,05
+2026-03-19;2026-03-19;LECLERC;Alimentation;Vie quotidienne;-14,04
+2026-03-17;2026-03-17;RETRAIT DAB;Retrait;Retraits cash;-60,00
+2026-03-17;2026-03-17;LECLERC;Alimentation;Vie quotidienne;-18,64
+2026-03-16;2026-03-16;ANTHROPIC;Abonnement;Non catégorisé;-24,00
+2026-03-16;2026-03-16;RETRAIT DAB;Retrait;Retraits cash;-100,00
+2026-03-16;2026-03-16;LECLERC;Alimentation;Vie quotidienne;-154,44
+2026-03-16;2026-03-15;VIR SAINDOU NAIDA;Virements;Virements émis;-368,00
+2026-03-16;2026-03-14;VIR SAINDOU NAIDA;Virements;Virements émis;-25,00
+2026-03-16;2026-03-14;VIR NAOUFAL SAINDOU;Virements;Virements émis;-5,00
+2026-03-16;2026-03-16;ENERGIE MUTUELLE;Santé;Santé;-64,75
+2026-03-13;2026-03-13;MARCHE DE L ORI;Alimentation;Vie quotidienne;-26,75
+2026-03-13;2026-03-13;PACE LAVAGE;Auto;Auto & Moto;-10,00
+2026-03-12;2026-03-12;RETRAIT DAB;Retrait;Retraits cash;-50,00
+2026-03-11;2026-03-11;CANAL PLUS;Multimédia;Abonnements & téléphonie;-34,99
+2026-03-11;2026-03-11;PHARMACIE;Santé;Santé;-15,39
+2026-03-10;2026-03-10;ANTHROPIC;Abonnement;Non catégorisé;-6,00
+2026-03-10;2026-03-10;GIFI;Maison;Vie quotidienne;-12,47
+2026-03-10;2026-03-10;AMAZON;Achats;Vie quotidienne;-13,98
+2026-03-10;2026-03-10;AMOUR DE PIZZA;Restaurant;Loisirs et sorties;-35,10
+2026-03-10;2026-03-10;CA CONSUMER FINANCE;Crédit;Emprunts (hors immobilier);-100,00
+2026-03-09;2026-03-09;ANTHROPIC;Abonnement;Non catégorisé;-6,00
+2026-03-09;2026-03-09;COFIDIS AMAZON;Crédit;Emprunts (hors immobilier);-34,26
+2026-03-09;2026-03-09;CARREFOUR;Alimentation;Vie quotidienne;-10,83
+2026-03-09;2026-03-09;BRICO DEPOT;Bricolage;Vie quotidienne;-22,19
+2026-03-09;2026-03-09;LECLERC;Alimentation;Vie quotidienne;-34,74
+2026-03-09;2026-03-09;SARL TO ELEC;Services;Vie quotidienne;-81,82
+2026-03-09;2026-03-09;ACTION;Achats;Vie quotidienne;-22,36
+2026-03-06;2026-03-06;FLOA CREDIT;Crédit;Non catégorisé;-39,25
+2026-03-05;2026-03-05;CANVA;Abonnement;Non catégorisé;-32,00
+2026-03-05;2026-03-05;DOMISERVE;Services;Autres dépenses;-24,43
+2026-03-05;2026-03-05;ACTIVE ASSURANCES;Assurance;Auto & Moto;-141,52
+2026-03-04;2026-03-04;DOMISERVE;Services;Autres dépenses;-40,00
+2026-03-04;2026-03-04;KEOLIS RENNES;Transports;Voyages & Transports;-1,70
+2026-03-04;2026-03-04;BRICO DEPOT;Bricolage;Vie quotidienne;-18,47
+2026-03-04;2026-03-04;VIR NAOUFAL SAINDOU;Virements;Virements émis;-26,00
+2026-03-03;2026-03-03;APPLE;Abonnement;Vie quotidienne;-4,00
+2026-03-03;2026-03-03;BARBERKING;Non catégorisé;Non catégorisé;-20,00
+2026-03-03;2026-03-03;SFR;Téléphonie;Abonnements & téléphonie;-44,99
+2026-03-02;2026-03-02;RAILWAY;Achats;Vie quotidienne;-4,24
+2026-03-02;2026-03-02;CLAUDE.AI;Abonnement;Non catégorisé;-108,00
+2026-03-02;2026-03-02;AMOUR DE PIZZA;Restaurant;Loisirs et sorties;-28,00
+2026-03-02;2026-03-02;PHARMACIE;Santé;Santé;-12,90
+2026-03-02;2026-03-02;LECLERC CARBURANT;Carburant;Auto & Moto;-60,95
+2026-03-02;2026-03-02;BRICO DEPOT;Bricolage;Vie quotidienne;-14,93
+2026-03-02;2026-03-02;E.LECLERC;Alimentation;Vie quotidienne;-281,79
+2026-03-02;2026-03-02;GRAND FRAIS;Alimentation;Vie quotidienne;-28,18
+2026-03-02;2026-03-02;BRICO DEPOT;Bricolage;Vie quotidienne;-56,51
+2026-03-02;2026-03-02;VIR NAOUFAL SAINDOU;Virements;Virements émis;-20,00
+2026-03-02;2026-03-02;SFR;Téléphonie;Abonnements & téléphonie;-25,96
+2026-03-02;2026-03-02;EDF;Energie;Logement;-4,39`;
 
-const CC={
-  "Vie quotidienne":"#6c5ce7",
-  "Loisirs et sorties":"#fd79a8",
-  "Auto & Moto":"#fdcb6e",
-  "Abonnements & téléphonie":"#74b9ff",
-  "Santé":"#00cec9",
-  "Virements émis":"#a29bfe",
-  "Logement":"#55efc4",
-  "Emprunts (hors immobilier)":"#ff7675",
-  "Non catégorisé":"#636e72",
-  "Retraits cash":"#b2bec3",
-  "Voyages & Transports":"#e17055",
-  "Chèques":"#dfe6e9",
-  "Cadeaux et solidarité":"#ffeaa7",
-  "Services financiers":"#81ecec",
-  "Autres dépenses":"#fab1a0"
+const COLORS = {
+  "Vie quotidienne": "#6c5ce7",
+  "Loisirs et sorties": "#fd79a8",
+  "Auto & Moto": "#fdcb6e",
+  "Abonnements & téléphonie": "#74b9ff",
+  "Santé": "#00cec9",
+  "Virements émis": "#a29bfe",
+  "Logement": "#55efc4",
+  "Emprunts (hors immobilier)": "#ff7675",
+  "Non catégorisé": "#636e72",
+  "Retraits cash": "#b2bec3",
+  "Voyages & Transports": "#e17055",
+  "Chèques": "#dfe6e9",
+  "Cadeaux et solidarité": "#ffeaa7",
+  "Autres dépenses": "#fab1a0"
 };
 
-const ICONS={
-  "Vie quotidienne":"🛒",
-  "Loisirs et sorties":"🎉",
-  "Auto & Moto":"🚗",
-  "Abonnements & téléphonie":"📱",
-  "Santé":"💊",
-  "Virements émis":"📤",
-  "Logement":"🏠",
-  "Emprunts (hors immobilier)":"💳",
-  "Non catégorisé":"❓",
-  "Retraits cash":"💵",
-  "Voyages & Transports":"🚆",
-  "Chèques":"📝",
-  "Cadeaux et solidarité":"🎁",
-  "Services financiers":"🏦",
-  "Autres dépenses":"📦"
+const ICONS = {
+  "Vie quotidienne": "🛒",
+  "Loisirs et sorties": "🎉",
+  "Auto & Moto": "🚗",
+  "Abonnements & téléphonie": "📱",
+  "Santé": "💊",
+  "Virements émis": "📤",
+  "Logement": "🏠",
+  "Emprunts (hors immobilier)": "💳",
+  "Non catégorisé": "❓",
+  "Retraits cash": "💵",
+  "Voyages & Transports": "🚆",
+  "Chèques": "📝",
+  "Cadeaux et solidarité": "🎁",
+  "Autres dépenses": "📦"
 };
 
-const MN={0:"Tout",1:"Janvier",2:"Février",3:"Mars",4:"Avril",5:"Mai",6:"Juin",7:"Juillet",8:"Août",9:"Septembre",10:"Octobre",11:"Novembre",12:"Décembre"};
-const MN_SHORT={0:"Tout",1:"Jan",2:"Fév",3:"Mar",4:"Avr",5:"Mai",6:"Juin",7:"Juil",8:"Août",9:"Sep",10:"Oct",11:"Nov",12:"Déc"};
+const MONTHS = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
 // État global
-let S={
-  tab:'dashboard',
-  currentMonth:3, // Mars par défaut (max des données)
-  salary:2300,
-  savingGoal:200,
-  savingMode:'monthly', // 'monthly' ou 'yearly'
-  manualTx:[],
-  forecastAdjustments:{}, // {category: amount}
-  showFixedOnly:false
+let state = {
+  tab: 'dashboard',
+  currentMonth: 3, // Mars par défaut
+  salary: 2300,
+  transactions: [],
+  forecastAdjustments: {},
+  editingForecast: null
 };
 
-// Helpers
-function getAllTx(){
-  const seedTx=SEED.map(t=>({
-    ...t,
-    month:parseInt(t.d.split('-')[1]),
-    date:t.d,
-    label:t.l,
-    category:t.c,
-    amount:t.a,
-    type:t.t||'normal',
-    months:t.months||1
-  }));
+// Parser CSV
+function parseCSV(csvText) {
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(';');
+  const result = [];
   
-  const manual=S.manualTx.map(t=>({
-    ...t,
-    month:parseInt(t.date.split('-')[1]),
-    type:t.type||'normal',
-    months:t.months||1
-  }));
-  
-  return [...seedTx,...manual];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(';');
+    if (values.length < 6) continue;
+    
+    const amount = parseFloat(values[6].replace(',', '.'));
+    const date = values[0];
+    const month = parseInt(date.split('-')[1]);
+    
+    result.push({
+      id: Date.now() + i,
+      date: date,
+      dateVal: values[1],
+      label: values[2].replace(/^"|"$/g, '').trim(),
+      category: values[3],
+      categoryParent: values[4],
+      amount: amount,
+      month: month,
+      year: parseInt(date.split('-')[0])
+    });
+  }
+  return result;
 }
 
-function getMonths(){
-  const txs=getAllTx();
-  const months=[...new Set(txs.map(t=>t.month))].sort((a,b)=>a-b);
+// Initialisation
+function init() {
+  const saved = localStorage.getItem('financeProData');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    state.transactions = parsed.transactions || [];
+    state.salary = parsed.salary || 2300;
+    state.forecastAdjustments = parsed.forecastAdjustments || {};
+  } else {
+    // Charger les données seed
+    state.transactions = parseCSV(SEED_DATA);
+  }
+  
+  render();
+}
+
+function save() {
+  localStorage.setItem('financeProData', JSON.stringify({
+    transactions: state.transactions,
+    salary: state.salary,
+    forecastAdjustments: state.forecastAdjustments
+  }));
+}
+
+function getMonths() {
+  const months = [...new Set(state.transactions.map(t => t.month))].sort((a, b) => a - b);
   return months;
 }
 
-function getFilteredTx(){
-  const all=getAllTx();
-  if(S.currentMonth===0)return all;
-  return all.filter(t=>t.month===S.currentMonth);
+function getTransactionsByMonth(month) {
+  if (month === 0) return state.transactions;
+  return state.transactions.filter(t => t.month === month);
 }
 
-function getCategoryStats(){
-  const months=getMonths();
-  const stats={};
+function getCategoryStats(month = 0) {
+  const txs = month === 0 ? state.transactions : state.transactions.filter(t => t.month === month);
+  const stats = {};
   
-  // Initialiser toutes les catégories
-  Object.keys(CC).forEach(cat=>{
-    stats[cat]={
-      total:0,
-      months:{},
-      count:0,
-      fixed:false
-    };
-  });
-  
-  // Remplir avec les données
-  getAllTx().forEach(tx=>{
-    if(tx.amount>=0)return; // Ignorer revenus
-    
-    const cat=tx.category;
-    const month=tx.month;
-    const absAmount=Math.abs(tx.amount);
-    
-    if(!stats[cat]){
-      stats[cat]={total:0,months:{},count:0,fixed:false};
+  txs.forEach(tx => {
+    if (tx.amount >= 0) return; // On ne compte que les dépenses
+    const cat = tx.categoryParent;
+    if (!stats[cat]) {
+      stats[cat] = { total: 0, count: 0, transactions: [] };
     }
-    
-    // Gestion des paiements fractionnés
-    if(tx.type==='fractionne'&&tx.months>1){
-      const monthlyAmount=absAmount/tx.months;
-      for(let i=0;i<tx.months;i++){
-        const targetMonth=month+i;
-        if(targetMonth<=12){
-          stats[cat].months[targetMonth]=(stats[cat].months[targetMonth]||0)+monthlyAmount;
-          stats[cat].total+=monthlyAmount;
-        }
-      }
-    }else{
-      stats[cat].months[month]=(stats[cat].months[month]||0)+absAmount;
-      stats[cat].total+=absAmount;
-    }
-    
-    stats[cat].count++;
-    
-    // Détection des charges fixes (type mensuel ou montant >50€ dans catégorie fixe)
-    const fixedCategories=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Santé'];
-    if(tx.type==='mensuel'||(absAmount>50&&fixedCategories.includes(cat))){
-      stats[cat].fixed=true;
-    }
-  });
-  
-  // Calculer moyennes
-  Object.keys(stats).forEach(cat=>{
-    const monthCount=Object.keys(stats[cat].months).length||1;
-    stats[cat].average=stats[cat].total/monthCount;
-    stats[cat].lastMonth=stats[cat].months[S.currentMonth]||0;
+    stats[cat].total += Math.abs(tx.amount);
+    stats[cat].count += 1;
+    stats[cat].transactions.push(tx);
   });
   
   return stats;
 }
 
-function formatMoney(n){
-  return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+function getAverageByCategory() {
+  const months = getMonths();
+  if (months.length === 0) return {};
+  
+  const totals = {};
+  const counts = {};
+  
+  months.forEach(m => {
+    const stats = getCategoryStats(m);
+    Object.entries(stats).forEach(([cat, data]) => {
+      if (!totals[cat]) { totals[cat] = 0; counts[cat] = 0; }
+      totals[cat] += data.total;
+      counts[cat] += 1;
+    });
+  });
+  
+  const avg = {};
+  Object.keys(totals).forEach(cat => {
+    avg[cat] = totals[cat] / months.length;
+  });
+  return avg;
 }
 
-function formatDate(d){
-  return new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+function formatMoney(n) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 }
 
-function save(){
-  localStorage.setItem('finProData',JSON.stringify({
-    salary:S.salary,
-    savingGoal:S.savingGoal,
-    savingMode:S.savingMode,
-    manualTx:S.manualTx,
-    forecastAdjustments:S.forecastAdjustments
-  }));
-}
-
-function load(){
-  try{
-    const data=JSON.parse(localStorage.getItem('finProData'));
-    if(data){
-      S.salary=data.salary||2300;
-      S.savingGoal=data.savingGoal||200;
-      S.savingMode=data.savingMode||'monthly';
-      S.manualTx=data.manualTx||[];
-      S.forecastAdjustments=data.forecastAdjustments||{};
-    }
-  }catch(e){
-    console.error('Load error',e);
-  }
-}
-
-function toast(icon,msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
+function toast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function setTab(tab){
-  S.tab=tab;
-  document.querySelectorAll('.nav-btn').forEach(btn=>{
-    btn.classList.toggle('active',btn.onclick.toString().includes(tab));
+function setTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.includes(tab === 'dashboard' ? 'Vue' : 
+                                                          tab === 'forecast' ? 'Prévoir' : 
+                                                          tab === 'transactions' ? 'Opérations' : 
+                                                          tab === 'import' ? 'Import' : '⚙️'));
   });
   render();
 }
 
-function setMonth(m){
-  S.currentMonth=m;
+function setMonth(m) {
+  state.currentMonth = m;
   render();
 }
 
-function adjustForecast(cat,value){
-  S.forecastAdjustments[cat]=parseFloat(value);
-  save();
-  renderForecast();
-}
-
 // Rendu des vues
-function render(){
-  const content=document.getElementById('content');
-  document.getElementById('op-count').textContent=`${getAllTx().length} opérations`;
+function render() {
+  const content = document.getElementById('content');
+  const months = getMonths();
+  const currentMonthName = MONTHS[state.currentMonth] || 'Tout';
   
-  let html='<div class="fade-in">';
+  // Stats header
+  document.getElementById('stats-bar').textContent = `${state.transactions.length} opérations · ${months.length} mois`;
   
-  if(S.tab==='dashboard'){
-    html+=renderDashboard();
-  }else if(S.tab==='forecast'){
-    html+=renderForecast();
-  }else if(S.tab==='transactions'){
-    html+=renderTransactions();
-  }else if(S.tab==='add'){
-    html+=renderAdd();
+  let html = '';
+  
+  if (state.tab === 'dashboard') {
+    html = renderDashboard(months);
+  } else if (state.tab === 'forecast') {
+    html = renderForecast();
+  } else if (state.tab === 'transactions') {
+    html = renderTransactions(months);
+  } else if (state.tab === 'import') {
+    html = renderImport();
+  } else if (state.tab === 'settings') {
+    html = renderSettings();
   }
   
-  html+='</div>';
-  content.innerHTML=html;
+  content.innerHTML = html;
 }
 
-function renderDashboard(){
-  const txs=getFilteredTx();
-  const expenses=txs.filter(t=>t.amount<0);
-  const incomes=txs.filter(t=>t.amount>0);
+function renderDashboard(months) {
+  const txs = getTransactionsByMonth(state.currentMonth);
+  const expenses = txs.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const incomes = txs.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const balance = (state.currentMonth === 0 ? state.salary * months.length : state.salary) - expenses;
   
-  const totalExp=expenses.reduce((s,t)=>s+Math.abs(t.amount),0);
-  const totalInc=incomes.reduce((s,t)=>s+t.amount,0)+(S.currentMonth===0?S.salary*getMonths().length:S.salary);
-  const balance=totalInc-totalExp;
+  const stats = getCategoryStats(state.currentMonth);
+  const sortedCats = Object.entries(stats).sort((a, b) => b[1].total - a[1].total);
   
-  const stats=getCategoryStats();
-  const sortedCats=Object.entries(stats)
-    .filter(([,v])=>v.total>0)
-    .sort((a,b)=>b[1].total-a[1].total);
-  
-  let html=`
+  let html = `
     <div class="month-scroll">
-      <button class="month-chip ${S.currentMonth===0?'active':''}" onclick="setMonth(0)">Tout</button>
-      ${getMonths().map(m=>`
-        <button class="month-chip ${S.currentMonth===m?'active':''}" onclick="setMonth(${m})">${MN_SHORT[m]}</button>
+      <button class="month-chip ${state.currentMonth === 0 ? 'active' : ''}" onclick="setMonth(0)">Tout</button>
+      ${months.map(m => `
+        <button class="month-chip ${state.currentMonth === m ? 'active' : ''}" onclick="setMonth(${m})">${MONTHS[m]}</button>
       `).join('')}
     </div>
     
     <div class="grid-2">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Revenus</span>
-          <span style="color:var(--success);font-size:20px;">📈</span>
+          <span class="card-title">Dépenses</span>
+          <span class="negative">📉</span>
         </div>
-        <div class="card-value positive" style="color:var(--success);">${formatMoney(totalInc)}</div>
+        <div class="card-value negative">${formatMoney(expenses)}</div>
         <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
-          ${S.currentMonth===0?'Total sur '+getMonths().length+' mois':'Ce mois'}
+          ${txs.filter(t => t.amount < 0).length} transactions
         </div>
       </div>
       
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Dépenses</span>
-          <span style="color:var(--danger);font-size:20px;">📉</span>
+          <span class="card-title">Solde</span>
+          <span class="${balance >= 0 ? 'positive' : 'negative'}">${balance >= 0 ? '📈' : '🚨'}</span>
         </div>
-        <div class="card-value negative" style="color:var(--danger);">${formatMoney(totalExp)}</div>
+        <div class="card-value ${balance >= 0 ? 'positive' : 'negative'}">${formatMoney(balance)}</div>
         <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
-          ${expenses.length} transactions
+          après revenus estimés
         </div>
-      </div>
-    </div>
-    
-    <div class="card" style="text-align:center;padding:30px 20px;background:linear-gradient(135deg,rgba(108,92,231,0.2),transparent);border-color:var(--accent);">
-      <div class="card-title" style="color:var(--accent-light);margin-bottom:8px;">SOLDE DISPONIBLE</div>
-      <div class="card-value large" style="color:${balance>=0?'var(--success)':'var(--danger)'};font-size:48px;">
-        ${formatMoney(balance)}
-      </div>
-      <div style="margin-top:12px;">
-        <span class="badge ${balance>=0?'badge-success':'badge-danger'}">
-          ${balance>=0?'✅ Budget respecté':'🚨 Dépassement'}
-        </span>
       </div>
     </div>
     
     <div style="margin-top:24px;">
-      <div class="card-title" style="margin-bottom:16px;">Top catégories ${S.currentMonth>0?MN_SHORT[S.currentMonth]:'globales'}</div>
-      <div class="tx-list">
+      <div class="card-title" style="margin-bottom:16px;">Répartition ${state.currentMonth > 0 ? MONTHS[state.currentMonth] : 'globale'}</div>
   `;
   
-  sortedCats.slice(0,6).forEach(([cat,data])=>{
-    const percent=Math.round((data.total/(totalExp||1))*100);
-    html+=`
-      <div class="tx-item" onclick="S.tab='transactions';render()">
-        <div class="tx-icon" style="--cat-color:${CC[cat]};background:${CC[cat]}20;color:${CC[cat]};">
-          ${ICONS[cat]||'📦'}
-        </div>
-        <div class="tx-content">
-          <div class="tx-label">${cat}</div>
-          <div class="tx-meta">
-            <div class="progress-bar" style="width:100px;height:4px;display:inline-block;vertical-align:middle;">
-              <div class="progress-fill accent" style="width:${percent}%;background:${CC[cat]};"></div>
-            </div>
-            ${percent}%
+  sortedCats.forEach(([cat, data]) => {
+    const percent = (data.total / expenses * 100).toFixed(1);
+    const color = COLORS[cat] || '#636e72';
+    html += `
+      <div class="cat-card" onclick="showCategoryDetail('${cat}')" style="--cat-color:${color}">
+        <div class="cat-header">
+          <div class="cat-name">
+            <span style="font-size:20px;">${ICONS[cat] || '📦'}</span>
+            <span>${cat}</span>
+            <span style="font-size:12px;color:var(--text-secondary);">(${data.count})</span>
           </div>
+          <div class="cat-amount" style="color:${color}">${formatMoney(data.total)}</div>
         </div>
-        <div class="tx-amount negative">${formatMoney(data.total)}</div>
+        <div class="cat-bar">
+          <div class="cat-fill" style="width:${percent}%;background:${color}"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text-secondary);">
+          <span>${percent}% du total</span>
+          <span>Cliquez pour voir le détail →</span>
+        </div>
       </div>
     `;
   });
   
-  html+=`
-      </div>
-    </div>
-    
-    <div style="margin-top:24px;text-align:center;">
-      <button class="btn btn-secondary" onclick="setTab('forecast')" style="max-width:300px;margin:0 auto;">
-        🔮 Voir la prévision du mois prochain
-      </button>
-    </div>
-  `;
-  
+  html += `</div>`;
   return html;
 }
 
-function renderForecast(){
-  const stats=getCategoryStats();
-  const nextMonth=Math.max(...getMonths())+1;
-  const monthName=MN[nextMonth]||'Mois '+nextMonth;
+function renderForecast() {
+  const avg = getAverageByCategory();
+  const nextMonth = Math.max(...getMonths()) + 1;
+  const monthName = MONTHS[nextMonth] || 'Mois ' + nextMonth;
   
-  // Calculs de prévision
-  const netSalary=S.salary*(1-0.11); // 11% de charges par défaut
-  const monthlySaving=S.savingMode==='monthly'?S.savingGoal:S.savingGoal/12;
-  const available=netSalary-monthlySaving;
+  // Initialiser les ajustements si vide
+  if (Object.keys(state.forecastAdjustments).length === 0) {
+    state.forecastAdjustments = {...avg};
+  }
   
-  // Charges fixes (identifiées automatiquement)
-  const fixedCharges={};
-  const variableCharges={};
-  let totalFixed=0;
-  let totalVariable=0;
+  const projected = Object.values(state.forecastAdjustments).reduce((a, b) => a + b, 0);
+  const remaining = state.salary - projected;
+  const usedPct = (projected / state.salary) * 100;
   
-  Object.entries(stats).forEach(([cat,data])=>{
-    if(data.total===0)return;
-    
-    const adjusted=S.forecastAdjustments[cat]!==undefined?S.forecastAdjustments[cat]:data.average;
-    
-    if(data.fixed){
-      fixedCharges[cat]={average:data.average,adjusted:adjusted,color:CC[cat]};
-      totalFixed+=adjusted;
-    }else{
-      variableCharges[cat]={average:data.average,adjusted:adjusted,color:CC[cat]};
-      totalVariable+=adjusted;
-    }
-  });
+  // Détection charges fixes (occurs every month)
+  const fixedCats = ['Logement', 'Emprunts (hors immobilier)', 'Abonnements & téléphonie', 'Santé'];
   
-  const projected=totalFixed+totalVariable;
-  const remaining=available-projected;
-  const usedPercent=(projected/available)*100;
-  
-  // Scénarios
-  const optimistic=available-totalFixed-(totalVariable*0.7);
-  const pessimistic=available-totalFixed-(totalVariable*1.3);
-  
-  let html=`
-    <div class="card forecast-hero">
-      <div style="text-align:center;position:relative;z-index:1;">
-        <div class="card-title" style="color:rgba(255,255,255,0.9);margin-bottom:8px;">PRÉVISION</div>
-        <div class="card-value large" style="font-size:40px;">${monthName} 2026</div>
-        <div style="font-size:14px;opacity:0.9;margin-top:8px;">
-          Basé sur ${getMonths().length} mois d'historique
-        </div>
+  let html = `
+    <div class="card" style="background:linear-gradient(135deg,var(--accent),#5b4cdb);color:white;border:none;">
+      <div style="text-align:center;">
+        <div style="font-size:13px;opacity:0.9;margin-bottom:4px;">PRÉVISION</div>
+        <div style="font-family:JetBrains Mono;font-size:28px;font-weight:700;">${monthName} 2026</div>
+        <div style="font-size:14px;opacity:0.9;margin-top:8px;">Basé sur ${getMonths().length} mois d'historique</div>
       </div>
     </div>
     
     <div class="grid-2" style="margin-top:16px;">
-      <div class="card" style="background:var(--success-bg);border-color:var(--success);">
-        <div class="card-title" style="color:var(--success);">Capacité d'épargne</div>
-        <div class="card-value" style="color:var(--success);font-size:28px;">${formatMoney(remaining)}</div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
-          après charges et objectif
-        </div>
-      </div>
-      
       <div class="card">
-        <div class="card-title">Taux d'utilisation</div>
-        <div class="card-value" style="font-size:28px;">${usedPercent.toFixed(1)}%</div>
-        <div class="progress-bar" style="margin-top:12px;">
-          <div class="progress-fill ${usedPercent>90?'danger':usedPercent>75?'warning':'success'}" style="width:${Math.min(usedPercent,100)}%;"></div>
-        </div>
+        <div class="card-title">Budget prévu</div>
+        <div class="card-value">${formatMoney(projected)}</div>
+      </div>
+      <div class="card" style="${remaining < 0 ? 'background:var(--danger-bg);border-color:var(--danger);' : remaining < 200 ? 'background:var(--warning-bg);border-color:var(--warning);' : 'background:var(--success-bg);border-color:var(--success);}'}">
+        <div class="card-title" style="${remaining < 0 ? 'color:var(--danger);' : remaining < 200 ? 'color:var(--warning);' : 'color:var(--success);'}">Reste disponible</div>
+        <div class="card-value" style="${remaining < 0 ? 'color:var(--danger);' : remaining < 200 ? 'color:var(--warning);' : 'color:var(--success);'}">${formatMoney(remaining)}</div>
       </div>
     </div>
-  `;
-  
-  // Alertes intelligentes
-  if(remaining<0){
-    html+=`
-      <div class="alert alert-danger">
-        <div class="alert-icon">🚨</div>
-        <div class="alert-content">
-          <div class="alert-title">Déficit prévisionnel de ${formatMoney(Math.abs(remaining))}</div>
-          <div class="alert-text">Tes charges dépassent tes revenus. Envisage de réduire les dépenses variables ci-dessous.</div>
-        </div>
+    
+    <div class="progress-container card">
+      <div class="progress-header">
+        <span>Utilisation du budget</span>
+        <span style="font-family:JetBrains Mono;">${usedPct.toFixed(1)}%</span>
       </div>
-    `;
-  }else if(remaining<100){
-    html+=`
-      <div class="alert alert-warning">
-        <div class="alert-icon">⚠️</div>
-        <div class="alert-content">
-          <div class="alert-title">Marge de sécurité faible</div>
-          <div class="alert-text">Il ne te reste que ${formatMoney(remaining)}. Prévois des imprévus ou ajuste ton épargne.</div>
-        </div>
-      </div>
-    `;
-  }else{
-    html+=`
-      <div class="alert alert-success">
-        <div class="alert-icon">✅</div>
-        <div class="alert-content">
-          <div class="alert-title">Budget équilibré</div>
-          <div class="alert-text">Tu peux épargner ${formatMoney(remaining)} ce mois-ci. Excellent !</div>
-        </div>
-      </div>
-    `;
-  }
-  
-  // Scénarios
-  html+=`
-    <div style="margin:24px 0;">
-      <div class="card-title" style="margin-bottom:12px;">Scénarios de simulation</div>
-      <div class="grid-3">
-        <div class="scenario-card optimist" onclick="applyScenario(0.7)">
-          <div class="scenario-label" style="color:var(--success);">Optimiste</div>
-          <div class="scenario-value" style="color:var(--success);">${formatMoney(optimistic)}</div>
-          <div class="scenario-desc">-30% dépenses variables</div>
-        </div>
-        
-        <div class="scenario-card realistic" onclick="applyScenario(1)">
-          <div class="scenario-label" style="color:var(--accent);">Réaliste</div>
-          <div class="scenario-value">${formatMoney(remaining)}</div>
-          <div class="scenario-desc">Basé sur tes moyennes</div>
-        </div>
-        
-        <div class="scenario-card pessimist" onclick="applyScenario(1.3)">
-          <div class="scenario-label" style="color:var(--danger);">Pessimiste</div>
-          <div class="scenario-value" style="color:var(--danger);">${formatMoney(pessimistic)}</div>
-          <div class="scenario-desc">+30% dépenses variables</div>
-        </div>
+      <div class="progress-bar">
+        <div class="progress-fill ${usedPct > 90 ? 'danger' : usedPct > 75 ? 'warning' : 'success'}" style="width:${Math.min(usedPct, 100)}%"></div>
       </div>
     </div>
-  `;
-  
-  // Charges Fixes
-  html+=`
-    <div class="card" style="margin-top:24px;">
-      <div class="card-header">
-        <div class="card-title">🔒 Charges Fixes (Non modifiables)</div>
-        <div class="badge">${formatMoney(totalFixed)}</div>
+    
+    <div class="scenario-grid">
+      <div class="scenario-card optimist" onclick="applyScenario(0.8)">
+        <div class="scenario-label" style="color:var(--success);">Optimiste</div>
+        <div class="scenario-value" style="color:var(--success);">${formatMoney(state.salary - (projected * 0.8))}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">-20% dépenses</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:12px;opacity:0.8;">
-  `;
-  
-  Object.entries(fixedCharges).forEach(([cat,data])=>{
-    html+=`
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid ${data.color};">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span>${ICONS[cat]}</span>
-          <span style="font-size:14px;">${cat}</span>
-          <span class="recurring-badge">Fixe</span>
-        </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;">${formatMoney(data.adjusted)}</div>
+      <div class="scenario-card neutral" onclick="applyScenario(1)">
+        <div class="scenario-label" style="color:var(--accent);">Réaliste</div>
+        <div class="scenario-value">${formatMoney(remaining)}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">Moyennes actuelles</div>
       </div>
-    `;
-  });
-  
-  html+=`
+      <div class="scenario-card pessimist" onclick="applyScenario(1.2)">
+        <div class="scenario-label" style="color:var(--danger);">Pessimiste</div>
+        <div class="scenario-value" style="color:var(--danger);">${formatMoney(state.salary - (projected * 1.2))}</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">+20% dépenses</div>
       </div>
     </div>
-  `;
-  
-  // Dépenses Variables Ajustables
-  html+=`
+    
     <div style="margin-top:24px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div class="card-title">⚡ Dépenses Variables (Ajustables)</div>
-        <div class="badge" style="background:var(--warning-bg);color:var(--warning);">${formatMoney(totalVariable)}</div>
-      </div>
-      <div class="forecast-grid">
+      <div class="card-title" style="margin-bottom:16px;">Ajuster les dépenses par catégorie</div>
   `;
   
-  Object.entries(variableCharges).forEach(([cat,data])=>{
-    const min=0;
-    const max=data.average*3;
+  Object.entries(state.forecastAdjustments).sort((a, b) => b[1] - a[1]).forEach(([cat, currentVal]) => {
+    const isFixed = fixedCats.includes(cat);
+    const avgVal = avg[cat] || currentVal;
+    const color = COLORS[cat] || '#636e72';
+    const isEditing = state.editingForecast === cat;
     
-    html+=`
-      <div class="category-card" style="--cat-color:${data.color};">
-        <div class="category-header">
-          <div class="category-name">
-            <div class="category-icon">${ICONS[cat]}</div>
-            <div>
-              <div style="font-weight:600;">${cat}</div>
-              <div style="font-size:11px;color:var(--text-secondary);">Moy: ${formatMoney(data.average)}</div>
-            </div>
+    html += `
+      <div class="forecast-row">
+        <div class="forecast-header">
+          <div class="forecast-cat">
+            <span class="forecast-dot" style="background:${color}"></span>
+            <span>${cat} ${isFixed ? '🔒' : ''}</span>
           </div>
-          <div class="category-amount" style="color:${data.color};">${formatMoney(data.adjusted)}</div>
+          <div class="forecast-amount-wrapper">
+            ${isEditing ? `
+              <input type="number" class="forecast-amount editing" value="${currentVal.toFixed(2)}" 
+                     id="edit-${cat}" step="0.01" onkeypress="if(event.key==='Enter')confirmEdit('${cat}')">
+              <button class="btn-icon success" onclick="confirmEdit('${cat}')">✓</button>
+              <button class="btn-icon danger" onclick="cancelEdit()">✕</button>
+            ` : `
+              <span class="forecast-amount" style="color:${color}" onclick="startEdit('${cat}')">
+                ${formatMoney(currentVal)}
+              </span>
+              ${!isFixed ? `<button class="btn-icon" onclick="startEdit('${cat}')">✎</button>` : ''}
+            `}
+          </div>
         </div>
-        <input type="range" 
-               class="category-slider" 
-               min="${min}" 
-               max="${max}" 
-               step="5" 
-               value="${data.adjusted}"
-               oninput="adjustForecast('${cat}',this.value)"
-               style="--cat-color:${data.color};">
-        <div class="category-stats">
-          <span>0€</span>
-          <span>Max: ${formatMoney(max)}</span>
-        </div>
+        ${!isFixed && !isEditing ? `
+          <input type="range" class="forecast-slider" min="0" max="${avgVal * 3}" value="${currentVal}" step="5"
+                 oninput="updateForecast('${cat}', this.value)" style="--cat-color:${color}">
+          <div class="forecast-hint">
+            <span>Moyenne: ${formatMoney(avgVal)}</span>
+            <span>${currentVal > avgVal ? '↑ +' + ((currentVal/avgVal-1)*100).toFixed(0) + '%' : currentVal < avgVal ? '↓ -' + ((1-currentVal/avgVal)*100).toFixed(0) + '%' : '→ Moyenne'}</span>
+          </div>
+        ` : ''}
       </div>
     `;
   });
   
-  html+=`
-      </div>
+  html += `
     </div>
-    
-    <div style="margin-top:24px;display:flex;gap:12px;">
-      <button class="btn btn-primary" onclick="saveForecast()" style="flex:1;">
-        💾 Sauvegarder cette prévision
-      </button>
-      <button class="btn btn-secondary" onclick="resetForecast()" style="flex:1;">
-        🔄 Réinitialiser
-      </button>
+    <div style="display:flex;gap:12px;margin-top:16px;">
+      <button class="btn btn-secondary" onclick="resetForecast()" style="flex:1;">🔄 Réinitialiser</button>
+      <button class="btn btn-primary" onclick="saveForecast()" style="flex:1;">💾 Sauvegarder</button>
     </div>
   `;
   
   return html;
 }
 
-function renderTransactions(){
-  const txs=getFilteredTx().sort((a,b)=>new Date(b.date)-new Date(a.date));
+function renderTransactions(months) {
+  const txs = getTransactionsByMonth(state.currentMonth).sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  let html=`
+  let html = `
     <div class="month-scroll" style="margin-bottom:16px;">
-      <button class="month-chip ${S.currentMonth===0?'active':''}" onclick="setMonth(0)">Tout</button>
-      ${getMonths().map(m=>`
-        <button class="month-chip ${S.currentMonth===m?'active':''}" onclick="setMonth(${m})">${MN_SHORT[m]}</button>
+      <button class="month-chip ${state.currentMonth === 0 ? 'active' : ''}" onclick="setMonth(0)">Tout</button>
+      ${months.map(m => `
+        <button class="month-chip ${state.currentMonth === m ? 'active' : ''}" onclick="setMonth(${m})">${MONTHS[m]}</button>
       `).join('')}
     </div>
     
     <div class="tx-list">
   `;
   
-  if(txs.length===0){
-    html+=`
-      <div class="empty">
-        <div class="empty-icon">📭</div>
-        <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Aucune transaction</div>
-        <div style="font-size:14px;">Ajoute des opérations pour commencer</div>
+  if (txs.length === 0) {
+    html += `
+      <div style="text-align:center;padding:40px;color:var(--text-secondary);">
+        <div style="font-size:48px;margin-bottom:16px;">📭</div>
+        <div>Aucune transaction</div>
       </div>
     `;
-  }else{
-    txs.forEach(tx=>{
-      const isExp=tx.amount<0;
-      const catColor=CC[tx.category]||'#636e72';
-      html+=`
+  } else {
+    txs.forEach(tx => {
+      const isExp = tx.amount < 0;
+      const catColor = COLORS[tx.categoryParent] || '#636e72';
+      html += `
         <div class="tx-item">
           <div class="tx-icon" style="--cat-color:${catColor};background:${catColor}20;color:${catColor};">
-            ${ICONS[tx.category]||'📦'}
+            ${ICONS[tx.categoryParent] || '📦'}
           </div>
           <div class="tx-content">
             <div class="tx-label">${tx.label}</div>
-            <div class="tx-meta">
-              ${formatDate(tx.date)} • ${tx.category}
-              ${tx.type==='mensuel'?'<span class="recurring-badge">Mensuel</span>':''}
-              ${tx.type==='fractionne'?'<span class="recurring-badge" style="background:var(--warning);">Fractionné</span>':''}
-            </div>
+            <div class="tx-meta">${tx.date.slice(8,10)}/${tx.date.slice(5,7)} · ${tx.category}</div>
           </div>
-          <div class="tx-amount ${isExp?'negative':'positive'}">
-            ${isExp?'':'+'}${formatMoney(Math.abs(tx.amount))}
+          <div class="tx-amount ${isExp ? 'negative' : 'positive'}">
+            ${isExp ? '' : '+'}${formatMoney(Math.abs(tx.amount))}
           </div>
         </div>
       `;
     });
   }
   
-  if(S.manualTx.length>0){
-    html+=`
-      <div style="margin-top:24px;text-align:center;">
-        <button class="btn btn-secondary" onclick="clearManual()" style="font-size:13px;padding:12px 24px;">
-          🗑️ Effacer les ${S.manualTx.length} ajouts manuels
-        </button>
-      </div>
-    `;
-  }
-  
-  html+=`</div>`;
+  html += `</div>`;
   return html;
 }
 
-function renderAdd(){
+function renderImport() {
   return `
-    <div class="card" style="border-left:4px solid var(--danger);">
-      <div style="font-size:18px;font-weight:700;margin-bottom:20px;color:var(--danger);display:flex;align-items:center;gap:8px;">
-        <span>➖</span> Nouvelle dépense
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">📥 Import CSV BoursoBank</div>
+      <p style="color:var(--text-secondary);margin-bottom:20px;font-size:14px;">
+        Collez votre export CSV (format: dateOp;dateVal;label;category;categoryParent;...;amount) ou glissez-déposez le fichier.
+      </p>
+      
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()" 
+           ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+        <div style="font-size:48px;margin-bottom:16px;">📄</div>
+        <div style="font-weight:600;margin-bottom:8px;">Cliquez ou déposez un fichier CSV</div>
+        <div style="font-size:13px;color:var(--text-secondary);">Format supporté: export BoursoBank</div>
+        <input type="file" id="file-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
       </div>
       
       <div class="form-group">
-        <label>Libellé</label>
-        <input type="text" id="expLabel" placeholder="Ex: Courses hebdomadaires">
+        <label>Ou collez le contenu CSV ici:</label>
+        <textarea id="csv-paste" rows="10" placeholder="dateOp;dateVal;label;category;categoryParent;supplierFound;amount;..."></textarea>
       </div>
       
-      <div class="grid-2" style="gap:12px;">
-        <div class="form-group">
-          <label>Montant (€)</label>
-          <input type="number" id="expAmount" placeholder="0.00" step="0.01">
-        </div>
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="expDate" value="${new Date().toISOString().split('T')[0]}">
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Catégorie</label>
-        <select id="expCat">
-          ${Object.keys(CC).map(c=>`<option value="${c}">${ICONS[c]} ${c}</option>`).join('')}
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Type</label>
-        <div class="toggle-group">
-          <button class="toggle-btn active" onclick="setTxType('normal',this)" id="btn-normal">Ponctuel</button>
-          <button class="toggle-btn" onclick="setTxType('mensuel',this)" id="btn-mensuel">Mensuel</button>
-          <button class="toggle-btn" onclick="setTxType('fractionne',this)" id="btn-fractionne">Fractionné</button>
-        </div>
-      </div>
-      
-      <div id="fractionne-options" class="hidden" style="margin-top:12px;">
-        <label>Nombre de mensualités</label>
-        <input type="number" id="expMonths" value="3" min="2" max="12" style="margin-top:6px;">
-      </div>
-      
-      <button class="btn btn-danger" onclick="addTransaction('expense')" style="margin-top:16px;">
-        Ajouter la dépense
-      </button>
+      <button class="btn btn-primary" onclick="importFromText()">Importer le texte</button>
     </div>
     
-    <div class="card" style="border-left:4px solid var(--success);margin-top:16px;">
-      <div style="font-size:18px;font-weight:700;margin-bottom:20px;color:var(--success);display:flex;align-items:center;gap:8px;">
-        <span>➕</span> Revenu exceptionnel
-      </div>
-      
-      <div class="form-group">
-        <label>Libellé</label>
-        <input type="text" id="incLabel" placeholder="Ex: Prime, Remboursement">
-      </div>
-      
-      <div class="grid-2" style="gap:12px;">
-        <div class="form-group">
-          <label>Montant (€)</label>
-          <input type="number" id="incAmount" placeholder="0.00" step="0.01" style="color:var(--success);">
-        </div>
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="incDate" value="${new Date().toISOString().split('T')[0]}">
-        </div>
-      </div>
-      
-      <button class="btn btn-success" onclick="addTransaction('income')" style="margin-top:8px;">
-        Ajouter le revenu
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">⚠️ Gestion des données</div>
+      <button class="btn btn-danger" onclick="clearAllData()" style="margin-top:12px;">
+        🗑️ Effacer toutes les données et recharger l'exemple
       </button>
     </div>
-    
-    <div class="card" style="margin-top:16px;background:rgba(255,255,255,0.03);">
-      <div class="card-title" style="margin-bottom:16px;">⚙️ Paramètres globaux</div>
+  `;
+}
+
+function renderSettings() {
+  return `
+    <div class="card">
+      <div class="card-title">⚙️ Paramètres</div>
       
-      <div class="form-group">
-        <label>Salaire mensuel net</label>
-        <input type="number" value="${S.salary}" onchange="S.salary=parseFloat(this.value);save();render();" style="font-family:'JetBrains Mono',monospace;font-size:18px;">
+      <div class="form-group" style="margin-top:16px;">
+        <label>Revenu mensuel net estimé</label>
+        <input type="number" value="${state.salary}" onchange="state.salary=parseFloat(this.value);save();render();" 
+               style="font-family:JetBrains Mono;font-size:18px;">
       </div>
       
-      <div class="form-group">
-        <label>Objectif d'épargne (${S.savingMode==='monthly'?'mensuel':'annuel'})</label>
-        <div style="display:flex;gap:8px;">
-          <input type="number" value="${S.savingGoal}" onchange="S.savingGoal=parseFloat(this.value);save();" style="flex:1;">
-          <select onchange="S.savingMode=this.value;save();render();" style="width:auto;">
-            <option value="monthly" ${S.savingMode==='monthly'?'selected':''}>/mois</option>
-            <option value="yearly" ${S.savingMode==='yearly'?'selected':''}>/an</option>
-          </select>
-        </div>
+      <div class="alert alert-success">
+        <div>✅ Données sauvegardées automatiquement dans le navigateur</div>
       </div>
     </div>
   `;
 }
 
-let currentTxType='normal';
-
-function setTxType(type,btn){
-  currentTxType=type;
-  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  const fracDiv=document.getElementById('fractionne-options');
-  if(type==='fractionne'){
-    fracDiv.classList.remove('hidden');
-  }else{
-    fracDiv.classList.add('hidden');
-  }
+// Actions Prévision
+function startEdit(cat) {
+  state.editingForecast = cat;
+  render();
+  setTimeout(() => {
+    const input = document.getElementById(`edit-${cat}`);
+    if (input) { input.focus(); input.select(); }
+  }, 50);
 }
 
-function addTransaction(type){
-  if(type==='expense'){
-    const label=document.getElementById('expLabel').value.trim();
-    const amount=parseFloat(document.getElementById('expAmount').value);
-    const date=document.getElementById('expDate').value;
-    const cat=document.getElementById('expCat').value;
-    const months=parseInt(document.getElementById('expMonths')?.value||1);
-    
-    if(!label||!amount){
-      toast('⚠️','Remplis tous les champs');
-      return;
-    }
-    
-    S.manualTx.push({
-      date:date,
-      label:label,
-      category:cat,
-      amount:-Math.abs(amount),
-      type:currentTxType,
-      months:months
-    });
-    
-    toast('✅','Dépense ajoutée');
-  }else{
-    const label=document.getElementById('incLabel').value.trim();
-    const amount=parseFloat(document.getElementById('incAmount').value);
-    const date=document.getElementById('incDate').value;
-    
-    if(!label||!amount){
-      toast('⚠️','Remplis tous les champs');
-      return;
-    }
-    
-    S.manualTx.push({
-      date:date,
-      label:label,
-      category:'Revenu',
-      amount:Math.abs(amount),
-      type:'normal'
-    });
-    
-    toast('✅','Revenu ajouté');
-  }
-  
-  save();
-  setTab('dashboard');
-}
-
-function clearManual(){
-  if(confirm('Effacer toutes les transactions manuelles ?')){
-    S.manualTx=[];
+function confirmEdit(cat) {
+  const input = document.getElementById(`edit-${cat}`);
+  const val = parseFloat(input.value);
+  if (!isNaN(val) && val >= 0) {
+    state.forecastAdjustments[cat] = val;
+    state.editingForecast = null;
     save();
     render();
-    toast('🗑️','Transactions effacées');
+    toast('✅', 'Montant mis à jour');
   }
 }
 
-function applyScenario(factor){
-  const stats=getCategoryStats();
-  
-  Object.entries(stats).forEach(([cat,data])=>{
-    if(!data.fixed && data.total>0){
-      S.forecastAdjustments[cat]=data.average*factor;
+function cancelEdit() {
+  state.editingForecast = null;
+  render();
+}
+
+function updateForecast(cat, value) {
+  state.forecastAdjustments[cat] = parseFloat(value);
+  render();
+}
+
+function applyScenario(factor) {
+  const avg = getAverageByCategory();
+  Object.keys(state.forecastAdjustments).forEach(cat => {
+    if (!['Logement', 'Emprunts (hors immobilier)'].includes(cat)) {
+      state.forecastAdjustments[cat] = (avg[cat] || 0) * factor;
     }
   });
+  render();
+  toast('✅', `Scénario ${factor < 1 ? 'optimiste' : factor > 1 ? 'pessimiste' : 'réaliste'} appliqué`);
+}
+
+function resetForecast() {
+  state.forecastAdjustments = {...getAverageByCategory()};
+  render();
+  toast('🔄', 'Valeurs réinitialisées aux moyennes');
+}
+
+function saveForecast() {
+  save();
+  toast('💾', 'Prévision sauvegardée');
+}
+
+// Détail catégorie (Modal)
+function showCategoryDetail(cat) {
+  const modal = document.getElementById('cat-modal');
+  const title = document.getElementById('modal-title');
+  const body = document.getElementById('modal-body');
   
-  save();
-  render();
-  toast('✅',`Scénario ${factor<1?'optimiste':'pessimiste'} appliqué`);
+  title.textContent = `${ICONS[cat] || '📦'} ${cat}`;
+  
+  const txs = state.transactions
+    .filter(t => t.categoryParent === cat && t.amount < 0)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  const total = txs.reduce((s, t) => s + Math.abs(t.amount), 0);
+  const byMonth = {};
+  txs.forEach(t => {
+    if (!byMonth[t.month]) byMonth[t.month] = 0;
+    byMonth[t.month] += Math.abs(t.amount);
+  });
+  
+  let html = `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:32px;font-family:JetBrains Mono;font-weight:700;color:${COLORS[cat] || '#fff'};">
+        ${formatMoney(total)}
+      </div>
+      <div style="color:var(--text-secondary);">${txs.length} transactions sur ${Object.keys(byMonth).length} mois</div>
+    </div>
+    
+    <div style="margin-bottom:20px;">
+      <div style="font-weight:600;margin-bottom:8px;">Répartition mensuelle:</div>
+      ${Object.entries(byMonth).sort((a,b) => a[0]-b[0]).map(([m, amt]) => `
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span>${MONTHS[m]}</span>
+          <span style="font-family:JetBrains Mono;">${formatMoney(amt)}</span>
+        </div>
+      `).join('')}
+    </div>
+    
+    <div style="max-height:400px;overflow-y:auto;">
+      <div style="font-weight:600;margin-bottom:8px;">Dernières opérations:</div>
+      ${txs.slice(0, 50).map(t => `
+        <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface-solid);border-radius:8px;margin-bottom:8px;border:1px solid var(--border);">
+          <div>
+            <div style="font-weight:500;font-size:14px;">${t.label}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${t.date} · ${t.category}</div>
+          </div>
+          <div style="font-family:JetBrains Mono;color:var(--danger);">
+            ${formatMoney(Math.abs(t.amount))}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  body.innerHTML = html;
+  modal.classList.add('active');
 }
 
-function saveForecast(){
-  save();
-  toast('✅','Prévision sauvegardée localement');
+function closeModal() {
+  document.getElementById('cat-modal').classList.remove('active');
 }
 
-function resetForecast(){
-  S.forecastAdjustments={};
-  save();
-  render();
-  toast('🔄','Prévision réinitialisée');
+// Import CSV
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('dragover');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) processFile(files[0]);
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    importCSV(text);
+  };
+  reader.readAsText(file);
+}
+
+function importFromText() {
+  const text = document.getElementById('csv-paste').value;
+  if (text.trim()) {
+    importCSV(text);
+  }
+}
+
+function importCSV(csvText) {
+  try {
+    const newTxs = parseCSV(csvText);
+    if (newTxs.length === 0) {
+      toast('⚠️', 'Aucune transaction trouvée dans le CSV');
+      return;
+    }
+    
+    // Fusionner avec existant (éviter doublons par ID implicite: date+label+amount)
+    const existingKeys = new Set(state.transactions.map(t => `${t.date}-${t.label}-${t.amount}`));
+    const uniqueNew = newTxs.filter(t => !existingKeys.has(`${t.date}-${t.label}-${t.amount}`));
+    
+    state.transactions = [...state.transactions, ...uniqueNew];
+    save();
+    render();
+    toast('✅', `${uniqueNew.length} transactions importées (${newTxs.length - uniqueNew.length} doublons ignorés)`);
+    setTab('transactions');
+  } catch (err) {
+    toast('❌', 'Erreur lors de l\'import: ' + err.message);
+  }
+}
+
+function clearAllData() {
+  if (confirm('Effacer toutes les données et recharger les 3 mois d\'exemple ?')) {
+    localStorage.removeItem('financeProData');
+    state.transactions = parseCSV(SEED_DATA);
+    state.forecastAdjustments = {};
+    save();
+    render();
+    toast('🗑️', 'Données réinitialisées');
+  }
 }
 
 // Init
-load();
-render();
+init();
+
+// Fermer modal au clic extérieur
+document.getElementById('cat-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'cat-modal') closeModal();
+});
 </script>
 </body>
 </html>
