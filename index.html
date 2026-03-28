@@ -150,8 +150,10 @@ const DEFO={"hlm les foyers":"Logement"};
 const FIXED_CATS=new Set(["Logement","Abonnements & téléphonie","Santé","Emprunts (hors immobilier)","Auto & Moto","Services financiers & professionnels"]);
 
 let S={tab:'dashboard',mk:'all',tx:[],sal:2300,savT:200,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},
-  fixedSup:{}, // supplier -> true/false user override
-  manRec:[]    // [{label,amount,cat,supplier}] manually added recurring
+  fixedSup:{},
+  manRec:[],
+  labelOv:{},  // old_label_lower -> new display name
+  _search:''   // live search filter
 };
 
 function mkOf(t){return t.date.slice(0,7)}
@@ -161,9 +163,13 @@ function gMks(){return[...new Set(S.tx.map(mkOf))].sort()}
 function txM(mk){return mk==='all'?S.tx:S.tx.filter(t=>mkOf(t)===mk)}
 function nxtMk(mk){const[y,m]=mk.split('-').map(Number);return(m===12?y+1:y)+'-'+String(m===12?1:m+1).padStart(2,'0')}
 function stx(r){return r.map((r,i)=>({id:i,date:r[0],dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6]}))}
-function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t.categoryParent=S.catOv[s]})}
-function save(){localStorage.setItem('fp5',JSON.stringify({tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec}))}
-function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,{tx:d.tx,sal:d.sal??2300,savT:d.savT??200,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{...DEFO},fixedSup:d.fixedSup??{},manRec:d.manRec??[]});aOv();return}}catch(e){}
+function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t.categoryParent=S.catOv[s];
+  // Apply label overrides
+  const lk=t.label.toLowerCase();if(S.labelOv[lk])t.label=S.labelOv[lk];
+  if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
+})}
+function save(){localStorage.setItem('fp5',JSON.stringify({tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv}))}
+function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,{tx:d.tx,sal:d.sal??2300,savT:d.savT??200,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{...DEFO},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{}});aOv();return}}catch(e){}
   S.tx=stx(SR);S.catOv={...DEFO};aOv();
 }
 function cSt(mk){const tx=txM(mk).filter(t=>t.amount<0);const o={};tx.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t)});return o}
@@ -201,9 +207,13 @@ function detectFixed(){
       fixed.push({supplier:sup,label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),cat:d.cat,avg,months:mc,forced:S.fixedSup[sup]===true});
     }
   });
-  // Add manual recurring
+  // Add manual recurring (skip if supplier already in auto-detected list)
+  const autoSups=new Set(fixed.map(f=>f.supplier));
   S.manRec.forEach(r=>{
-    fixed.push({supplier:r.supplier||r.label.toLowerCase(),label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,forced:true,manual:true});
+    const rs=r.supplier||r.label.toLowerCase();
+    if(!autoSups.has(rs)){
+      fixed.push({supplier:rs,label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,forced:true,manual:true});
+    }
   });
   return fixed.sort((a,b)=>b.avg-a.avg);
 }
@@ -286,12 +296,35 @@ function vF(){
 
 /* ══ TRANSACTIONS ══ */
 function vT(mks){
-  const tx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
-  let h=mChips(mks)+`<div class="tl">`;
-  if(!tx.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">📭</div>Aucune transaction</div>`}
+  let allTx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
+  const q=S._search.toLowerCase().trim();
+  const tx=q?allTx.filter(t=>t.label.toLowerCase().includes(q)||t.categoryParent.toLowerCase().includes(q)||t.supplier.toLowerCase().includes(q)):allTx;
+  const totalExp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0);
+  let h=mChips(mks);
+  h+=`<div style="margin-bottom:14px"><input type="text" id="tx-search" placeholder="🔍 Rechercher une opération..." value="${S._search}" oninput="S._search=this.value;renderTxList()" style="font-size:14px;padding:11px 16px"></div>`;
+  h+=`<div id="tx-results">`;
+  if(q)h+=`<div style="font-size:12px;color:var(--ts);margin-bottom:12px">${tx.length} résultat${tx.length>1?'s':''} · ${fmt(totalExp)} de dépenses</div>`;
+  h+=`<div class="tl">`;
+  if(!tx.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">${q?'🔍':'📭'}</div>${q?'Aucun résultat':'Aucune transaction'}</div>`}
   else{tx.forEach(t=>{const neg=t.amount<0,col=COL[t.categoryParent]||'#6b7080';
-    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`})}
-  h+=`</div>`;return h;
+    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}${t.manual?'<span class="fix-tag" style="margin-left:6px">Manuel</span>':''}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`})}
+  h+=`</div></div>`;return h;
+}
+function renderTxList(){
+  const mks=gMks();
+  let allTx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
+  const q=S._search.toLowerCase().trim();
+  const tx=q?allTx.filter(t=>t.label.toLowerCase().includes(q)||t.categoryParent.toLowerCase().includes(q)||t.supplier.toLowerCase().includes(q)):allTx;
+  const totalExp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0);
+  let h='';
+  if(q)h+=`<div style="font-size:12px;color:var(--ts);margin-bottom:12px">${tx.length} résultat${tx.length>1?'s':''} · ${fmt(totalExp)} de dépenses</div>`;
+  h+=`<div class="tl">`;
+  if(!tx.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">${q?'🔍':'📭'}</div>${q?'Aucun résultat':'Aucune transaction'}</div>`}
+  else{tx.forEach(t=>{const neg=t.amount<0,col=COL[t.categoryParent]||'#6b7080';
+    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}${t.manual?'<span class="fix-tag" style="margin-left:6px">Manuel</span>':''}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`})}
+  h+=`</div>`;
+  const container=document.getElementById('tx-results');
+  if(container)container.innerHTML=h;
 }
 
 /* ══ IMPORT ══ */
@@ -320,6 +353,13 @@ function vS(){
   <div class="al ai" style="margin-top:16px">💾 Sauvegarde automatique</div></div>`;
 
   // Category rules
+  // Label rules
+  const lk=Object.keys(S.labelOv);
+  if(lk.length){
+    h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">✏️ Renommages (${lk.length})</div>`;
+    lk.sort().forEach(k=>{h+=`<div class="ri"><span class="rs" style="opacity:.5;text-decoration:line-through">${k}</span><span class="ra">→</span><span class="rc">${S.labelOv[k]}</span><button class="rd" onclick="delete S.labelOv['${esc(k)}'];aOv();save();render();toast('🗑️','Renommage supprimé')">✕</button></div>`});
+    h+=`</div>`;
+  }
   h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">🏷️ Règles de catégorisation (${rk.length})</div>`;
   if(rk.length){rk.sort().forEach(s=>{h+=`<div class="ri"><span class="rs">${s}</span><span class="ra">→</span><span class="rc">${IC[S.catOv[s]]||'📦'} ${S.catOv[s]}</span><button class="rd" onclick="dRule('${esc(s)}')">✕</button></div>`})}
   else{h+=`<div style="text-align:center;padding:16px;color:var(--tm);font-size:13px">Aucune règle</div>`}
@@ -336,7 +376,7 @@ function vS(){
 /* ── ACTIONS ── */
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
-function removeFix(sup){S.fixedSup[sup]=false;S._editFix=false;save();render();toast('🔓','Charge retirée')}
+function removeFix(sup){S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);S._editFix=false;save();render();toast('🔓','Charge retirée')}
 function sFE(c){S.fEd=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
 function cFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.fAdj[c]=v;S.fEd=null;save();render();toast('✅','OK')}}
 function xFE(){S.fEd=null;render()}
@@ -366,12 +406,21 @@ function showCD(cat){
 function oRe(id){
   const tx=S.tx.find(t=>t.id===id);if(!tx)return;
   const b=document.getElementById('m-re-b'),sup=tx.supplier,supL=sup?sup.toLowerCase():'',same=sup?S.tx.filter(t=>t.supplier.toLowerCase()===supL):[];
-  const isRec=S.fixedSup[supL]===true||S.manRec.some(r=>r.supplier===supL);
+  const isRec=S.fixedSup[supL]===true||S.manRec.some(r=>r.supplier===supL)||detectFixed().some(f=>f.supplier===supL);
+  const origLabel=tx._origLabel||tx.label;
   let h=`<div style="margin-bottom:16px;padding:14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
-    <div style="font-weight:600;font-size:14px;margin-bottom:4px">${tx.label}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <span style="font-weight:600;font-size:14px;flex:1" id="re-label-show">${tx.label}</span>
+      <button class="bi" onclick="document.getElementById('re-label-edit').style.display='flex';document.getElementById('re-label-show').style.display='none';this.style.display='none';document.getElementById('re-label-input').focus()" style="width:28px;height:28px;font-size:12px">✎</button>
+    </div>
+    <div id="re-label-edit" style="display:none;gap:6px;margin-bottom:8px">
+      <input type="text" id="re-label-input" value="${tx.label}" style="font-size:14px;padding:8px 12px;flex:1" onkeydown="if(event.key==='Enter')renameTx(${id})">
+      <button class="bi ok" onclick="renameTx(${id})" style="width:32px;height:32px">✓</button>
+    </div>
     <div style="font-size:12px;color:var(--tm);font-family:var(--m)">${tx.date} · ${fmtD(Math.abs(tx.amount))}</div>
     <div style="font-size:12px;color:var(--ts);margin-top:4px">Catégorie: <strong>${tx.categoryParent}</strong></div>
     ${sup?`<div style="font-size:11px;color:var(--tm);margin-top:4px">"${sup}" → ${same.length} opérations</div>`:''}
+    ${tx.manual?`<div style="margin-top:10px"><button class="btn bd" style="padding:8px;font-size:12px" onclick="delTx(${id})">🗑️ Supprimer cette opération</button></div>`:''}
   </div>
   <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Type de dépense</div>
   <div style="display:flex;gap:8px;margin-bottom:20px">
@@ -397,14 +446,40 @@ function setRecur(id,rec){
   if(rec){
     S.fixedSup[supL]=true;
     if(!S.manRec.some(r=>r.supplier===supL)){
-      S.manRec.push({label:tx.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),amount:tx.amount,cat:tx.categoryParent,supplier:supL})}
-    save();toast('🔄','Ajouté aux charges fixes');
+      // Check if already auto-detected - if so, just confirm without adding to manRec
+      const existing=detectFixed().find(f=>f.supplier===supL);
+      if(existing){
+        save();toast('✅','Confirmé comme charge fixe');
+      } else {
+        S.manRec.push({label:tx.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),amount:tx.amount,cat:tx.categoryParent,supplier:supL});
+        save();toast('🔄','Ajouté aux charges fixes');
+      }
+    } else { save();toast('✅','Déjà dans les charges fixes'); }
   }else{
     delete S.fixedSup[supL];
     S.manRec=S.manRec.filter(r=>r.supplier!==supL);
     save();toast('⚡','Retiré des charges fixes');
   }
   oRe(id);render();
+}
+function renameTx(id){
+  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
+  const inp=document.getElementById('re-label-input');
+  const newName=inp.value.trim();if(!newName)return;
+  const origKey=(tx._origLabel||tx.label).toLowerCase();
+  if(!tx._origLabel)tx._origLabel=tx.label;
+  S.labelOv[origKey]=newName;
+  S.tx.forEach(t=>{
+    const tKey=(t._origLabel||t.label).toLowerCase();
+    if(tKey===origKey){if(!t._origLabel)t._origLabel=t.label;t.label=newName}
+  });
+  save();oRe(id);render();toast('✏️','Renommé');
+}
+function delTx(id){
+  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
+  if(!confirm('Supprimer "'+tx.label+'" ?'))return;
+  S.tx=S.tx.filter(t=>t.id!==id);
+  save();cm('m-re');render();toast('🗑️','Supprimé');
 }
 function dRe(id,cat){const tx=S.tx.find(t=>t.id===id);if(!tx)return;const sup=tx.supplier.toLowerCase();if(sup)S.catOv[sup]=cat;S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=cat});
   S.manRec.forEach(r=>{if(r.supplier===sup)r.cat=cat});
@@ -442,7 +517,7 @@ function doAdd(){
   if(!lb){toast('⚠️','Libellé requis');return}if(isNaN(am)||am<=0){toast('⚠️','Montant invalide');return}if(!dt){toast('⚠️','Date requise');return}
   const fAmt=window._aType==='dep'?-am:am;
   // Add transaction
-  S.tx.push({id:Date.now()+Math.floor(Math.random()*1000),date:dt,dateVal:dt,label:lb,category:lb,categoryParent:cat,supplier:lb.toLowerCase(),amount:fAmt});
+  S.tx.push({id:Date.now()+Math.floor(Math.random()*1000),date:dt,dateVal:dt,label:lb,category:lb,categoryParent:cat,supplier:lb.toLowerCase(),amount:fAmt,manual:true});
   // If recurring, also save as manual recurring
   if(window._aFreq==='rec'){
     S.manRec.push({label:lb,amount:fAmt,cat:cat,supplier:lb.toLowerCase()});
@@ -465,16 +540,22 @@ function pCSV(text){
   return out;
 }
 function oF(e){const files=e.target.files;if(!files.length)return;let t=0,d=0;
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
-  Promise.all(ps).then(()=>{save();render();toast('✅',`${t} importées`);if(t>0)setTab('transactions')})}
+  // Purge manual ponctual tx (not recurring) to avoid dupes with CSV data
+  const recSups=new Set(S.manRec.map(r=>r.supplier));
+  const before=S.tx.length;
+  S.tx=S.tx.filter(tx=>!tx.manual||recSups.has(tx.supplier.toLowerCase()));
+  const purged=before-S.tx.length;
+  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label.toLowerCase()}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+  Promise.all(ps).then(()=>{save();render();const msg=`${t} importées`+(purged?` · ${purged} manuelles nettoyées`:'');toast('✅',msg);if(t>0)setTab('transactions')})}
 
-function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
+function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
 
 /* ── EVENTS ── */
 document.addEventListener('dragover',e=>{const z=document.getElementById('dz');if(z){e.preventDefault();z.classList.add('dg')}});
 document.addEventListener('dragleave',e=>{const z=document.getElementById('dz');if(z)z.classList.remove('dg')});
 document.addEventListener('drop',e=>{e.preventDefault();const z=document.getElementById('dz');if(z)z.classList.remove('dg');if(e.dataTransfer.files.length){const files=e.dataTransfer.files;let t=0,d=0;
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+  const recSups2=new Set(S.manRec.map(r=>r.supplier));S.tx=S.tx.filter(tx=>!tx.manual||recSups2.has(tx.supplier.toLowerCase()));
+  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label.toLowerCase()}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
   Promise.all(ps).then(()=>{save();render();toast('✅',`${t} importées`);if(t>0)setTab('transactions')})}});
 ['m-cat','m-re','m-add'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)cm(id)})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')['m-cat','m-re','m-add'].forEach(cm)});
