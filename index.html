@@ -152,8 +152,10 @@ const FIXED_CATS=new Set(["Logement","Abonnements & téléphonie","Santé","Empr
 let S={tab:'dashboard',mk:'all',tx:[],sal:2300,savT:200,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},
   fixedSup:{},
   manRec:[],
-  labelOv:{},  // old_label_lower -> new display name
-  _search:''   // live search filter
+  labelOv:{},
+  delKeys:[],
+  _editFixIdx:null,
+  _search:''
 };
 
 function mkOf(t){return t.date.slice(0,7)}
@@ -168,8 +170,8 @@ function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t
   const lk=t.label.toLowerCase();if(S.labelOv[lk])t.label=S.labelOv[lk];
   if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
 })}
-function save(){localStorage.setItem('fp5',JSON.stringify({tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv}))}
-function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,{tx:d.tx,sal:d.sal??2300,savT:d.savT??200,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{...DEFO},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{}});aOv();return}}catch(e){}
+function save(){localStorage.setItem('fp5',JSON.stringify({tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys}))}
+function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,{tx:d.tx,sal:d.sal??2300,savT:d.savT??200,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{...DEFO},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[]});aOv();return}}catch(e){}
   S.tx=stx(SR);S.catOv={...DEFO};aOv();
 }
 function cSt(mk){const tx=txM(mk).filter(t=>t.amount<0);const o={};tx.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t)});return o}
@@ -195,6 +197,9 @@ function detectFixed(){
     bySup[sup].months[mk]+=Math.abs(t.amount);
   });
   const fixed=[];
+  // Build manRec lookup: supplier -> amount (user's chosen amount takes priority)
+  const manRecMap={};
+  S.manRec.forEach(r=>{manRecMap[r.supplier||r.label.toLowerCase()]=r});
   Object.entries(bySup).forEach(([sup,d])=>{
     if(S.fixedSup[sup]===false)return;
     const mc=Object.keys(d.months).length;
@@ -204,10 +209,14 @@ function detectFixed(){
     const isFixed=S.fixedSup[sup]===true||
       (mc>=Math.min(mks.length,2)&&maxDev<0.15&&FIXED_CATS.has(d.cat));
     if(isFixed){
-      fixed.push({supplier:sup,label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),cat:d.cat,avg,months:mc,forced:S.fixedSup[sup]===true});
+      // If user explicitly set this as recurring, use their chosen amount
+      const mr=manRecMap[sup];
+      const displayAmt=mr?Math.abs(mr.amount):avg;
+      const displayLabel=mr?mr.label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim();
+      fixed.push({supplier:sup,label:displayLabel,cat:d.cat,avg:displayAmt,months:mc,forced:S.fixedSup[sup]===true,manual:!!mr});
     }
   });
-  // Add manual recurring (skip if supplier already in auto-detected list)
+  // Add manual recurring NOT already in auto-detected list
   const autoSups=new Set(fixed.map(f=>f.supplier));
   S.manRec.forEach(r=>{
     const rs=r.supplier||r.label.toLowerCase();
@@ -243,17 +252,32 @@ function vD(mks){
   <div class="card"><div class="ch"><span class="ct">Solde estimé</span><span style="font-size:18px">${bal>=0?'📈':'🚨'}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} dispo${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''}</div></div></div>`;
   
   // FIXED CHARGES CARD
-  if(fixed.length){
+  if(fixed.length||S._editFix){
     const editing=S._editFix;
-    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charges · <span style="color:var(--ok)">${fmt(net()-fixedTotal)}</span> restant après charges${editing?' · <span style="color:var(--al)">Décochez pour retirer</span>':''}</div>`;
-    fixed.forEach(f=>{
-      if(editing){
-        h+=`<div class="fix-item" onclick="removeFix('${esc(f.supplier)}')"><span class="fix-toggle on">✓</span><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
+    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;S._editFixIdx=null;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt(net()-fixedTotal)}</span> restant après charges</div>`;
+    fixed.forEach((f,idx)=>{
+      const isEditing=editing&&S._editFixIdx===idx;
+      if(isEditing){
+        h+=`<div class="fix-item" style="flex-wrap:wrap;gap:8px;padding:12px 14px">
+          <span class="fix-icon">${IC[f.cat]||'📦'}</span>
+          <input type="text" id="fix-ed-label" value="${f.label}" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
+          <input type="number" id="fix-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+          <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
+            <button class="bi ok" onclick="saveFixEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
+            <button class="bi ko" onclick="S._editFixIdx=null;render()" style="width:28px;height:28px;font-size:12px">✕</button>
+            <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">🗑</button>
+          </div>
+        </div>`;
+      } else if(editing){
+        h+=`<div class="fix-item" onclick="S._editFixIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
       } else {
         h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
       }
     });
+    if(editing){
+      h+=`<div class="fix-item" onclick="addFixCharge()" style="justify-content:center;border:1px dashed var(--border);border-radius:8px;margin-top:8px;color:var(--al);font-weight:600;gap:6px"><span>+</span> Ajouter une charge</div>`;
+    }
     h+=`</div>`;
   }
   
@@ -377,6 +401,63 @@ function vS(){
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
 function removeFix(sup){S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);S._editFix=false;save();render();toast('🔓','Charge retirée')}
+function removeFixCharge(sup){
+  if(!confirm('Retirer cette charge fixe ?'))return;
+  S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);
+  S._editFixIdx=null;save();render();toast('🗑️','Charge supprimée');
+}
+function saveFixEdit(idx){
+  const fixed=detectFixed();
+  const f=fixed[idx];if(!f)return;
+  const newLabel=document.getElementById('fix-ed-label').value.trim();
+  const newAmt=parseFloat(document.getElementById('fix-ed-amt').value);
+  if(!newLabel){toast('⚠️','Libellé requis');return}
+  if(isNaN(newAmt)||newAmt<=0){toast('⚠️','Montant invalide');return}
+  // Update or create manRec entry for this supplier
+  const existing=S.manRec.find(r=>r.supplier===f.supplier);
+  if(existing){
+    existing.label=newLabel;
+    existing.amount=-newAmt;
+  }else{
+    S.manRec.push({label:newLabel,amount:-newAmt,cat:f.cat,supplier:f.supplier});
+  }
+  S.fixedSup[f.supplier]=true;
+  S._editFixIdx=null;save();render();toast('✅','Charge modifiée');
+}
+function addFixCharge(){
+  const catO=AC.map(c=>`<option value="${c}">${IC[c]||'📦'} ${c}</option>`).join('');
+  const card=document.querySelector('.card[style*="border-left:3px"]');
+  if(!card)return;
+  // Check if add form already exists
+  if(document.getElementById('fix-add-form'))return;
+  const form=document.createElement('div');
+  form.id='fix-add-form';
+  form.style.cssText='padding:12px 14px;border:1px dashed var(--accent);border-radius:8px;margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
+  form.innerHTML=`
+    <input type="text" id="fix-add-label" placeholder="Libellé" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
+    <input type="number" id="fix-add-amt" placeholder="Montant" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+    <select id="fix-add-cat" style="flex:1;min-width:140px;padding:6px 10px;font-size:13px">${catO}</select>
+    <div style="display:flex;gap:4px">
+      <button class="bi ok" onclick="confirmAddFix()" style="width:28px;height:28px;font-size:12px">✓</button>
+      <button class="bi ko" onclick="document.getElementById('fix-add-form').remove()" style="width:28px;height:28px;font-size:12px">✕</button>
+    </div>`;
+  card.appendChild(form);
+  document.getElementById('fix-add-label').focus();
+}
+function confirmAddFix(){
+  const label=document.getElementById('fix-add-label').value.trim();
+  const amt=parseFloat(document.getElementById('fix-add-amt').value);
+  const cat=document.getElementById('fix-add-cat').value;
+  if(!label){toast('⚠️','Libellé requis');return}
+  if(isNaN(amt)||amt<=0){toast('⚠️','Montant invalide');return}
+  const sup=label.toLowerCase();
+  // Check duplicate
+  const existing=detectFixed().find(f=>f.supplier===sup);
+  if(existing){toast('⚠️','Cette charge existe déjà');return}
+  S.manRec.push({label,amount:-amt,cat,supplier:sup});
+  S.fixedSup[sup]=true;
+  save();render();toast('✅','Charge ajoutée');
+}
 function sFE(c){S.fEd=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
 function cFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.fAdj[c]=v;S.fEd=null;save();render();toast('✅','OK')}}
 function xFE(){S.fEd=null;render()}
@@ -420,7 +501,7 @@ function oRe(id){
     <div style="font-size:12px;color:var(--tm);font-family:var(--m)">${tx.date} · ${fmtD(Math.abs(tx.amount))}</div>
     <div style="font-size:12px;color:var(--ts);margin-top:4px">Catégorie: <strong>${tx.categoryParent}</strong></div>
     ${sup?`<div style="font-size:11px;color:var(--tm);margin-top:4px">"${sup}" → ${same.length} opérations</div>`:''}
-    ${tx.manual?`<div style="margin-top:10px"><button class="btn bd" style="padding:8px;font-size:12px" onclick="delTx(${id})">🗑️ Supprimer cette opération</button></div>`:''}
+    <div style="margin-top:10px"><button class="btn bd" style="padding:8px;font-size:12px" onclick="delTx(${id})">🗑️ Supprimer cette opération</button></div>
   </div>
   <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Type de dépense</div>
   <div style="display:flex;gap:8px;margin-bottom:20px">
@@ -477,7 +558,11 @@ function renameTx(id){
 }
 function delTx(id){
   const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  if(!confirm('Supprimer "'+tx.label+'" ?'))return;
+  if(!confirm('Supprimer "'+tx.label+'" ('+fmtD(Math.abs(tx.amount))+') ?'))return;
+  // Track deletion key so it won't come back on re-import
+  const dk=`${tx.date}|${(tx._origLabel||tx.label).toLowerCase()}|${tx.amount}`;
+  if(!S.delKeys)S.delKeys=[];
+  S.delKeys.push(dk);
   S.tx=S.tx.filter(t=>t.id!==id);
   save();cm('m-re');render();toast('🗑️','Supprimé');
 }
@@ -545,17 +630,18 @@ function oF(e){const files=e.target.files;if(!files.length)return;let t=0,d=0;
   const before=S.tx.length;
   S.tx=S.tx.filter(tx=>!tx.manual||recSups.has(tx.supplier.toLowerCase()));
   const purged=before-S.tx.length;
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label.toLowerCase()}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+  const delSet=new Set(S.delKeys||[]);
+  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>{const tk=`${t.date}|${t.label.toLowerCase()}|${t.amount}`;return!k.has(tk)&&!delSet.has(tk)});S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
   Promise.all(ps).then(()=>{save();render();const msg=`${t} importées`+(purged?` · ${purged} manuelles nettoyées`:'');toast('✅',msg);if(t>0)setTab('transactions')})}
-
-function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
+function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};S.delKeys=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
 
 /* ── EVENTS ── */
 document.addEventListener('dragover',e=>{const z=document.getElementById('dz');if(z){e.preventDefault();z.classList.add('dg')}});
 document.addEventListener('dragleave',e=>{const z=document.getElementById('dz');if(z)z.classList.remove('dg')});
 document.addEventListener('drop',e=>{e.preventDefault();const z=document.getElementById('dz');if(z)z.classList.remove('dg');if(e.dataTransfer.files.length){const files=e.dataTransfer.files;let t=0,d=0;
   const recSups2=new Set(S.manRec.map(r=>r.supplier));S.tx=S.tx.filter(tx=>!tx.manual||recSups2.has(tx.supplier.toLowerCase()));
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label.toLowerCase()}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+  const delSet2=new Set(S.delKeys||[]);
+  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>{const tk=`${t.date}|${t.label.toLowerCase()}|${t.amount}`;return!k.has(tk)&&!delSet2.has(tk)});S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
   Promise.all(ps).then(()=>{save();render();toast('✅',`${t} importées`);if(t>0)setTab('transactions')})}});
 ['m-cat','m-re','m-add'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)cm(id)})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')['m-cat','m-re','m-add'].forEach(cm)});
