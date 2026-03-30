@@ -420,7 +420,7 @@ function vD(mks){
     h+=`</div></div>`}
   
   h+=`<div class="st">Répartition ${S.mk==='all'?'globale':mkS(S.mk)}</div>`;
-  sorted.forEach(([cat,data])=>{const pct=exp>0?(data.total/exp*100):0,col=COL[cat]||'#6b7080',ic=IC[cat]||'📦';
+  sorted.forEach(([cat,data])=>{const pct=totalExp>0?(data.total/totalExp*100):0,col=COL[cat]||'#6b7080',ic=IC[cat]||'📦';
     h+=`<div class="cc" onclick="showCD('${esc(cat)}')" style="--cat-color:${col}"><div class="h"><div class="n"><span style="font-size:18px">${ic}</span><span>${cat}</span><span class="cnt">${data.count}</span></div><div class="amt" style="color:${col}">${fmt(data.total)}</div></div><div class="bar"><div class="fill" style="width:${pct}%;background:${col}"></div></div><div class="ft"><span>${pct.toFixed(1)}%</span><span class="arr">Détail →</span></div></div>`});
   return h;
 }
