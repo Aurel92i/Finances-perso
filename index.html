@@ -24,7 +24,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100v
 .cv{font-family:var(--m);font-size:30px;font-weight:700;letter-spacing:-1px}
 .csub{font-size:12px;color:var(--ts);margin-top:4px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:600px){.g2,.g3{grid-template-columns:1fr}.app{padding:16px 14px 120px}.fab{bottom:24px;right:20px;width:50px;height:50px;font-size:24px}}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr}.app{padding:16px 14px 120px}.fab{bottom:24px!important;right:20px!important;width:50px!important;height:50px!important;font-size:24px!important}}
 .ms{display:flex;gap:8px;overflow-x:auto;padding:2px 0;margin-bottom:20px;scrollbar-width:none;mask-image:linear-gradient(to right,transparent,black 12px,black calc(100% - 12px),transparent)}.ms::-webkit-scrollbar{display:none}
 .mc{padding:9px 20px;border:1px solid var(--border);background:var(--surface);color:var(--ts);border-radius:24px;cursor:pointer;font-family:var(--f);font-size:13px;font-weight:600;white-space:nowrap;transition:all .25s;backdrop-filter:blur(10px)}
 .mc:hover:not(.a){border-color:var(--ba);color:var(--text)}.mc.a{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 16px var(--ag)}
@@ -46,7 +46,6 @@ body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100v
 .ti .me{font-size:11px;color:var(--tm);font-family:var(--m)}
 .ti .am{font-family:var(--m);font-size:14px;font-weight:700;text-align:right;flex-shrink:0}
 .neg{color:var(--no)}.pos{color:var(--ok)}
-/* Forecast */
 .fr{background:var(--ss);border:1px solid var(--border);border-radius:var(--rs);padding:16px;margin-bottom:10px}.fr:hover{border-color:var(--ba)}
 .fh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .fc{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
@@ -82,7 +81,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .bs{background:var(--surface);border:1px solid var(--border);color:var(--text)}.bs:hover{border-color:var(--ba)}
 .bd{background:var(--nob);color:var(--no);border:1px solid rgba(240,108,108,0.3)}
 .bi{width:34px;height:34px;border-radius:8px;border:none;background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;flex-shrink:0}.bi:hover{background:var(--accent);color:#fff}.bi.ok{background:var(--ok);color:#fff}.bi.ko{background:var(--nob);color:var(--no)}
-.uz{border:2px dashed var(--border);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:16px}.uz:hover,.uz.dg{border-color:var(--accent);background:rgba(124,108,240,0.04)}
+.uz{border:2px dashed var(--border);border-radius:var(--r);padding:48px 20px;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:16px}.uz:hover,.uz.dg{border-color:var(--accent);background:rgba(124,108,240,0.04)}
 .mo{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fi .2s}.mo.a{display:flex}
 @keyframes fi{from{opacity:0}to{opacity:1}}@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .moc{background:var(--ss);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:560px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;animation:su .3s cubic-bezier(.4,0,.2,1)}
@@ -92,6 +91,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .al{padding:14px 16px;border-radius:var(--rs);margin-bottom:14px;border:1px solid transparent;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
 .al.ai{background:rgba(124,108,240,0.08);border-color:rgba(124,108,240,0.25);color:var(--al)}
 .al.aw{background:var(--warnb);border-color:rgba(240,195,78,0.25);color:var(--warn)}
+.al.as{background:var(--okb);border-color:rgba(52,217,180,0.25);color:var(--ok)}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ss);border:1px solid var(--border);padding:14px 24px;border-radius:var(--rs);box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;z-index:2000;opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .st{font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;margin-top:28px;display:flex;align-items:center;gap:8px}.st::after{content:'';flex:1;height:1px;background:var(--border)}
 .dc{background:var(--ss);border:1px solid var(--border);border-radius:var(--rs);padding:16px;margin-bottom:12px;transition:all .2s}.dc.en{border-color:var(--accent);background:rgba(124,108,240,0.04)}
@@ -102,18 +102,10 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .ri .ra{color:var(--tm);margin:0 8px;flex-shrink:0}.ri .rc{color:var(--al);font-weight:600;flex-shrink:0}
 .ri .rd{width:24px;height:24px;border-radius:50%;border:none;background:var(--nob);color:var(--no);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;margin-left:8px;flex-shrink:0}.ri .rd:hover{background:var(--no);color:#fff}
 .fab{position:fixed;bottom:32px;right:32px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--al));color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 6px 24px var(--ag);z-index:90;display:flex;align-items:center;justify-content:center;transition:all .25s}.fab:hover{transform:scale(1.08)}.fab:active{transform:scale(.95)}
-/* Fixed charges */
-.fix-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer;transition:all .15s;border-radius:6px;margin:0 -4px}
-.fix-item:last-child{border-bottom:none}
-.fix-item:hover{background:rgba(255,255,255,0.03)}
-.fix-item .fix-icon{font-size:14px;flex-shrink:0}
-.fix-item .fix-label{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fix-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px}.fix-item:last-child{border-bottom:none}
+.fix-item .fix-icon{font-size:14px;flex-shrink:0}.fix-item .fix-label{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fix-item .fix-amt{font-family:var(--m);font-weight:700;color:var(--no);flex-shrink:0}
-.fix-item .fix-toggle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .2s;color:transparent}
-.fix-item .fix-toggle.on{border-color:var(--ok);background:var(--ok);color:#fff}
-.fix-item .fix-toggle.off{border-color:var(--no);background:var(--nob);color:var(--no)}
-.fix-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(124,108,240,0.15);color:var(--al);margin-left:6px;letter-spacing:.3px}
-/* Type toggle */
+.fix-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(124,108,240,0.15);color:var(--al);margin-left:6px}
 .type-toggle{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs)}
 .type-toggle button{flex:1;padding:10px;border:none;border-radius:8px;font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--ts)}
 .type-toggle button.sel{color:#fff}
@@ -121,42 +113,255 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .type-toggle button.rev.sel{background:var(--ok)}
 .type-toggle button.rec.sel{background:var(--accent)}
 .type-toggle button.once.sel{background:var(--ts)}
-.afg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.afg{grid-template-columns:1fr}}
+.afg{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:500px){.afg{grid-template-columns:1fr}}
+/* Onboarding */
+.onboard{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px}
+.onboard .ob-icon{font-size:72px;margin-bottom:24px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.onboard h2{font-size:28px;font-weight:800;margin-bottom:12px;letter-spacing:-.5px}
+.onboard p{color:var(--ts);font-size:15px;max-width:480px;margin-bottom:32px;line-height:1.7}
+.onboard .ob-features{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;width:100%;margin-bottom:32px;text-align:left}
+.onboard .ob-feat{padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px}
+.onboard .ob-feat span:first-child{font-size:20px;flex-shrink:0}
+@media(max-width:500px){.onboard .ob-features{grid-template-columns:1fr}}
+.step-dots{display:flex;gap:8px;justify-content:center;margin-bottom:24px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all .3s}
+.step-dot.a{background:var(--accent);width:24px;border-radius:4px}
+
+/* Auth */
+.auth-card{text-align:center;padding:20px 0}
+.auth-card .auth-logo{font-size:48px;margin-bottom:16px}
+.auth-card .auth-desc{font-size:13px;color:var(--ts);margin-bottom:24px}
+.auth-tabs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:20px}
+.auth-tabs button{flex:1;padding:10px;border:none;border-radius:8px;font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--ts);transition:all .2s}
+.auth-tabs button.sel{background:var(--accent);color:#fff}
+.auth-sep{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--tm);font-size:12px}.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.sync-dot.online{background:var(--ok)}.sync-dot.offline{background:var(--warn)}.sync-dot.saving{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:14px;font-size:13px}
+.user-bar .user-email{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:12px}
+.user-bar .logout-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--no);font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;flex-shrink:0}
+.user-bar .logout-btn:hover{background:var(--nob);border-color:var(--no)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="app" id="app">
   <div class="hdr"><div class="hdr-top"><h1>💰 Finances Pro</h1><div class="hdr-st" id="sb"></div></div></div>
-  <div class="nav" id="nav"></div>
+  <div class="nav" id="nav" style="display:none"></div>
   <div id="co"></div>
 </div>
-<button class="fab" id="fab" onclick="openAdd()" title="Ajouter">+</button>
+<button class="fab" id="fab" onclick="openAdd()" title="Ajouter" style="display:none">+</button>
 <div class="mo" id="m-cat"><div class="moc"><div class="moh"><h3 id="m-cat-t">Détail</h3><button class="cb" onclick="cm('m-cat')">×</button></div><div class="mob" id="m-cat-b"></div></div></div>
-<div class="mo" id="m-re"><div class="moc" style="max-width:420px"><div class="moh"><h3 id="m-re-t">Catégorie</h3><button class="cb" onclick="cm('m-re')">×</button></div><div class="mob" id="m-re-b"></div></div></div>
+<div class="mo" id="m-re"><div class="moc" style="max-width:420px"><div class="moh"><h3>Changer la catégorie</h3><button class="cb" onclick="cm('m-re')">×</button></div><div class="mob" id="m-re-b"></div></div></div>
 <div class="mo" id="m-add"><div class="moc" style="max-width:500px"><div class="moh"><h3>➕ Nouvelle opération</h3><button class="cb" onclick="cm('m-add')">×</button></div><div class="mob" id="m-add-b"></div></div></div>
-<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
 
+<div class="mo" id="m-auth" style="z-index:1100"><div class="moc" style="max-width:420px"><div class="moh"><h3 id="auth-title">🔐 Connexion</h3><div id="auth-close-wrap"></div></div><div class="mob" id="auth-body"></div></div></div>
+<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
 <script>
-const SR=[["2026-01-30","2026-01-30","CARTE 29/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-30","2026-01-30","CARTE 29/01/26 SnP*AAL CB*2399","Non catégorisé","Non catégorisé","snp*aal",-10.0],["2026-01-30","2026-01-30","CARTE 29/01/26 HELLOASSO* CAGNOT CB*2399","Solidarité - Autres","Cadeaux et solidarité","helloasso",-5.0],["2026-01-30","2026-01-30","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-130.0],["2026-01-30","2026-01-30","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-120.0],["2026-01-29","2026-01-29","CARTE 28/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-29","2026-01-29","CARTE 28/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-01-29","2026-01-29","CARTE 28/01/26 LE RELAIS DE PACE CB*2399","Carburant","Auto & Moto","le relais de pace",-10.9],["2026-01-29","2026-01-29","CARTE 28/01/26 SNCF OUIGO CB*2399","Transports longue distance (avions, trains…)","Voyages & Transports","sncf",-54.0],["2026-01-29","2026-01-29","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-25.97],["2026-01-28","2026-01-28","PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","edf",-4.39],["2026-01-27","2026-01-27","CARTE 26/01/26 FRESH FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","fresh food",-12.5],["2026-01-27","2026-01-27","CARTE 03/08/25 BOUCHERIE VILLE04 CB*2399","Alimentation","Vie quotidienne","boucherie ville",-20.89],["2026-01-27","2026-01-27","CARTE 26/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-25.12],["2026-01-27","2026-01-27","CARTE 26/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-12.99],["2026-01-27","2026-01-27","CARTE 25/01/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-48.68],["2026-01-27","2026-01-27","CARTE 23/01/26 SC-SCEM PHO.AUT CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","sc scem pho aut",-8.0],["2026-01-26","2026-01-26","CARTE 24/01/26 SP MECCA BOOKS CB*2399","Non catégorisé","Non catégorisé","sp mecca books",-21.9],["2026-01-26","2026-01-26","CARTE 23/01/26 WWW.NAJAMINSTITUT CB*2399","Non catégorisé","Non catégorisé","www.najaminstitute.com",-11.2],["2026-01-26","2026-01-26","CARTE 24/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.28],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-25.03],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-7.93],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-65.43],["2026-01-26","2026-01-26","CARTE 23/01/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-4.98],["2026-01-26","2026-01-26","CARTE 25/01/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-01-26","2026-01-26","CARTE 25/01/26 BOULANGERIE M.M04 CB*2399","Alimentation","Vie quotidienne","boulangerie m",-2.5],["2026-01-26","2026-01-26","CARTE 25/01/26 POSTE CODE EXAM CB*2399","Vie Quotidienne - Autres","Vie quotidienne","la poste",-30.0],["2026-01-26","2026-01-26","CARTE 25/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.1],["2026-01-26","2026-01-24","VIR INST PAPA","Virements émis","Virements émis","papa",-30.0],["2026-01-26","2026-01-26","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-01-23","2026-01-23","CARTE 22/01/26 PHARMACIE MACE CB*2399","Pharmacie et laboratoire","Santé","pharmacie mace",-2.09],["2026-01-23","2026-01-23","CARTE 22/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-22","2026-01-22","RETRAIT DAB 20/01/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-100.0],["2026-01-22","2026-01-22","CARTE 21/01/26 AMAZON PAYMENTS 2 CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","amazon",-15.91],["2026-01-21","2026-01-21","CARTE 20/01/26 POSTE CODE EXAM CB*2399","Vie Quotidienne - Autres","Vie quotidienne","la poste",-30.0],["2026-01-20","2026-01-20","CARTE 19/01/26 LA MIE CALINE CB*2399","Alimentation","Vie quotidienne","la mie caline",-4.1],["2026-01-20","2026-01-20","CARTE 19/01/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-30.0],["2026-01-20","2026-01-20","CARTE 19/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-19","2026-01-19","RETRAIT DAB 16/01/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-150.0],["2026-01-19","2026-01-19","CARTE 17/01/26 MONMEZIERES CB*2399","Divertissement - culture (ciné, théâtre, concerts…)","Loisirs et sorties","monmezieres",-12.3],["2026-01-19","2026-01-19","CARTE 16/01/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-8.7],["2026-01-19","2026-01-19","CARTE 16/01/26 PPG*OFFREAVANTAGE CB*2399","Mobilier, électroménager, décoration…","Vie quotidienne","ppg",-20.8],["2026-01-19","2026-01-19","CARTE 16/01/26 CARREFOUR CESSON CB*2399","Alimentation","Vie quotidienne","carrefour",-25.81],["2026-01-19","2026-01-19","CARTE 16/01/26 BOUTIQUE COIFFEUR CB*2399","Bien-être et soins (coiffeur, parfums…)","Vie quotidienne","boutique coiffure",-30.58],["2026-01-19","2026-01-19","CARTE 16/01/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-1.6],["2026-01-19","2026-01-19","CARTE 16/01/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-2.0],["2026-01-19","2026-01-19","CARTE 16/01/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-15.0],["2026-01-19","2026-01-19","CARTE 16/01/26 DR LEGRU NICOLA 4 CB*2399","Médecins et frais médicaux","Santé","docteur legru nicola",-30.0],["2026-01-19","2026-01-19","CARTE 16/01/26 BOULANG LA ROTOND CB*2399","Alimentation","Vie quotidienne","boulanger la rotonde",-4.7],["2026-01-16","2026-01-16","CARTE 15/01/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-16","2026-01-16","CARTE 15/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.71],["2026-01-16","2026-01-16","CARTE 15/01/26 VILLA D'OR CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-13.9],["2026-01-16","2026-01-16","PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-01-16","2026-01-16","PRLV SEPA ACM IARD SA","Assurances (Auto/Moto)","Auto & Moto","acm iard",-18.33],["2026-01-15","2026-01-15","CARTE 14/01/26 AMOUR DE PIZZA CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-28.0],["2026-01-15","2026-01-15","PRLV SEPA SYNDICAT UNSA ENERGIE","Club / association (sport, hobby, art…)","Loisirs et sorties","syndicat unsa energie",-15.0],["2026-01-14","2026-01-14","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-30.0],["2026-01-14","2026-01-14","CARTE 13/01/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-01-14","2026-01-14","CARTE 13/01/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-9.9],["2026-01-14","2026-01-14","CARTE 13/01/26 CARREFOUR EXPRESS CB*2399","Alimentation","Vie quotidienne","carrefour",-4.71],["2026-01-14","2026-01-14","CARTE 13/01/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-2.6],["2026-01-14","2026-01-14","CARTE 12/01/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-13.72],["2026-01-13","2026-01-13","CARTE 12/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.08],["2026-01-13","2026-01-13","CHQ. N.1546746","Chèques","Chèques","cheque n 1546746",-75.0],["2026-01-12","2026-01-12","CARTE 10/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-9.73],["2026-01-12","2026-01-12","CARTE 09/01/26 CARREFOUR CESSON CB*4457","Alimentation","Vie quotidienne","carrefour",-2.69],["2026-01-12","2026-01-12","CARTE 09/01/26 CARREFOUR CESSON CB*4457","Alimentation","Vie quotidienne","carrefour",-36.19],["2026-01-12","2026-01-12","CARTE 08/01/26 GRAND FRAIS 4 CB*4457","Alimentation","Vie quotidienne","grand frais",-16.86],["2026-01-12","2026-01-12","CARTE 09/01/26 Microsoft*Subscri CB*4457","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","microsoft",-10.0],["2026-01-12","2026-01-12","CARTE 11/01/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-15.86],["2026-01-12","2026-01-12","PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-01-09","2026-01-09","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-20.0],["2026-01-09","2026-01-09","CARTE 08/01/26 SARL GBP CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","gbp",-3.95],["2026-01-09","2026-01-09","CARTE 08/01/26 VILLA D'OR CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-13.9],["2026-01-09","2026-01-09","CARTE 07/01/26 FDJ OBGF 2 CB*4457","Dépenses Jeux et paris","Loisirs et sorties","francaise des je",-170.0],["2026-01-08","2026-01-08","CARTE 06/01/26 NOTION LABS, INC. CB*4457","Abonnements & téléphonie","Abonnements & téléphonie","notion labs inc",-28.2],["2026-01-08","2026-01-08","CARTE 07/01/26 LE SULTAN CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","le sultan",-7.6],["2026-01-08","2026-01-08","CARTE 07/01/26 PACE LAVAGE CB*4457","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-08","2026-01-08","CARTE 07/01/26 TOPWG.COM* NOUNOU CB*4457","Non catégorisé","Non catégorisé","topwg.com* nounou-top",-6.99],["2026-01-07","2026-01-07","CARTE 06/01/26 CARREFOUR EXPRE04 CB*4457","Alimentation","Vie quotidienne","carrefour",-2.95],["2026-01-07","2026-01-07","CARTE 07/01/26 OPENAI *CHATGPT S CB*4457","Non catégorisé","Non catégorisé","openai *chatgpt subscr",-23.0],["2026-01-06","2026-01-06","CARTE 05/01/26 NORAUTO 70 CB*4457","Entretien - Réparation","Auto & Moto","norauto",-10.47],["2026-01-06","2026-01-06","CARTE 05/01/26 SAHIN CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","sahin",-154.96],["2026-01-06","2026-01-06","CARTE 05/01/26 NCD FOOD CB*4457","Non catégorisé","Non catégorisé","ncd food",-10.0],["2026-01-06","2026-01-06","CARTE 05/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-6.84],["2026-01-06","2026-01-06","CARTE 05/01/26 BARBERKING 35 2 CB*4457","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-01-06","2026-01-06","CARTE 05/01/26 UBR* PENDING.UBER CB*4457","Taxis","Voyages & Transports","ubr pending uber com",-19.9],["2026-01-06","2026-01-06","CARTE 05/01/26 Boulanger CB*4457","Electronique et informatique","Vie quotidienne","boulanger",-50.04],["2026-01-06","2026-01-06","CARTE 04/01/26 BOULANGERIE M.M04 CB*4457","Alimentation","Vie quotidienne","boulangerie m",-5.7],["2026-01-06","2026-01-06","CARTE 02/01/26 CANAL PLUS FR CB*4457","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-01-06","2026-01-06","CARTE 04/01/26 carrefour city 4 CB*4457","Alimentation","Vie quotidienne","carrefour city",-7.26],["2026-01-06","2026-01-06","PRLV SEPA Floa SA","Crédit conso","Emprunts (hors immobilier)","banque du groupe casino banque casino",-39.25],["2026-01-06","2026-01-06","PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-01-05","2026-01-05","CARTE 03/01/26 hostinger.com CB*4457","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-5.04],["2026-01-05","2026-01-05","CARTE 03/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-28.48],["2026-01-05","2026-01-05","CARTE 02/01/26 GRAND FRAIS 4 CB*4457","Alimentation","Vie quotidienne","grand frais",-89.48],["2026-01-05","2026-01-05","CARTE 03/01/26 HOSTINGER* HOSTIN CB*4457","Vêtements et accessoires","Vie quotidienne","hostinger hostinger f",-12.19],["2026-01-05","2026-01-05","CARTE 02/01/26 CONTROLE TECHNI CB*4457","Entretien - Réparation","Auto & Moto","controle technique",-69.0],["2026-01-05","2026-01-05","CARTE 02/01/26 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-93.99],["2026-01-05","2026-01-05","CARTE 02/01/26 APPLE.COM/BILL CB*4457","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-01-05","2026-01-04","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-22.5],["2026-01-05","2026-01-03","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-01-05","2026-01-05","CHQ. N.1546745","Chèques","Chèques","cheque n 1546745",-200.0],["2026-01-02","2026-01-02","*FRAIS REFABRICATION CB","Frais bancaires et de gestion (dont agios)","Services financiers & professionnels","boursorama banque",-10.0],["2026-01-02","2026-01-02","CARTE 31/12/25 PACE LAVAGE CB*4457","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-01-02","2026-01-02","CARTE 31/12/25 LECLERC CB*4457","Alimentation","Vie quotidienne","leclerc",-25.68],["2026-01-02","2026-01-02","CARTE 31/12/25 CHP ST GREGOIRE 4 CB*4457","Médecins et frais médicaux","Santé","chp saint grego",-2.5],["2026-01-02","2026-01-02","CARTE 31/12/25 NCD FOOD CB*4457","Non catégorisé","Non catégorisé","ncd food",-10.0],["2026-02-26","2026-02-26","VIR INST SA HLM LES FOYERS","Loyers, Charges","Logement","hlm les foyers",-600.0],["2026-02-26","2026-02-26","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-02-26","2026-02-26","CARTE 26/02/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-02-26","2026-02-26","CARTE 25/02/26 THE RIVER CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","the river",-23.5],["2026-02-26","2026-02-26","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-02-25","2026-02-25","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-100.0],["2026-02-23","2026-02-23","CARTE 21/02/26 NORAUTO 70 CB*2399","Entretien - Réparation","Auto & Moto","norauto",-13.47],["2026-02-23","2026-02-23","CARTE 21/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-20.0],["2026-02-23","2026-02-23","CARTE 21/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-78.95],["2026-02-23","2026-02-23","CARTE 21/02/26 RIVEX 4 CB*2399","Alimentation","Vie quotidienne","rivex",-76.28],["2026-02-23","2026-02-23","CARTE 20/02/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-02-23","2026-02-23","CARTE 20/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.71],["2026-02-23","2026-02-23","CARTE 20/02/26 RIVEX RENNES 47 4 CB*2399","Alimentation","Vie quotidienne","rivex",-5.23],["2026-02-23","2026-02-23","CARTE 19/02/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-9.0],["2026-02-19","2026-02-19","CARTE 18/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-3.96],["2026-02-18","2026-02-18","CARTE 17/02/26 RESTAURANT LE K04 CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","restaurant le k",-21.2],["2026-02-18","2026-02-18","CARTE 17/02/26 SARL OPI CB*2399","Bien-être et soins (coiffeur, parfums…)","Vie quotidienne","opi",-7.0],["2026-02-18","2026-02-18","CARTE 17/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-5.4],["2026-02-18","2026-02-18","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-395.0],["2026-02-17","2026-02-17","CARTE 16/02/26 PHARMACIE DU CH03 CB*2399","Pharmacie et laboratoire","Santé","pharmacie du ch",-11.8],["2026-02-17","2026-02-17","CARTE 16/02/26 CARREFOUR CITY CB*2399","Alimentation","Vie quotidienne","carrefour city",-8.54],["2026-02-17","2026-02-17","CARTE 16/02/26 LE SOLEIL CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","le soleil",-12.0],["2026-02-17","2026-02-17","PRLV SEPA ACM IARD SA","Assurances (Auto/Moto)","Auto & Moto","acm iard",-18.33],["2026-02-16","2026-02-16","CARTE 14/02/26 EL BARAKA CB*2399","Alimentation","Vie quotidienne","el baraka",-84.64],["2026-02-16","2026-02-16","CARTE 14/02/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-3.3],["2026-02-16","2026-02-16","CARTE 13/02/26 COMPTOIRS BIO 4 CB*2399","Alimentation","Vie quotidienne","comptoirs bio",-1.25],["2026-02-16","2026-02-16","CARTE 13/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-9.75],["2026-02-16","2026-02-16","CARTE 13/02/26 SUMUP *CENTRE CU CB*2399","Auto / Moto - Autres","Auto & Moto","sumup centre culturel a",-5.0],["2026-02-16","2026-02-15","VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-10.0],["2026-02-16","2026-02-16","PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-02-13","2026-02-13","CARTE 12/02/26 VILLA D'OR CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","villa d or",-14.9],["2026-02-13","2026-02-13","CARTE 12/02/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-02-13","2026-02-13","CARTE 12/02/26 UBER *TRIP CB*2399","Taxis","Voyages & Transports","uber",-1.0],["2026-02-13","2026-02-13","CARTE 12/02/26 UBR* PENDING.UBER CB*2399","Taxis","Voyages & Transports","ubr pending uber com",-28.98],["2026-02-12","2026-02-12","CARTE 11/02/26 SCARABEE PARIS CB*2399","Alimentation","Vie quotidienne","scarabee paris",-8.05],["2026-02-12","2026-02-12","CARTE 10/02/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-21.31],["2026-02-12","2026-02-12","CARTE 11/02/26 SARL ETHNIC FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","ethnic food",-10.0],["2026-02-11","2026-02-11","CARTE 10/02/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-02-11","2026-02-11","CARTE 10/02/26 PHARMACIE MACE CB*2399","Pharmacie et laboratoire","Santé","pharmacie mace",-15.52],["2026-02-10","2026-02-10","CARTE 09/02/26 DERSIM CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","dersim",-7.5],["2026-02-10","2026-02-10","CARTE 08/02/26 CANAL PLUS FR CB*2399","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-02-10","2026-02-10","PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-02-09","2026-02-09","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-20.0],["2026-02-09","2026-02-09","CARTE 06/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-11.2],["2026-02-09","2026-02-09","CARTE 06/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-10.79],["2026-02-09","2026-02-09","CARTE 07/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-7.9],["2026-02-09","2026-02-07","VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-25.0],["2026-02-09","2026-02-07","VIR INST MARINE TANFIN","Virements émis","Virements émis","marine tanfin",-194.95],["2026-02-06","2026-02-06","CARTE 05/02/26 LES DELICES DE 03 CB*2399","Alimentation","Vie quotidienne","les delices de",-3.0],["2026-02-06","2026-02-06","CARTE 05/02/26 LECLERC LAVAGE CB*2399","Alimentation","Vie quotidienne","leclerc",-8.0],["2026-02-06","2026-02-06","CARTE 05/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-4.57],["2026-02-06","2026-02-06","PRLV SEPA Floa SA","Non catégorisé","Non catégorisé","",-39.25],["2026-02-05","2026-02-05","CARTE 03/02/26 CANVA* I04781-283 CB*2399","Non catégorisé","Non catégorisé","canva* i04781-28358670",-16.0],["2026-02-05","2026-02-05","CARTE 04/02/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.06],["2026-02-05","2026-02-05","CHQ. N.1546747","Chèques","Chèques","cheque n 1546747",-70.0],["2026-02-05","2026-02-05","CHQ. N.1546743","Chèques","Chèques","cheque n 1546743",-200.0],["2026-02-05","2026-02-05","PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-02-04","2026-02-04","VIR INST SA HLM LES FOYERS","Solidarité - Autres","Cadeaux et solidarité","hlm les foyers",-530.0],["2026-02-04","2026-02-04","VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-30.0],["2026-02-04","2026-02-04","CARTE 03/02/26 PITAYA CB*2399","Non catégorisé","Non catégorisé","pitaya",-16.4],["2026-02-04","2026-02-04","CARTE 02/02/26 O'BROZER'S FOOD CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","o brozer s food",-10.7],["2026-02-03","2026-02-03","CARTE 01/02/26 OPENROUTER, INC CB*2399","Non catégorisé","Non catégorisé","openrouter, inc",-9.12],["2026-02-03","2026-02-03","CARTE 02/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-47.04],["2026-02-03","2026-02-03","CARTE 02/02/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-39.0],["2026-02-03","2026-02-03","CARTE 02/02/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-02-03","2026-02-03","CARTE 02/02/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-96.36],["2026-02-03","2026-02-03","CARTE 02/02/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-02-03","2026-02-03","CARTE 02/02/26 SERVICE NAVIGO 4 CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","navigo",-2.55],["2026-02-03","2026-02-03","CARTE 02/02/26 SELECTA SAS CB*2399","Alimentation","Vie quotidienne","selecta",-3.7],["2026-02-03","2026-02-03","CARTE 02/02/26 APPLE.COM/BILL CB*2399","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-02-02","2026-02-02","CARTE 29/01/26 CLAUDE.AI SUBSCRI CB*2399","Non catégorisé","Non catégorisé","claude.ai subscription",-108.0],["2026-02-02","2026-02-02","CARTE 31/01/26 SC-COMPTOIR DE Z CB*2399","Alimentation","Vie quotidienne","sc comptoir de z",-13.8],["2026-02-02","2026-02-02","CARTE 31/01/26 SC-LE PANIER DE CB*2399","Alimentation","Vie quotidienne","sc le panier de",-12.0],["2026-02-02","2026-02-02","CARTE 31/01/26 U EXPRESS 9 CB*2399","Alimentation","Vie quotidienne","u express",-1.15],["2026-02-02","2026-02-02","CARTE 31/01/26 U EXPRESS 9 CB*2399","Alimentation","Vie quotidienne","u express",-9.22],["2026-02-02","2026-02-02","CARTE 31/01/26 SERVICE NAVIGO 4 CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","navigo",-5.1],["2026-02-02","2026-02-02","CARTE 30/01/26 SELECTA SAS CB*2399","Alimentation","Vie quotidienne","selecta",-3.7],["2026-02-02","2026-02-02","CARTE 30/01/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-3.4],["2026-02-02","2026-02-02","CARTE 30/01/26 LE FEU DE BOIS 4 CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","le feu de bois",-20.7],["2026-02-02","2026-01-31","VIR INST COCHET EVA MAELYS","Virements émis","Virements émis","cochet eva maelys",-20.0],["2026-02-02","2026-02-02","PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-44.99],["2026-03-30","2026-03-28","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-77.0],["2026-03-30","2026-03-28","Vir Inst Sa Hlm Les Foyers | VIR INST SA HLM LES FOYERS","Solidarité - Autres","Cadeaux et solidarité","hlm les foyers",-623.0],["2026-03-30","2026-03-30","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.3],["2026-03-30","2026-03-30","EDF | PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","edf",-4.39],["2026-03-27","2026-03-27","Mowok | CARTE 26/03/26 MOZAIK CB*2399","Non catégorisé","Non catégorisé","mozaik",-8.9],["2026-03-27","2026-03-27","Geffray | CARTE 26/03/26 geffray 4 CB*2399","Médecins et frais médicaux","Santé","geffray",-2.8],["2026-03-27","2026-03-27","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-50.0],["2026-03-26","2026-03-26","Hostinger.com | CARTE 25/03/26 hostinger.com CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","hostinger com",-16.79],["2026-03-26","2026-03-26","Carrefour | CARTE 25/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-5.1],["2026-03-26","2026-03-26","Carrefour | CARTE 25/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.74],["2026-03-26","2026-03-26","Super U | CARTE 25/03/26 SUPER U 9 CB*2399","Alimentation","Vie quotidienne","super u",-53.66],["2026-03-26","2026-03-26","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-27.18],["2026-03-25","2026-03-25","Chez Theo | CARTE 24/03/26 CHEZ THEO CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","chez theo",-6.5],["2026-03-25","2026-03-25","Boulang.patis | CARTE 24/03/26 BOULANG.PATIS B03 CB*2399","Alimentation","Vie quotidienne","boulanger patisserie",-1.6],["2026-03-25","2026-03-25","Keolis | CARTE 24/03/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-03-25","2026-03-25","E.Leclerc | CARTE 24/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-33.0],["2026-03-25","2026-03-25","Grand Pere Jules | CARTE 24/03/26 GRAND PERE JULES CB*2399","Non catégorisé","Non catégorisé","grand pere jules",-4.8],["2026-03-23","2026-03-23","Au Comptoir Des Pains | CARTE 20/03/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-5.45],["2026-03-23","2026-03-23","Sif | CARTE 20/03/26 SIF CB*2399","Dons et Cadeaux","Cadeaux et solidarité","sif",-27.0],["2026-03-19","2026-03-19","Rivages Exotiques | CARTE 18/03/26 RIVEX RENNES 11 4 CB*2399","Alimentation","Vie quotidienne","rivex",-16.67],["2026-03-19","2026-03-19","La Baraka | CARTE 18/03/26 EL BARAKA CB*2399","Alimentation","Vie quotidienne","el baraka",-54.05],["2026-03-19","2026-03-19","E.Leclerc | CARTE 18/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-14.04],["2026-03-17","2026-03-17","Retrait Dab 16/03/26 Noyal Sur V Cb*2399 | RETRAIT DAB 16/03/26 NOYAL SUR V CB*2399","Retraits cash","Retraits cash","retrait automate",-60.0],["2026-03-17","2026-03-17","E.Leclerc | CARTE 16/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-18.64],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-12.0],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-16","2026-03-16","Anthropic | CARTE 12/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-16","2026-03-16","Retrait Dab 14/03/26 Rennes Cb*2399 | RETRAIT DAB 14/03/26 RENNES CB*2399","Retraits cash","Retraits cash","retrait automate",-100.0],["2026-03-16","2026-03-16","E.Leclerc | CARTE 13/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-154.44],["2026-03-16","2026-03-15","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-368.0],["2026-03-16","2026-03-14","Vir Inst Saindou Naida | VIR INST SAINDOU NAIDA","Virements émis","Virements émis","saindou naida",-25.0],["2026-03-16","2026-03-14","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-5.0],["2026-03-16","2026-03-16","Energie Mutuelle | PRLV SEPA ENERGIE MUTUELLE","Complémentaires santé","Santé","energie mutuelle",-64.75],["2026-03-13","2026-03-13","Au Comptoir Des Pains | CARTE 12/03/26 AU COMPTOIR DES CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","au comptoir des acigne",-2.4],["2026-03-13","2026-03-13","Marche De L'ori | CARTE 12/03/26 MARCHE DE L ORI03 CB*2399","Alimentation","Vie quotidienne","marche de l ori",-26.75],["2026-03-13","2026-03-13","Pace Lavage | CARTE 12/03/26 PACE LAVAGE CB*2399","Entretien - Réparation","Auto & Moto","pace lavage",-10.0],["2026-03-12","2026-03-12","Retrait Dab 11/03/26 Acigne Cb*2399 | RETRAIT DAB 11/03/26 ACIGNE CB*2399","Retraits cash","Retraits cash","retrait automate",-50.0],["2026-03-12","2026-03-12","Flowbird | CARTE 11/03/26 HORODATEURS 2 CB*2399","Parking","Auto & Moto","horodateurs",-1.4],["2026-03-11","2026-03-11","Canal+ | CARTE 09/03/26 CANAL PLUS FR CB*2399","Multimedia à domicile (TV, internet, téléphonie…)","Abonnements & téléphonie","canal plus",-34.99],["2026-03-11","2026-03-11","Lec | CARTE 10/03/26 PH LE CENTRE CB*2399","Pharmacie et laboratoire","Santé","pharmacie le centre",-15.39],["2026-03-11","2026-03-11","Lidl | CARTE 09/03/26 LIDL 2 CB*2399","Alimentation","Vie quotidienne","lidl",-4.18],["2026-03-10","2026-03-10","Matw Meals | CARTE 08/03/26 MATW MEALS CB*2399","Non catégorisé","Non catégorisé","matw meals",-10.0],["2026-03-10","2026-03-10","Anthropic | CARTE 08/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-10","2026-03-10","E.Leclerc | CARTE 09/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-6.53],["2026-03-10","2026-03-10","GiFi | CARTE 09/03/26 GIFI ST GREGOIR 4 CB*2399","Vie Quotidienne - Autres","Vie quotidienne","gifi",-12.47],["2026-03-10","2026-03-10","Amazon | CARTE 07/03/26 AMAZON PAYMENTS 2 CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","amazon",-13.98],["2026-03-10","2026-03-10","Intermarché | CARTE 09/03/26 INTERMARCHE 4 CB*2399","Alimentation","Vie quotidienne","intermarche",-1.52],["2026-03-10","2026-03-10","Carrefour | CARTE 09/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-16.03],["2026-03-10","2026-03-10","Grand Frais | CARTE 08/03/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-9.97],["2026-03-10","2026-03-10","Grand Frais | CARTE 08/03/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-6.38],["2026-03-10","2026-03-10","Amour De Pizza | CARTE 08/03/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-9.4],["2026-03-10","2026-03-10","Amour De Pizza | CARTE 08/03/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-25.7],["2026-03-10","2026-03-10","Crédit Agricole Consumer Finance | PRLV SEPA CA CONSUMER FINANCE","Crédit conso","Emprunts (hors immobilier)","ca consumer finance",-100.0],["2026-03-09","2026-03-09","Anthropic | CARTE 08/03/26 ANTHROPIC CB*2399","Non catégorisé","Non catégorisé","anthropic",-6.0],["2026-03-09","2026-03-09","Amazon | CARTE 07/03/26 COFIDIS AMAZON CB*2399","Crédit conso","Emprunts (hors immobilier)","cofidis",-34.26],["2026-03-09","2026-03-09","Carrefour | CARTE 07/03/26 CARREFOUR CESSON CB*2399","Alimentation","Vie quotidienne","carrefour",-10.83],["2026-03-09","2026-03-09","Brico Dépôt | CARTE 08/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-3.29],["2026-03-09","2026-03-09","Brico Dépôt | CARTE 08/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-18.9],["2026-03-09","2026-03-09","Carrefour | CARTE 08/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.58],["2026-03-09","2026-03-09","E.Leclerc | CARTE 07/03/26 LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-34.74],["2026-03-09","2026-03-09","Carrefour | CARTE 07/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-1.05],["2026-03-09","2026-03-09","Carrefour | CARTE 06/03/26 carrefour city 4 CB*2399","Alimentation","Vie quotidienne","carrefour city",-11.89],["2026-03-09","2026-03-09","Sarl To Eurl | CARTE 06/03/26 SARL TO EURL CB*2399","Electronique et informatique","Vie quotidienne","to",-81.82],["2026-03-09","2026-03-09","Action | CARTE 06/03/26 Action 4549 CB*2399","Vie Quotidienne - Autres","Vie quotidienne","action",-22.36],["2026-03-09","2026-03-09","Boulangerie M.m | CARTE 05/03/26 BOULANGERIE M.M04 CB*2399","Alimentation","Vie quotidienne","boulangerie m",-2.55],["2026-03-06","2026-03-06","FLOA Bank | PRLV SEPA Floa SA","Non catégorisé","Non catégorisé","",-39.25],["2026-03-05","2026-03-05","Canva | CARTE 03/03/26 CANVA* I04809-288 CB*2399","Non catégorisé","Non catégorisé","canva* i04809-28846783",-32.0],["2026-03-05","2026-03-05","Domiserve | CARTE 04/03/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-24.43],["2026-03-05","2026-03-05","Active Assurances | PRLV SEPA ACTIVE ASSURANCES","Assurances (Auto/Moto)","Auto & Moto","active assurances",-141.52],["2026-03-04","2026-03-04","Eurl Bouvier | CARTE 03/03/26 EURL BOUVIER 03 CB*2399","Alimentation","Vie quotidienne","bouvier",-10.8],["2026-03-04","2026-03-04","Domiserve | CARTE 03/03/26 DOMISERVE CB*2399","Autres dépenses","Autres dépenses","domiserve",-40.0],["2026-03-04","2026-03-04","Keolis | CARTE 03/03/26 KEOLIS RENNES ME CB*2399","Transports quotidiens (métro, bus…)","Voyages & Transports","keolis rennes",-1.7],["2026-03-04","2026-03-04","Brico Dépôt | CARTE 02/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-8.48],["2026-03-04","2026-03-04","Brico Dépôt | CARTE 02/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-9.99],["2026-03-04","2026-03-04","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-26.0],["2026-03-03","2026-03-03","Apple | CARTE 02/03/26 APPLE.COM/BILL CB*2399","Vie quotidienne","Vie quotidienne","itunes",-4.0],["2026-03-03","2026-03-03","Barber King | CARTE 02/03/26 BARBERKING 35 2 CB*2399","Non catégorisé","Non catégorisé","barberking 35   2155472",-20.0],["2026-03-03","2026-03-03","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-44.99],["2026-03-02","2026-03-02","Railway | CARTE 28/02/26 RAILWAY CB*2399","Livres, CD/DVD, bijoux, jouets…","Vie quotidienne","railway",-4.24],["2026-03-02","2026-03-02","Claude.ai Subscri | CARTE 28/02/26 CLAUDE.AI SUBSCRI CB*2399","Non catégorisé","Non catégorisé","claude.ai subscription",-108.0],["2026-03-02","2026-03-02","Amour De Pizza | CARTE 27/02/26 AMOUR DE PIZZA S CB*2399","Restaurants, bars, discothèques…","Loisirs et sorties","amour de pizza",-28.0],["2026-03-02","2026-03-02","Pharmacie Du Ch | CARTE 27/02/26 PHARMACIE DU CH03 CB*2399","Pharmacie et laboratoire","Santé","pharmacie du ch",-12.9],["2026-03-02","2026-03-02","E.Leclerc | CARTE 27/02/26 LECLERC DAC VL 03 CB*2399","Carburant","Auto & Moto","leclerc dac",-60.95],["2026-03-02","2026-03-02","Brico Dépôt | CARTE 01/03/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-14.93],["2026-03-02","2026-03-02","E.Leclerc | CARTE 28/02/26 E.LECLERC CB*2399","Alimentation","Vie quotidienne","leclerc",-281.79],["2026-03-02","2026-03-02","Grand Frais | CARTE 28/02/26 GRAND FRAIS 4 CB*2399","Alimentation","Vie quotidienne","grand frais",-28.18],["2026-03-02","2026-03-02","Brico Dépôt | CARTE 28/02/26 BRICO DEPOT 2 CB*2399","Bricolage et jardinage","Vie quotidienne","brico depot",-56.51],["2026-03-02","2026-02-28","Vir Inst Naoufal Saindou | VIR INST NAOUFAL SAINDOU","Virements émis","Virements émis","naoufal saindou",-20.0],["2026-03-02","2026-03-02","SFR | PRLV SEPA SFR","Téléphonie (fixe et mobile)","Abonnements & téléphonie","sfr",-25.96],["2026-03-02","2026-03-02","EDF | PRLV SEPA EDF clients particuliers","Energie (électricité, gaz, fuel, chauffage…)","Logement","electricite de france",-4.39]];
+
+const SUPA_URL='https://acnwkllnuuxvjptmokqe.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjbndrbGxudXV4dmpwdG1va3FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTQ2MjUsImV4cCI6MjA5MDQ3MDYyNX0.I8enTAhHJjgwYyvJWLDrew0StRtz2aeLdUvQhsvDYQA';
+const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+let _user=null;
+let _syncStatus='offline'; // online|offline|saving
+let _syncTimer=null;
+
+// ── AUTH ──
+async function initAuth(){
+  const{data:{session}}=await supa.auth.getSession();
+  if(session){_user=session.user;await loadFromCloud()}
+  supa.auth.onAuthStateChange(async(ev,session)=>{
+    if(session){_user=session.user;await loadFromCloud();rNav();render()}
+    else{_user=null;S={tab:'dashboard',mk:'all',tx:[],sal:0,savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],labelOv:{},delKeys:[],setup:false,_search:''};render()}
+  });
+  render();
+}
+
+function vAuthLanding(){
+  return`<div class="onboard">
+    <div class="ob-icon">💰</div>
+    <h2>Finances Pro</h2>
+    <p>Prenez le contrôle de vos finances. Importez vos relevés, suivez vos charges fixes, anticipez vos dépenses. Synchronisé entre tous vos appareils.</p>
+    <div class="ob-features">
+      <div class="ob-feat"><span>📊</span>Dashboard dépenses</div>
+      <div class="ob-feat"><span>🔒</span>Charges fixes auto</div>
+      <div class="ob-feat"><span>📅</span>Prévisions budgétaires</div>
+      <div class="ob-feat"><span>🏷️</span>Catégorisation intelligente</div>
+      <div class="ob-feat"><span>💎</span>Objectif d\'épargne</div>
+      <div class="ob-feat"><span>📲</span>Synchro multi-appareils</div>
+    </div>
+    <div style="display:flex;gap:10px;max-width:400px;width:100%">
+      <button class="btn bp" onclick="showAuth('login')" style="flex:1">Se connecter</button>
+      <button class="btn bs" onclick="showAuth('signup')" style="flex:1">Créer un compte</button>
+    </div>
+    <div style="margin-top:16px;font-size:12px;color:var(--tm)">🔒 Vos données sont chiffrées et privées</div>
+  </div>`;
+}
+
+function showAuth(mode){
+  const m=document.getElementById('m-auth');
+  const b=document.getElementById('auth-body');
+  const t=document.getElementById('auth-title');
+  const cw=document.getElementById('auth-close-wrap');
+  cw.innerHTML=_user?'<button class="cb" onclick="cm(\'m-auth\')">×</button>':'';
+  
+  window._authMode=mode||'login';
+  window._authError='';
+  renderAuth();
+  m.classList.add('a');
+}
+
+function renderAuth(){
+  const b=document.getElementById('auth-body');
+  const t=document.getElementById('auth-title');
+  const mode=window._authMode;
+  const err=window._authError;
+  t.textContent=mode==='login'?'🔐 Connexion':mode==='signup'?'📝 Inscription':'📱 Connexion SMS';
+  
+  let h=`<div class="auth-tabs">
+    <button class="${mode==='login'?'sel':''}" onclick="window._authMode='login';renderAuth()">Email</button>
+    <button class="${mode==='signup'?'sel':''}" onclick="window._authMode='signup';renderAuth()">Inscription</button>
+    <button class="${mode==='sms'?'sel':''}" onclick="window._authMode='sms';renderAuth()">SMS</button>
+  </div>`;
+  
+  if(err)h+=`<div class="al" style="background:var(--nob);border-color:rgba(240,108,108,0.25);color:var(--no);margin-bottom:14px">${err}</div>`;
+  
+  if(mode==='sms'){
+    h+=`<div class="fg"><label>Numéro de téléphone</label><input type="tel" id="auth-phone" placeholder="+33 6 12 34 56 78" style="font-size:16px"></div>
+    <div id="sms-otp-wrap" style="display:none"><div class="fg"><label>Code reçu par SMS</label><input type="text" id="auth-otp" placeholder="123456" maxlength="6" style="font-size:20px;text-align:center;letter-spacing:8px;font-family:var(--m)"></div></div>
+    <button class="btn bp" id="sms-btn" onclick="doSMS()">Envoyer le code</button>`;
+  } else {
+    h+=`<div class="fg"><label>Email</label><input type="email" id="auth-email" placeholder="vous@email.com" style="font-size:16px"></div>
+    <div class="fg"><label>Mot de passe</label><input type="password" id="auth-pwd" placeholder="${mode==='signup'?'Min. 6 caractères':'Votre mot de passe'}" onkeydown="if(event.key==='Enter')doEmailAuth()" style="font-size:16px"></div>
+    <button class="btn bp" onclick="doEmailAuth()">${mode==='login'?'Se connecter':'Créer mon compte'}</button>`;
+  }
+  
+  b.innerHTML=h;
+  setTimeout(()=>{const el=document.getElementById(mode==='sms'?'auth-phone':'auth-email');if(el)el.focus()},200);
+}
+
+async function doEmailAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pwd=document.getElementById('auth-pwd').value;
+  if(!email||!pwd){window._authError='Remplissez tous les champs';renderAuth();return}
+  if(window._authMode==='signup'&&pwd.length<6){window._authError='Mot de passe: 6 caractères minimum';renderAuth();return}
+  window._authError='';
+  try{
+    let res;
+    if(window._authMode==='signup'){
+      res=await supa.auth.signUp({email,password:pwd});
+    }else{
+      res=await supa.auth.signInWithPassword({email,password:pwd});
+    }
+    if(res.error)throw res.error;
+    if(window._authMode==='signup'&&res.data?.user?.identities?.length===0){
+      window._authError='Ce compte existe déjà';renderAuth();return;
+    }
+    cm('m-auth');
+    toast('✅',window._authMode==='signup'?'Compte créé ! Vérifiez vos emails si nécessaire':'Connecté !');
+  }catch(e){
+    window._authError=e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message||'Erreur';
+    renderAuth();
+  }
+}
+
+async function doSMS(){
+  const phone=document.getElementById('auth-phone').value.trim().replace(/\s/g,'');
+  const otpWrap=document.getElementById('sms-otp-wrap');
+  const otpInput=document.getElementById('auth-otp');
+  
+  if(otpWrap.style.display==='none'){
+    // Step 1: send OTP
+    if(!phone||phone.length<10){window._authError='Numéro invalide';renderAuth();return}
+    try{
+      const{error}=await supa.auth.signInWithOtp({phone});
+      if(error)throw error;
+      otpWrap.style.display='block';
+      document.getElementById('sms-btn').textContent='Vérifier le code';
+      document.getElementById('sms-btn').setAttribute('onclick','verifySMS()');
+      toast('📱','Code envoyé !');
+      setTimeout(()=>otpInput.focus(),200);
+    }catch(e){window._authError=e.message||'Erreur SMS';renderAuth()}
+  }
+}
+
+async function verifySMS(){
+  const phone=document.getElementById('auth-phone').value.trim().replace(/\s/g,'');
+  const otp=document.getElementById('auth-otp').value.trim();
+  if(!otp||otp.length<6){window._authError='Code à 6 chiffres requis';renderAuth();return}
+  try{
+    const{error}=await supa.auth.verifyOtp({phone,token:otp,type:'sms'});
+    if(error)throw error;
+    cm('m-auth');toast('✅','Connecté !');
+  }catch(e){window._authError=e.message||'Code invalide';renderAuth()}
+}
+
+async function doLogout(){
+  if(!confirm('Se déconnecter ?'))return;
+  await supa.auth.signOut();
+  localStorage.removeItem('fp5');
+  toast('👋','Déconnecté');
+}
+
+// ── CLOUD SYNC ──
+async function syncToCloud(){
+  if(!_user)return;
+  _syncStatus='saving';updateSyncDot();
+  clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(async()=>{
+    try{
+      const data={tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv||{},delKeys:S.delKeys||[],setup:S.setup};
+      const{error}=await supa.from('user_data').upsert({id:_user.id,data,updated_at:new Date().toISOString()});
+      if(error)throw error;
+      _syncStatus='online';
+    }catch(e){console.error('Sync error:',e);_syncStatus='offline'}
+    updateSyncDot();
+  },1500);
+}
+
+async function loadFromCloud(){
+  if(!_user)return;
+  try{
+    const{data:row,error}=await supa.from('user_data').select('data,updated_at').eq('id',_user.id).maybeSingle();
+    if(error)throw error;
+    if(row&&row.data){
+      const cloud=row.data;
+      // Merge: cloud wins if it has more transactions or is newer
+      const localStr=localStorage.getItem('fp5');
+      const local=localStr?JSON.parse(localStr):null;
+      if(!local||!local.tx||!local.tx.length||(cloud.tx&&cloud.tx.length>=local.tx.length)){
+        Object.assign(S,cloud);aOv();
+        localStorage.setItem('fp5',JSON.stringify(cloud));
+      }
+      _syncStatus='online';
+    }else{
+      // No cloud data yet - push local if exists
+      load();
+      if(S.tx&&S.tx.length)syncToCloud();
+      _syncStatus='online';
+    }
+  }catch(e){console.error('Load cloud error:',e);_syncStatus='offline';load()}
+}
+
+async function clearCloud(){
+  if(!_user)return;
+  try{await supa.from('user_data').delete().eq('id',_user.id)}catch(e){}
+}
+
+function updateSyncDot(){
+  document.querySelectorAll('.sync-dot').forEach(d=>{d.className='sync-dot '+_syncStatus});
+}
 
 const COL={"Vie quotidienne":"#7c6cf0","Loisirs et sorties":"#f06c9a","Auto & Moto":"#f0c34e","Abonnements & téléphonie":"#5da8f0","Santé":"#34d9b4","Virements émis":"#a89eff","Logement":"#3ee8a8","Emprunts (hors immobilier)":"#f06c6c","Non catégorisé":"#6b7080","Retraits cash":"#a0aab5","Voyages & Transports":"#e07548","Chèques":"#c8d0d8","Cadeaux et solidarité":"#f0d84e","Autres dépenses":"#f0a080","Services financiers & professionnels":"#8899aa"};
 const IC={"Vie quotidienne":"🛒","Loisirs et sorties":"🎉","Auto & Moto":"🚗","Abonnements & téléphonie":"📱","Santé":"💊","Virements émis":"📤","Logement":"🏠","Emprunts (hors immobilier)":"💳","Non catégorisé":"❓","Retraits cash":"💵","Voyages & Transports":"🚆","Chèques":"📝","Cadeaux et solidarité":"🎁","Autres dépenses":"📦","Services financiers & professionnels":"🏦"};
 const MN=["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const TABS=[{id:'dashboard',l:'📊 Vue'},{id:'forecast',l:'📅 Prévoir'},{id:'transactions',l:'📋 Opérations'},{id:'import',l:'📥 Import'},{id:'settings',l:'⚙️'}];
 const AC=Object.keys(COL).sort();
-const DEFO={"hlm les foyers":"Logement"};
-// Categories that are typically fixed charges
 const FIXED_CATS=new Set(["Logement","Abonnements & téléphonie","Santé","Emprunts (hors immobilier)","Auto & Moto","Services financiers & professionnels"]);
 
-let S={tab:'dashboard',mk:'all',tx:[],sal:2300,savT:200,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},
-  fixedSup:{},
-  manRec:[],
-  labelOv:{},
-  delKeys:[],
-  _editFixIdx:null,
-  _search:''
-};
+let S={tab:'dashboard',mk:'all',tx:[],sal:0,savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],setup:false};
 
 function mkOf(t){return t.date.slice(0,7)}
 function mkL(mk){const[y,m]=mk.split('-');return MN[+m]+' '+y}
@@ -164,15 +369,14 @@ function mkS(mk){const[y,m]=mk.split('-');const ms=gMks();const ys=new Set(ms.ma
 function gMks(){return[...new Set(S.tx.map(mkOf))].sort()}
 function txM(mk){return mk==='all'?S.tx:S.tx.filter(t=>mkOf(t)===mk)}
 function nxtMk(mk){const[y,m]=mk.split('-').map(Number);return(m===12?y+1:y)+'-'+String(m===12?1:m+1).padStart(2,'0')}
-function stx(r){return r.map((r,i)=>({id:i,date:r[0],dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6]}))}
-function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t.categoryParent=S.catOv[s];
-  // Apply label overrides
-  const lk=t.label.toLowerCase();if(S.labelOv[lk])t.label=S.labelOv[lk];
-  if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
-})}
-function save(){localStorage.setItem('fp5',JSON.stringify({tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys}))}
-function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,{tx:d.tx,sal:d.sal??2300,savT:d.savT??200,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{...DEFO},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[]});aOv();return}}catch(e){}
-  S.tx=stx(SR);S.catOv={...DEFO};aOv();
+function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t.categoryParent=S.catOv[s]})}
+function save(){
+  const data={tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys};
+  localStorage.setItem('fp5',JSON.stringify(data));
+  syncToCloud();
+}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem('fp5'));if(d&&d.tx&&d.tx.length){Object.assign(S,d);aOv()}}catch(e){}
 }
 function cSt(mk){const tx=txM(mk).filter(t=>t.amount<0);const o={};tx.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t)});return o}
 function cAvg(){const ms=gMks();if(!ms.length)return{};const s={};ms.forEach(mk=>{const st=cSt(mk);Object.entries(st).forEach(([c,d])=>{s[c]=(s[c]||0)+d.total})});const a={};Object.keys(s).forEach(c=>a[c]=s[c]/ms.length);return a}
@@ -185,54 +389,99 @@ function setTab(id){S.tab=id;rNav();render()}
 function setMk(mk){S.mk=mk;render()}
 function rNav(){document.getElementById('nav').innerHTML=TABS.map(t=>`<button class="nb ${S.tab===t.id?'a':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}
 
-/* ── FIXED CHARGES DETECTION ── */
 function detectFixed(){
   const mks=gMks();if(mks.length<2)return[];
   const bySup={};
-  S.tx.filter(t=>t.amount<0).forEach(t=>{
-    const sup=t.supplier.toLowerCase();if(!sup)return;
-    const mk=mkOf(t);
-    if(!bySup[sup])bySup[sup]={months:{},cat:t.categoryParent,label:t.label};
-    if(!bySup[sup].months[mk])bySup[sup].months[mk]=0;
-    bySup[sup].months[mk]+=Math.abs(t.amount);
-  });
+  S.tx.filter(t=>t.amount<0).forEach(t=>{const sup=t.supplier.toLowerCase();if(!sup)return;const mk=mkOf(t);if(!bySup[sup])bySup[sup]={months:{},cat:t.categoryParent,label:t.label};if(!bySup[sup].months[mk])bySup[sup].months[mk]=0;bySup[sup].months[mk]+=Math.abs(t.amount)});
   const fixed=[];
-  // Build manRec lookup: supplier -> amount (user's chosen amount takes priority)
-  const manRecMap={};
-  S.manRec.forEach(r=>{manRecMap[r.supplier||r.label.toLowerCase()]=r});
-  Object.entries(bySup).forEach(([sup,d])=>{
-    if(S.fixedSup[sup]===false)return;
-    const mc=Object.keys(d.months).length;
-    const amts=Object.values(d.months);
-    const avg=amts.reduce((a,b)=>a+b,0)/mc;
-    const maxDev=Math.max(...amts.map(a=>Math.abs(a-avg)/Math.max(avg,1)));
-    const isFixed=S.fixedSup[sup]===true||
-      (mc>=Math.min(mks.length,2)&&maxDev<0.15&&FIXED_CATS.has(d.cat));
-    if(isFixed){
-      // If user explicitly set this as recurring, use their chosen amount
-      const mr=manRecMap[sup];
-      const displayAmt=mr?Math.abs(mr.amount):avg;
-      const displayLabel=mr?mr.label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim();
-      fixed.push({supplier:sup,label:displayLabel,cat:d.cat,avg:displayAmt,months:mc,forced:S.fixedSup[sup]===true,manual:!!mr});
-    }
-  });
-  // Add manual recurring NOT already in auto-detected list
-  const autoSups=new Set(fixed.map(f=>f.supplier));
-  S.manRec.forEach(r=>{
-    const rs=r.supplier||r.label.toLowerCase();
-    if(!autoSups.has(rs)){
-      fixed.push({supplier:rs,label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,forced:true,manual:true});
-    }
-  });
+  Object.entries(bySup).forEach(([sup,d])=>{if(S.fixedSup[sup]===false)return;const mc=Object.keys(d.months).length;const amts=Object.values(d.months);const avg=amts.reduce((a,b)=>a+b,0)/mc;const maxDev=Math.max(...amts.map(a=>Math.abs(a-avg)/Math.max(avg,1)));
+    if(S.fixedSup[sup]===true||(mc>=Math.min(mks.length,2)&&maxDev<0.15&&FIXED_CATS.has(d.cat))){
+      fixed.push({supplier:sup,label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),cat:d.cat,avg,months:mc,forced:S.fixedSup[sup]===true})}});
+  S.manRec.forEach(r=>{fixed.push({supplier:r.supplier||r.label.toLowerCase(),label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,forced:true,manual:true})});
   return fixed.sort((a,b)=>b.avg-a.avg);
 }
 
 function vMk(){if(S.mk!=='all'&&!gMks().includes(S.mk)){const m=gMks();S.mk=m.length?m[m.length-1]:'all'}}
+
 function render(){
   vMk();const el=document.getElementById('co'),mks=gMks();
+  // Auth required?
+  if(!_user){
+    document.getElementById('nav').style.display='none';
+    document.getElementById('fab').style.display='none';
+    document.getElementById('sb').textContent='';
+    el.innerHTML=vAuthLanding();return;
+  }
+  // Not setup yet or no transactions?
+  if(!S.setup||!S.tx.length){
+    document.getElementById('nav').style.display='none';
+    document.getElementById('fab').style.display='none';
+    document.getElementById('sb').textContent='';
+    el.innerHTML=vOnboard();return;
+  }
+  document.getElementById('nav').style.display='flex';
   document.getElementById('sb').textContent=`${S.tx.length} opérations · ${mks.length} mois`;
   document.getElementById('fab').style.display=['transactions','dashboard'].includes(S.tab)?'flex':'none';
   switch(S.tab){case'dashboard':el.innerHTML=vD(mks);break;case'forecast':el.innerHTML=vF();break;case'transactions':el.innerHTML=vT(mks);break;case'import':el.innerHTML=vI();break;case'settings':el.innerHTML=vS();break}
+}
+
+/* ══ ONBOARDING ══ */
+function vOnboard(){
+  return`<div class="onboard">
+    <div class="ob-icon">💰</div>
+    <h2>Bienvenue sur Finances Pro</h2>
+    <p>Prenez le contrôle de vos finances personnelles. Importez vos relevés bancaires, visualisez vos dépenses par catégorie, suivez vos charges fixes et anticipez le mois prochain. Compatible avec toutes les banques françaises.</p>
+    <div class="ob-features">
+      <div class="ob-feat"><span>📊</span>Dashboard dépenses</div>
+      <div class="ob-feat"><span>🔒</span>Charges fixes auto</div>
+      <div class="ob-feat"><span>📅</span>Prévisions budgétaires</div>
+      <div class="ob-feat"><span>🏷️</span>Catégorisation intelligente</div>
+      <div class="ob-feat"><span>💎</span>Objectif d'épargne</div>
+      <div class="ob-feat"><span>⚡</span>Gestion impôts</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:500px;margin-bottom:24px">
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">BoursoBank</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">Crédit Agricole</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">Société Générale</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">BNP Paribas</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">LCL</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">La Banque Postale</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">Fortuneo</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">CIC / Crédit Mutuel</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">N26</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">Revolut</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--ts)">Hello bank!</div>
+      <div style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(124,108,240,0.15);border:1px solid rgba(124,108,240,0.3);color:var(--al)">+ tout CSV bancaire</div>
+    </div>
+    <div class="card" style="width:100%;max-width:560px;text-align:left">
+      <div class="ct" style="margin-bottom:16px">🚀 Commencer</div>
+      <div class="fg"><label>Votre revenu mensuel net (€)</label><input type="number" id="ob-sal" placeholder="Ex: 2300" style="font-size:18px"></div>
+      <div class="st">Importez vos opérations</div>
+      <div class="uz" id="dz" onclick="document.getElementById('fi').click()">
+        <div style="font-size:40px;margin-bottom:12px">📄</div>
+        <div style="font-weight:600;margin-bottom:4px">Cliquez ou déposez vos relevés CSV</div>
+        <div style="font-size:12px;color:var(--tm)">Toutes banques · Détection automatique du format et des mois</div>
+        <input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="oF(event)" multiple>
+      </div>
+      <div class="fg"><label>Ou collez le contenu CSV</label><textarea id="ct" rows="6" placeholder="dateOp;dateVal;label;category;categoryParent;supplierFound;amount;..."></textarea></div>
+      <div id="ob-preview" style="margin-bottom:16px"></div>
+      <button class="btn bp" onclick="finishSetup()">✅ C'est parti !</button>
+      <div class="al ai" style="margin-top:14px">🔒 Tout reste dans votre navigateur. Aucune donnée n'est envoyée sur un serveur.</div>
+    </div>
+  </div>`;
+}
+
+function finishSetup(){
+  const sal=parseFloat(document.getElementById('ob-sal').value);
+  if(!sal||sal<=0){toast('⚠️','Entrez votre revenu mensuel');return}
+  // Try importing from textarea if no file was loaded
+  if(!S.tx.length){
+    const t=document.getElementById('ct').value.trim();
+    if(t){const n=pCSV(t);S.tx.push(...n);aOv()}
+  }
+  if(!S.tx.length){toast('⚠️','Importez au moins un CSV pour commencer');return}
+  S.sal=sal;S.setup=true;S.mk=gMks().length?gMks()[gMks().length-1]:'all';
+  save();render();toast('🎉','Bienvenue ! Vos données sont synchronisées');
 }
 
 function mChips(mks){return`<div class="ms"><button class="mc ${S.mk==='all'?'a':''}" onclick="setMk('all')">Tout</button>${mks.map(mk=>`<button class="mc ${S.mk===mk?'a':''}" onclick="setMk('${mk}')">${mkS(mk)}</button>`).join('')}</div>`}
@@ -242,50 +491,19 @@ function vD(mks){
   const tx=txM(S.mk),exp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0),nb=S.mk==='all'?mks.length:1,av=net()*nb,bal=av-exp;
   const st=cSt(S.mk),sorted=Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
   const ded=[];if(S.taxOn&&S.taxR>0)ded.push(`Impôt ${S.taxR}%`);if(S.savOn&&S.savT>0)ded.push(`Épargne ${fmt(S.savT)}`);
-  
-  // Fixed charges - only show active ones (excluded disappear naturally)
-  const fixed=detectFixed();
-  const fixedTotal=fixed.reduce((s,f)=>s+f.avg,0);
-  
+  const fixed=detectFixed(),fixedT=fixed.reduce((s,f)=>s+f.avg,0);
   let h=mChips(mks);
   h+=`<div class="g2"><div class="card"><div class="ch"><span class="ct">Dépenses</span><span style="font-size:18px">📉</span></div><div class="cv neg">${fmt(exp)}</div><div class="csub">${tx.filter(t=>t.amount<0).length} transactions</div></div>
   <div class="card"><div class="ch"><span class="ct">Solde estimé</span><span style="font-size:18px">${bal>=0?'📈':'🚨'}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} dispo${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''}</div></div></div>`;
-  
-  // FIXED CHARGES CARD
-  if(fixed.length||S._editFix){
-    const editing=S._editFix;
-    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;S._editFixIdx=null;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt(net()-fixedTotal)}</span> restant après charges</div>`;
-    fixed.forEach((f,idx)=>{
-      const isEditing=editing&&S._editFixIdx===idx;
-      if(isEditing){
-        h+=`<div class="fix-item" style="flex-wrap:wrap;gap:8px;padding:12px 14px">
-          <span class="fix-icon">${IC[f.cat]||'📦'}</span>
-          <input type="text" id="fix-ed-label" value="${f.label}" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
-          <input type="number" id="fix-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
-          <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
-            <button class="bi ok" onclick="saveFixEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
-            <button class="bi ko" onclick="S._editFixIdx=null;render()" style="width:28px;height:28px;font-size:12px">✕</button>
-            <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">🗑</button>
-          </div>
-        </div>`;
-      } else if(editing){
-        h+=`<div class="fix-item" onclick="S._editFixIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
-      } else {
-        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
-      }
-    });
-    if(editing){
-      h+=`<div class="fix-item" onclick="addFixCharge()" style="justify-content:center;border:1px dashed var(--border);border-radius:8px;margin-top:8px;color:var(--al);font-weight:600;gap:6px"><span>+</span> Ajouter une charge</div>`;
-    }
-    h+=`</div>`;
-  }
-  
+  if(fixed.length){
+    h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes / mois</span><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedT)}</span></div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charges · <span style="color:var(--ok)">${fmt(net()-fixedT)}</span> restant après charges</div>`;
+    fixed.forEach(f=>{h+=`<div class="fix-item"><span class="fix-icon">${IC[f.cat]||'📦'}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`});
+    h+=`</div>`}
   if(S.savOn||S.taxOn){h+=`<div class="card" style="padding:14px 18px"><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-family:var(--m)">`;
     if(S.taxOn&&S.taxR>0)h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--warn)">⚡</span> Impôt : <strong style="color:var(--warn)">${fmt(S.sal*(S.taxR/100)*nb)}</strong></div>`;
     if(S.savOn&&S.savT>0)h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--ok)">💎</span> Épargne : <strong style="color:var(--ok)">${fmt(S.savT*nb)}</strong></div>`;
     h+=`</div></div>`}
-  
   h+=`<div class="st">Répartition ${S.mk==='all'?'globale':mkS(S.mk)}</div>`;
   sorted.forEach(([cat,data])=>{const pct=exp>0?(data.total/exp*100):0,col=COL[cat]||'#6b7080',ic=IC[cat]||'📦';
     h+=`<div class="cc" onclick="showCD('${esc(cat)}')" style="--cat-color:${col}"><div class="h"><div class="n"><span style="font-size:18px">${ic}</span><span>${cat}</span><span class="cnt">${data.count}</span></div><div class="amt" style="color:${col}">${fmt(data.total)}</div></div><div class="bar"><div class="fill" style="width:${pct}%;background:${col}"></div></div><div class="ft"><span>${pct.toFixed(1)}%</span><span class="arr">Détail →</span></div></div>`});
@@ -294,7 +512,7 @@ function vD(mks){
 
 /* ══ FORECAST ══ */
 function vF(){
-  const avg=cAvg(),mks=gMks(),last=mks.length?mks[mks.length-1]:'2026-03',nk=nxtMk(last),nl=mkL(nk);
+  const avg=cAvg(),mks=gMks(),last=mks.length?mks[mks.length-1]:'2026-01',nk=nxtMk(last),nl=mkL(nk);
   if(!Object.keys(S.fAdj).length)S.fAdj={...avg};
   const proj=Object.values(S.fAdj).reduce((a,b)=>a+b,0),av=net(),rem=av-proj,pct=av>0?(proj/av)*100:0;
   const fx=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Santé'];
@@ -314,55 +532,38 @@ function vF(){
     if(!isF&&!ed){const mx=Math.max(avgV*3,val*1.5,100),diff=avgV>0?((val/avgV-1)*100):0;
       h+=`<input type="range" class="fsl" min="0" max="${mx.toFixed(0)}" value="${val.toFixed(0)}" step="5" style="--cat-color:${col}" oninput="uFA('${esc(cat)}',this.value)"><div class="fhi"><span>Moy: ${fmt(avgV)}</span><span>${diff>1?'↑ +'+diff.toFixed(0)+'%':diff<-1?'↓ '+diff.toFixed(0)+'%':'→ Moy'}</span></div>`}
     h+=`</div>`});
-  h+=`<div style="display:flex;gap:12px;margin-top:16px"><button class="btn bs" onclick="rFC()" style="flex:1">🔄 Reset</button><button class="btn bp" onclick="sFC()" style="flex:1">💾 Sauver</button></div>`;
-  return h;
+  h+=`<div style="display:flex;gap:12px;margin-top:16px"><button class="btn bs" onclick="rFC()" style="flex:1">🔄 Reset</button><button class="btn bp" onclick="sFC()" style="flex:1">💾 Sauver</button></div>`;return h;
 }
 
 /* ══ TRANSACTIONS ══ */
 function vT(mks){
-  let allTx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
-  const q=S._search.toLowerCase().trim();
-  const tx=q?allTx.filter(t=>t.label.toLowerCase().includes(q)||t.categoryParent.toLowerCase().includes(q)||t.supplier.toLowerCase().includes(q)):allTx;
-  const totalExp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0);
-  let h=mChips(mks);
-  h+=`<div style="margin-bottom:14px"><input type="text" id="tx-search" placeholder="🔍 Rechercher une opération..." value="${S._search}" oninput="S._search=this.value;renderTxList()" style="font-size:14px;padding:11px 16px"></div>`;
-  h+=`<div id="tx-results">`;
-  if(q)h+=`<div style="font-size:12px;color:var(--ts);margin-bottom:12px">${tx.length} résultat${tx.length>1?'s':''} · ${fmt(totalExp)} de dépenses</div>`;
-  h+=`<div class="tl">`;
-  if(!tx.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">${q?'🔍':'📭'}</div>${q?'Aucun résultat':'Aucune transaction'}</div>`}
-  else{tx.forEach(t=>{const neg=t.amount<0,col=COL[t.categoryParent]||'#6b7080';
-    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}${t.manual?'<span class="fix-tag" style="margin-left:6px">Manuel</span>':''}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`})}
-  h+=`</div></div>`;return h;
-}
-function renderTxList(){
-  const mks=gMks();
-  let allTx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
-  const q=S._search.toLowerCase().trim();
-  const tx=q?allTx.filter(t=>t.label.toLowerCase().includes(q)||t.categoryParent.toLowerCase().includes(q)||t.supplier.toLowerCase().includes(q)):allTx;
-  const totalExp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0);
-  let h='';
-  if(q)h+=`<div style="font-size:12px;color:var(--ts);margin-bottom:12px">${tx.length} résultat${tx.length>1?'s':''} · ${fmt(totalExp)} de dépenses</div>`;
-  h+=`<div class="tl">`;
-  if(!tx.length){h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">${q?'🔍':'📭'}</div>${q?'Aucun résultat':'Aucune transaction'}</div>`}
-  else{tx.forEach(t=>{const neg=t.amount<0,col=COL[t.categoryParent]||'#6b7080';
-    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}${t.manual?'<span class="fix-tag" style="margin-left:6px">Manuel</span>':''}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`})}
-  h+=`</div>`;
-  const container=document.getElementById('tx-results');
-  if(container)container.innerHTML=h;
+  const tx=txM(S.mk).sort((a,b)=>b.date.localeCompare(a.date));
+  let h=mChips(mks)+`<div class="tl">`;
+  if(!tx.length)h+=`<div style="text-align:center;padding:48px 0;color:var(--tm)"><div style="font-size:40px;margin-bottom:12px">📭</div>Aucune transaction</div>`;
+  else tx.forEach(t=>{const neg=t.amount<0,col=COL[t.categoryParent]||'#6b7080';
+    h+=`<div class="ti" onclick="oRe(${t.id})"><div class="ic" style="background:${col}18;color:${col}">${IC[t.categoryParent]||'📦'}</div><div class="co"><div class="lb">${t.label}</div><div class="me">${t.date.slice(8,10)}/${t.date.slice(5,7)}/${t.date.slice(0,4)} · ${t.categoryParent} <span class="csb">✎</span></div></div><div class="am ${neg?'neg':'pos'}">${neg?'':'+'}${fmtD(Math.abs(t.amount))}</div></div>`});
+  h+=`</div>`;return h;
 }
 
 /* ══ IMPORT ══ */
 function vI(){
-  return`<div class="card"><div class="ct" style="margin-bottom:14px">📥 Import CSV</div><p style="color:var(--ts);margin-bottom:16px;font-size:13px">Importez vos relevés bancaires. Les mois sont détectés automatiquement.</p>
-  <div class="uz" id="dz" onclick="document.getElementById('fi').click()"><div style="font-size:40px;margin-bottom:12px">📄</div><div style="font-weight:600;margin-bottom:4px">Cliquez ou déposez vos CSV</div><div style="font-size:12px;color:var(--tm)">Import multiple supporté</div><input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="oF(event)" multiple></div></div>
-  <div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:12px">⚠️ Reset</div><button class="btn bd" onclick="rAll()">🗑️ Tout effacer</button></div>`;
+  return`<div class="card"><div class="ct" style="margin-bottom:14px">📥 Import CSV</div><p style="color:var(--ts);margin-bottom:16px;font-size:13px">Importez vos relevés bancaires. Détection automatique de la banque.</p>
+  <div class="uz" id="dz" onclick="document.getElementById('fi2').click()"><div style="font-size:40px;margin-bottom:12px">📄</div><div style="font-weight:600">Cliquez ou déposez vos CSV</div><input type="file" id="fi2" accept=".csv,.txt" style="display:none" onchange="oF(event)" multiple></div>
+  <div class="fg"><label>Ou collez le CSV</label><textarea id="ct2" rows="8" placeholder="dateOp;dateVal;label;..."></textarea></div>
+  <button class="btn bp" onclick="iT2()">📥 Importer</button></div>
+  <div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:12px">⚠️ Reset complet</div><p style="color:var(--ts);font-size:13px;margin-bottom:12px">Efface toutes vos données et revient à l'écran d'accueil.</p><button class="btn bd" onclick="rAll()">🗑️ Tout effacer</button></div>`;
 }
 
 /* ══ SETTINGS ══ */
 function vS(){
+  let h='';
+  // User bar
+  if(_user){
+    h+=`<div class="user-bar"><span class="sync-dot ${_syncStatus}"></span><span class="user-email">${_user.email||_user.phone||'Utilisateur'}</span><button class="logout-btn" onclick="doLogout()">Déconnexion</button></div>`;
+  }
   const g=S.sal,ta=S.taxOn?g*(S.taxR/100):0,sa=S.savOn?S.savT:0,n=g-ta-sa;
-  const rk=Object.keys(S.catOv),fixed=detectFixed();
-  let h=`<div class="card"><div class="ct" style="margin-bottom:20px">⚙️ Paramètres</div>
+  const rk=Object.keys(S.catOv),fixed=detectFixed(),fixedT=fixed.reduce((s,f)=>s+f.avg,0);
+  h+=`<div class="card"><div class="ct" style="margin-bottom:20px">⚙️ Paramètres</div>
   <div class="fg"><label>Revenu mensuel net</label><input type="number" value="${S.sal}" onchange="S.sal=parseFloat(this.value)||0;save();render()" style="font-size:18px"></div>
   <div class="st" style="margin-top:24px">Déductions</div>
   <div class="dc ${S.savOn?'en':''}"><div class="tr ${S.savOn?'a':''}" onclick="tSav()"><div><div class="trl">💎 Épargne</div><div class="trs">Montant mensuel réservé</div></div><div class="tsw"></div></div>${S.savOn?`<div style="padding:12px 16px 4px"><div class="di"><input type="number" value="${S.savT}" min="0" step="10" onchange="S.savT=parseFloat(this.value)||0;save();render()"><span class="u">€/mois</span></div></div>`:''}</div>
@@ -371,93 +572,22 @@ function vS(){
   <div class="card" style="background:rgba(255,255,255,0.02);margin-bottom:0"><div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>Revenu brut</span><span style="font-family:var(--m);font-weight:600">${fmt(g)}</span></div>`;
   if(S.taxOn&&S.taxR>0)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--warn)"><span>− Impôt (${S.taxR}%)</span><span style="font-family:var(--m);font-weight:600">-${fmt(ta)}</span></div>`;
   if(S.savOn&&S.savT>0)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--ok)"><span>− Épargne</span><span style="font-family:var(--m);font-weight:600">-${fmt(sa)}</span></div>`;
-  const fixedT=fixed.reduce((s,f)=>s+f.avg,0);
   h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--no)"><span>− Charges fixes</span><span style="font-family:var(--m);font-weight:600">-${fmt(fixedT)}</span></div>`;
   h+=`<div style="border-top:1px solid var(--border);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;font-size:16px;font-weight:700"><span>Budget libre</span><span style="font-family:var(--m);color:${n-fixedT>=0?'var(--ok)':'var(--no)'}">${fmt(n-fixedT)}</span></div></div>
-  <div class="al ai" style="margin-top:16px">💾 Sauvegarde automatique</div></div>`;
-
-  // Category rules
-  // Label rules
-  const lk=Object.keys(S.labelOv);
-  if(lk.length){
-    h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">✏️ Renommages (${lk.length})</div>`;
-    lk.sort().forEach(k=>{h+=`<div class="ri"><span class="rs" style="opacity:.5;text-decoration:line-through">${k}</span><span class="ra">→</span><span class="rc">${S.labelOv[k]}</span><button class="rd" onclick="delete S.labelOv['${esc(k)}'];aOv();save();render();toast('🗑️','Renommage supprimé')">✕</button></div>`});
-    h+=`</div>`;
-  }
+  <div class="al ai" style="margin-top:16px">💾 Sauvegarde automatique dans votre navigateur</div></div>`;
   h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">🏷️ Règles de catégorisation (${rk.length})</div>`;
   if(rk.length){rk.sort().forEach(s=>{h+=`<div class="ri"><span class="rs">${s}</span><span class="ra">→</span><span class="rc">${IC[S.catOv[s]]||'📦'} ${S.catOv[s]}</span><button class="rd" onclick="dRule('${esc(s)}')">✕</button></div>`})}
-  else{h+=`<div style="text-align:center;padding:16px;color:var(--tm);font-size:13px">Aucune règle</div>`}
+  else h+=`<div style="text-align:center;padding:16px;color:var(--tm);font-size:13px">Aucune règle</div>`;
   h+=`</div>`;
-
-  // Manual recurring
-  h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">🔄 Charges récurrentes manuelles (${S.manRec.length})</div>
-  <p style="color:var(--ts);font-size:13px;margin-bottom:14px">Ajoutez ici les charges fixes qui n'apparaissent pas encore dans vos CSV.</p>`;
-  if(S.manRec.length){S.manRec.forEach((r,i)=>{h+=`<div class="ri"><span class="rs">${IC[r.cat]||'📦'} ${r.label}</span><span class="ra">${fmt(Math.abs(r.amount))}/mois</span><button class="rd" onclick="dManRec(${i})">✕</button></div>`})}
+  h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">🔄 Charges récurrentes manuelles (${S.manRec.length})</div>`;
+  if(S.manRec.length){S.manRec.forEach((r,i)=>{h+=`<div class="ri"><span class="rs">${IC[r.cat]||'📦'} ${r.label}</span><span class="ra">${fmt(Math.abs(r.amount))}/mois</span><button class="rd" onclick="dMR(${i})">✕</button></div>`})}
   h+=`<button class="btn bs" onclick="openAdd(true)" style="margin-top:8px">+ Ajouter une charge récurrente</button></div>`;
   return h;
 }
 
 /* ── ACTIONS ── */
-function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
-function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
-function removeFix(sup){S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);S._editFix=false;save();render();toast('🔓','Charge retirée')}
-function removeFixCharge(sup){
-  if(!confirm('Retirer cette charge fixe ?'))return;
-  S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);
-  S._editFixIdx=null;save();render();toast('🗑️','Charge supprimée');
-}
-function saveFixEdit(idx){
-  const fixed=detectFixed();
-  const f=fixed[idx];if(!f)return;
-  const newLabel=document.getElementById('fix-ed-label').value.trim();
-  const newAmt=parseFloat(document.getElementById('fix-ed-amt').value);
-  if(!newLabel){toast('⚠️','Libellé requis');return}
-  if(isNaN(newAmt)||newAmt<=0){toast('⚠️','Montant invalide');return}
-  // Update or create manRec entry for this supplier
-  const existing=S.manRec.find(r=>r.supplier===f.supplier);
-  if(existing){
-    existing.label=newLabel;
-    existing.amount=-newAmt;
-  }else{
-    S.manRec.push({label:newLabel,amount:-newAmt,cat:f.cat,supplier:f.supplier});
-  }
-  S.fixedSup[f.supplier]=true;
-  S._editFixIdx=null;save();render();toast('✅','Charge modifiée');
-}
-function addFixCharge(){
-  const catO=AC.map(c=>`<option value="${c}">${IC[c]||'📦'} ${c}</option>`).join('');
-  const card=document.querySelector('.card[style*="border-left:3px"]');
-  if(!card)return;
-  // Check if add form already exists
-  if(document.getElementById('fix-add-form'))return;
-  const form=document.createElement('div');
-  form.id='fix-add-form';
-  form.style.cssText='padding:12px 14px;border:1px dashed var(--accent);border-radius:8px;margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
-  form.innerHTML=`
-    <input type="text" id="fix-add-label" placeholder="Libellé" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
-    <input type="number" id="fix-add-amt" placeholder="Montant" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
-    <select id="fix-add-cat" style="flex:1;min-width:140px;padding:6px 10px;font-size:13px">${catO}</select>
-    <div style="display:flex;gap:4px">
-      <button class="bi ok" onclick="confirmAddFix()" style="width:28px;height:28px;font-size:12px">✓</button>
-      <button class="bi ko" onclick="document.getElementById('fix-add-form').remove()" style="width:28px;height:28px;font-size:12px">✕</button>
-    </div>`;
-  card.appendChild(form);
-  document.getElementById('fix-add-label').focus();
-}
-function confirmAddFix(){
-  const label=document.getElementById('fix-add-label').value.trim();
-  const amt=parseFloat(document.getElementById('fix-add-amt').value);
-  const cat=document.getElementById('fix-add-cat').value;
-  if(!label){toast('⚠️','Libellé requis');return}
-  if(isNaN(amt)||amt<=0){toast('⚠️','Montant invalide');return}
-  const sup=label.toLowerCase();
-  // Check duplicate
-  const existing=detectFixed().find(f=>f.supplier===sup);
-  if(existing){toast('⚠️','Cette charge existe déjà');return}
-  S.manRec.push({label,amount:-amt,cat,supplier:sup});
-  S.fixedSup[sup]=true;
-  save();render();toast('✅','Charge ajoutée');
-}
+function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'OFF')}
+function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'OFF')}
 function sFE(c){S.fEd=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
 function cFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.fAdj[c]=v;S.fEd=null;save();render();toast('✅','OK')}}
 function xFE(){S.fEd=null;render()}
@@ -465,7 +595,7 @@ function uFA(c,v){S.fAdj[c]=parseFloat(v);render()}
 function aScen(f){const avg=cAvg(),fx=['Logement','Emprunts (hors immobilier)'];Object.keys(S.fAdj).forEach(c=>{if(!fx.includes(c))S.fAdj[c]=(avg[c]||0)*f});render();toast('✅',f<1?'Optimiste':f>1?'Pessimiste':'Réaliste')}
 function rFC(){S.fAdj={...cAvg()};render();toast('🔄','Reset')}
 function sFC(){save();toast('💾','Sauvé')}
-function dManRec(i){S.manRec.splice(i,1);save();render();toast('🗑️','Supprimé')}
+function dMR(i){S.manRec.splice(i,1);save();render();toast('🗑️','Supprimé')}
 
 /* ── CATEGORY DETAIL ── */
 function showCD(cat){
@@ -486,110 +616,32 @@ function showCD(cat){
 /* ── REASSIGN ── */
 function oRe(id){
   const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  const b=document.getElementById('m-re-b'),sup=tx.supplier,supL=sup?sup.toLowerCase():'',same=sup?S.tx.filter(t=>t.supplier.toLowerCase()===supL):[];
-  const isRec=S.fixedSup[supL]===true||S.manRec.some(r=>r.supplier===supL)||detectFixed().some(f=>f.supplier===supL);
-  const origLabel=tx._origLabel||tx.label;
+  const b=document.getElementById('m-re-b'),sup=tx.supplier,same=sup?S.tx.filter(t=>t.supplier.toLowerCase()===sup.toLowerCase()):[];
   let h=`<div style="margin-bottom:16px;padding:14px;background:var(--surface);border-radius:10px;border:1px solid var(--border)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <span style="font-weight:600;font-size:14px;flex:1" id="re-label-show">${tx.label}</span>
-      <button class="bi" onclick="document.getElementById('re-label-edit').style.display='flex';document.getElementById('re-label-show').style.display='none';this.style.display='none';document.getElementById('re-label-input').focus()" style="width:28px;height:28px;font-size:12px">✎</button>
-    </div>
-    <div id="re-label-edit" style="display:none;gap:6px;margin-bottom:8px">
-      <input type="text" id="re-label-input" value="${tx.label}" style="font-size:14px;padding:8px 12px;flex:1" onkeydown="if(event.key==='Enter')renameTx(${id})">
-      <button class="bi ok" onclick="renameTx(${id})" style="width:32px;height:32px">✓</button>
-    </div>
+    <div style="font-weight:600;font-size:14px;margin-bottom:4px">${tx.label}</div>
     <div style="font-size:12px;color:var(--tm);font-family:var(--m)">${tx.date} · ${fmtD(Math.abs(tx.amount))}</div>
-    <div style="font-size:12px;color:var(--ts);margin-top:4px">Catégorie: <strong>${tx.categoryParent}</strong></div>
+    <div style="font-size:12px;color:var(--ts);margin-top:4px">Actuel: <strong>${tx.categoryParent}</strong></div>
     ${sup?`<div style="font-size:11px;color:var(--tm);margin-top:4px">"${sup}" → ${same.length} opérations</div>`:''}
-    <div style="margin-top:10px"><button class="btn bd" style="padding:8px;font-size:12px" onclick="delTx(${id})">🗑️ Supprimer cette opération</button></div>
-  </div>
-  <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Type de dépense</div>
-  <div style="display:flex;gap:8px;margin-bottom:20px">
-    <div onclick="setRecur(${id},false)" style="flex:1;padding:14px;border-radius:var(--rs);border:1px solid ${isRec?'var(--border)':'var(--accent)'};background:${isRec?'transparent':'rgba(124,108,240,0.08)'};cursor:pointer;text-align:center;transition:all .2s">
-      <div style="font-size:20px;margin-bottom:4px">⚡</div>
-      <div style="font-weight:600;font-size:13px;color:${isRec?'var(--ts)':'var(--text)'}">Ponctuel</div>
-    </div>
-    <div onclick="setRecur(${id},true)" style="flex:1;padding:14px;border-radius:var(--rs);border:1px solid ${isRec?'var(--accent)':'var(--border)'};background:${isRec?'rgba(124,108,240,0.08)':'transparent'};cursor:pointer;text-align:center;transition:all .2s">
-      <div style="font-size:20px;margin-bottom:4px">🔄</div>
-      <div style="font-weight:600;font-size:13px;color:${isRec?'var(--text)':'var(--ts)'}">Récurrent</div>
-      <div style="font-size:10px;color:var(--tm);margin-top:2px">→ Charge fixe</div>
-    </div>
-  </div>
-  <div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Catégorie</div>`;
+  </div><div style="font-weight:700;font-size:12px;color:var(--tm);text-transform:uppercase;margin-bottom:10px;letter-spacing:.8px">Nouvelle catégorie</div>`;
   AC.forEach(cat=>{const col=COL[cat]||'#6b7080',ic=IC[cat]||'📦',act=cat===tx.categoryParent;
     h+=`<div onclick="dRe(${id},'${esc(cat)}')" style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid ${act?'var(--accent)':'var(--border)'};background:${act?'rgba(124,108,240,0.08)':'transparent'};transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${act?'rgba(124,108,240,0.08)':'transparent'}'"><span style="font-size:16px">${ic}</span><span style="font-weight:600;font-size:13px;flex:1">${cat}</span><span style="width:10px;height:10px;border-radius:50%;background:${col}"></span></div>`});
   if(sup)h+=`<div class="al aw" style="margin-top:14px">⚡ S'applique aux <strong>${same.length}</strong> opérations de "${sup}"</div>`;
   b.innerHTML=h;document.getElementById('m-re').classList.add('a');
 }
-function setRecur(id,rec){
-  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  const supL=tx.supplier.toLowerCase();
-  if(rec){
-    S.fixedSup[supL]=true;
-    if(!S.manRec.some(r=>r.supplier===supL)){
-      // Check if already auto-detected - if so, just confirm without adding to manRec
-      const existing=detectFixed().find(f=>f.supplier===supL);
-      if(existing){
-        save();toast('✅','Confirmé comme charge fixe');
-      } else {
-        S.manRec.push({label:tx.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim(),amount:tx.amount,cat:tx.categoryParent,supplier:supL});
-        save();toast('🔄','Ajouté aux charges fixes');
-      }
-    } else { save();toast('✅','Déjà dans les charges fixes'); }
-  }else{
-    delete S.fixedSup[supL];
-    S.manRec=S.manRec.filter(r=>r.supplier!==supL);
-    save();toast('⚡','Retiré des charges fixes');
-  }
-  oRe(id);render();
-}
-function renameTx(id){
-  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  const inp=document.getElementById('re-label-input');
-  const newName=inp.value.trim();if(!newName)return;
-  const origKey=(tx._origLabel||tx.label).toLowerCase();
-  if(!tx._origLabel)tx._origLabel=tx.label;
-  S.labelOv[origKey]=newName;
-  S.tx.forEach(t=>{
-    const tKey=(t._origLabel||t.label).toLowerCase();
-    if(tKey===origKey){if(!t._origLabel)t._origLabel=t.label;t.label=newName}
-  });
-  save();oRe(id);render();toast('✏️','Renommé');
-}
-function delTx(id){
-  const tx=S.tx.find(t=>t.id===id);if(!tx)return;
-  if(!confirm('Supprimer "'+tx.label+'" ('+fmtD(Math.abs(tx.amount))+') ?'))return;
-  // Track deletion key so it won't come back on re-import
-  const dk=`${tx.date}|${(tx._origLabel||tx.label).toLowerCase()}|${tx.amount}`;
-  if(!S.delKeys)S.delKeys=[];
-  S.delKeys.push(dk);
-  S.tx=S.tx.filter(t=>t.id!==id);
-  save();cm('m-re');render();toast('🗑️','Supprimé');
-}
-function dRe(id,cat){const tx=S.tx.find(t=>t.id===id);if(!tx)return;const sup=tx.supplier.toLowerCase();if(sup)S.catOv[sup]=cat;S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=cat});
-  S.manRec.forEach(r=>{if(r.supplier===sup)r.cat=cat});
-  save();cm('m-re');render();toast('🏷️',S.tx.filter(t=>t.supplier.toLowerCase()===sup).length+' → '+cat)}
-function dRule(sup){delete S.catOv[sup];const orig=stx(SR);S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup.toLowerCase()){const o=orig.find(x=>x.id===t.id);if(o)t.categoryParent=o.categoryParent}});aOv();save();render();toast('🗑️','Règle supprimée')}
+function dRe(id,cat){const tx=S.tx.find(t=>t.id===id);if(!tx)return;const sup=tx.supplier.toLowerCase();if(sup)S.catOv[sup]=cat;S.tx.forEach(t=>{if(t.supplier.toLowerCase()===sup)t.categoryParent=cat});save();cm('m-re');render();toast('🏷️',S.tx.filter(t=>t.supplier.toLowerCase()===sup).length+' → '+cat)}
+function dRule(sup){delete S.catOv[sup];save();render();toast('🗑️','Règle supprimée')}
 
-/* ── ADD TRANSACTION / RECURRING ── */
+/* ── ADD ── */
 function openAdd(forceRec){
-  const b=document.getElementById('m-add-b');
-  const today=new Date().toISOString().slice(0,10);
+  const b=document.getElementById('m-add-b'),today=new Date().toISOString().slice(0,10);
   let catO=AC.map(c=>`<option value="${c}">${IC[c]||'📦'} ${c}</option>`).join('');
   b.innerHTML=`
     <div class="fg"><label>Libellé</label><input type="text" id="a-lb" placeholder="Ex: Loyer, Courses..."></div>
-    <div class="afg">
-      <div class="fg"><label>Montant (€)</label><input type="number" id="a-am" step="0.01" placeholder="0.00"></div>
-      <div class="fg"><label>Date</label><input type="date" id="a-dt" value="${today}"></div>
-    </div>
+    <div class="afg"><div class="fg"><label>Montant (€)</label><input type="number" id="a-am" step="0.01" placeholder="0.00"></div><div class="fg"><label>Date</label><input type="date" id="a-dt" value="${today}"></div></div>
     <div class="fg"><label>Catégorie</label><select id="a-cat">${catO}</select></div>
-    <div class="fg"><label>Type</label>
-      <div class="type-toggle"><button class="dep sel" id="at-dep" onclick="sAT('dep')">📉 Dépense</button><button class="rev" id="at-rev" onclick="sAT('rev')">📈 Revenu</button></div>
-    </div>
-    <div class="fg"><label>Fréquence</label>
-      <div class="type-toggle"><button class="once ${forceRec?'':'sel'}" id="at-once" onclick="sAF('once')">⚡ Ponctuel</button><button class="rec ${forceRec?'sel':''}" id="at-rec" onclick="sAF('rec')">🔄 Récurrent</button></div>
-      <div id="a-rec-info" style="margin-top:8px;font-size:12px;color:var(--ts);display:${forceRec?'block':'none'}">Cette opération sera ajoutée comme charge fixe mensuelle.</div>
-    </div>
+    <div class="fg"><label>Type</label><div class="type-toggle"><button class="dep sel" id="at-dep" onclick="sAT('dep')">📉 Dépense</button><button class="rev" id="at-rev" onclick="sAT('rev')">📈 Revenu</button></div></div>
+    <div class="fg"><label>Fréquence</label><div class="type-toggle"><button class="once ${forceRec?'':'sel'}" id="at-once" onclick="sAF('once')">⚡ Ponctuel</button><button class="rec ${forceRec?'sel':''}" id="at-rec" onclick="sAF('rec')">🔄 Récurrent</button></div>
+      <div id="a-rec-info" style="margin-top:8px;font-size:12px;color:var(--ts);display:${forceRec?'block':'none'}">Sera ajouté comme charge fixe mensuelle.</div></div>
     <button class="btn bp" onclick="doAdd()" style="margin-top:8px">✅ Ajouter</button>`;
   window._aType='dep';window._aFreq=forceRec?'rec':'once';
   document.getElementById('m-add').classList.add('a');
@@ -601,52 +653,210 @@ function doAdd(){
   const lb=document.getElementById('a-lb').value.trim(),am=parseFloat(document.getElementById('a-am').value),dt=document.getElementById('a-dt').value,cat=document.getElementById('a-cat').value;
   if(!lb){toast('⚠️','Libellé requis');return}if(isNaN(am)||am<=0){toast('⚠️','Montant invalide');return}if(!dt){toast('⚠️','Date requise');return}
   const fAmt=window._aType==='dep'?-am:am;
-  // Add transaction
-  S.tx.push({id:Date.now()+Math.floor(Math.random()*1000),date:dt,dateVal:dt,label:lb,category:lb,categoryParent:cat,supplier:lb.toLowerCase(),amount:fAmt,manual:true});
-  // If recurring, also save as manual recurring
-  if(window._aFreq==='rec'){
-    S.manRec.push({label:lb,amount:fAmt,cat:cat,supplier:lb.toLowerCase()});
-  }
+  S.tx.push({id:Date.now()+Math.floor(Math.random()*1000),date:dt,dateVal:dt,label:lb,category:lb,categoryParent:cat,supplier:lb.toLowerCase(),amount:fAmt});
+  if(window._aFreq==='rec')S.manRec.push({label:lb,amount:fAmt,cat,supplier:lb.toLowerCase()});
   save();cm('m-add');S.mk=dt.slice(0,7);render();
   toast('✅',`${window._aType==='dep'?'Dépense':'Revenu'} ajouté${window._aFreq==='rec'?' (récurrent)':''}!`);
 }
 
 function cm(id){document.getElementById(id).classList.remove('a')}
 
-/* ── IMPORT ── */
+/* ── MULTI-BANK CSV PARSER ── */
+const BANKS={
+  boursobank:{name:'BoursoBank',detect:h=>h.includes('categoryParent')||h.includes('supplierFound'),
+    parse:(r)=>({date:r[0],label:q(r[2]),category:q(r[3]),catP:q(r[4]),supplier:q(r[5]).toLowerCase(),amount:pAmt(r[6])})},
+  creditagricole:{name:'Crédit Agricole',detect:h=>/^date;/i.test(h)&&(h.includes('Débit')||h.includes('Debit'))&&(h.includes('Crédit')||h.includes('Credit'))&&!h.includes('Catégorie')&&!h.includes('valeur'),
+    parse:(r)=>{const deb=pAmt(r[2]),cre=pAmt(r[3]);return{date:pDate(r[0]),label:q(r[1]),category:'',catP:guessCP(q(r[1])),supplier:gSup(q(r[1])),amount:cre||(-Math.abs(deb))||0}}},
+  sg:{name:'Société Générale',detect:h=>h.includes('Sous-catégorie')||(/Date.*Date de valeur.*Libellé/i.test(h)&&h.includes('Montant')),
+    parse:(r)=>({date:pDate(r[0]),label:q(r[2]),category:q(r[3]),catP:q(r[4])||guessCP(q(r[2])),supplier:gSup(q(r[2])),amount:pAmt(r[5])})},
+  bnp:{name:'BNP Paribas',detect:h=>/Date op/i.test(h)&&/Montant/i.test(h)&&/Date valeur/i.test(h),
+    parse:(r)=>({date:pDate(r[0]),label:q(r[2]),category:'',catP:guessCP(q(r[2])),supplier:gSup(q(r[2])),amount:pAmt(r[3])})},
+  lbp:{name:'La Banque Postale',detect:h=>/^Date;Libell/i.test(h)&&h.split(';').length<=4&&/Montant/i.test(h),
+    parse:(r)=>({date:pDate(r[0]),label:q(r[1]),category:'',catP:guessCP(q(r[1])),supplier:gSup(q(r[1])),amount:pAmt(r[2])})},
+  lcl:{name:'LCL',detect:h=>/^Date;Libell.*Débit;Crédit/i.test(h)&&!h.includes('Catégorie'),
+    parse:(r)=>{const deb=pAmt(r[2]),cre=pAmt(r[3]);return{date:pDate(r[0]),label:q(r[1]),category:'',catP:guessCP(q(r[1])),supplier:gSup(q(r[1])),amount:cre||(-Math.abs(deb))||0}}},
+  fortuneo:{name:'Fortuneo',detect:h=>/Date op.*Date valeur.*Libell.*Débit.*Crédit/i.test(h),
+    parse:(r)=>{const deb=pAmt(r[3]),cre=pAmt(r[4]);return{date:pDate(r[0]),label:q(r[2]),category:'',catP:guessCP(q(r[2])),supplier:gSup(q(r[2])),amount:cre||(-Math.abs(deb))||0}}},
+  cicm:{name:'CIC / Crédit Mutuel',detect:h=>/Date;Date de valeur;Débit;Crédit;Libell/i.test(h),
+    parse:(r)=>{const deb=pAmt(r[2]),cre=pAmt(r[3]);return{date:pDate(r[0]),label:q(r[4]),category:'',catP:guessCP(q(r[4])),supplier:gSup(q(r[4])),amount:cre||(-Math.abs(deb))||0}}},
+  n26:{name:'N26',detect:h=>/Payee/i.test(h)&&/Amount.*EUR/i.test(h),sep:',',
+    parse:(r)=>({date:pDate(r[0]),label:q(r[1]),category:'',catP:guessCP(q(r[1])),supplier:gSup(q(r[1])),amount:pAmt(r[5])})},
+  revolut:{name:'Revolut',detect:h=>/^Type[,;]Product/i.test(h)&&/Description/i.test(h),sep:',',
+    parse:(r)=>({date:pDate(r[2]),label:q(r[4]),category:'',catP:guessCP(q(r[4])),supplier:gSup(q(r[4])),amount:pAmt(r[5])})},
+  hellobank:{name:'Hello bank!',detect:h=>/Date.*Libell.*Montant/i.test(h)&&h.split(';').length>=3&&!h.includes('categoryParent'),
+    parse:(r)=>({date:pDate(r[0]),label:q(r[1]),category:'',catP:guessCP(q(r[1])),supplier:gSup(q(r[1])),amount:pAmt(r[2])})}
+};
+
+function q(s){return(s||'').replace(/^"|"$/g,'').trim()}
+function pAmt(s){if(!s)return NaN;return parseFloat(q(s).replace(/\s/g,'').replace(',','.'))}
+function pDate(s){
+  s=q(s);if(!s)return '';
+  // YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  // DD/MM/YYYY or DD-MM-YYYY
+  const m=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+  if(m)return m[3]+'-'+m[2]+'-'+m[1];
+  // DD/MM/YY
+  const m2=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{2})/);
+  if(m2){const yr=parseInt(m2[3]);return(yr>50?'19':'20')+m2[3]+'-'+m2[2]+'-'+m2[1]}
+  // ISO datetime
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s))return s.slice(0,10);
+  // YYYY/MM/DD
+  const m3=s.match(/^(\d{4})[\/](\d{2})[\/](\d{2})/);
+  if(m3)return m3[1]+'-'+m3[2]+'-'+m3[3];
+  return '';
+}
+
+// Basic category guessing from label keywords
+const CAT_RULES=[
+  [/loyer|hlm|foyer|bailleur/i,'Logement'],
+  [/edf|engie|gaz|energie|électricité|chauffag/i,'Logement'],
+  [/sfr|free|orange|bouygues|sosh|red by|b&you|prixtel|téléphon/i,'Abonnements & téléphonie'],
+  [/canal\+|canal plus|netflix|disney|spotify|deezer|amazon prime|apple\.com|microsoft.*subscri|notion|openai|claude|anthropic|chatgpt|canva|hostinger/i,'Abonnements & téléphonie'],
+  [/leclerc|carrefour|lidl|aldi|intermarché|super u|casino|monoprix|franprix|auchan|grand frais|picard|boulang|alimentation|el baraka|rivex|marché/i,'Vie quotidienne'],
+  [/pharmacie|médecin|docteur|mutuelle|santé|labo|dentist|optic/i,'Santé'],
+  [/assurance|maif|maaf|macif|matmut|allianz|axa|active assur|acm iard|groupama/i,'Auto & Moto'],
+  [/carburant|essence|gasoil|total energies|shell|bp|leclerc dac|relais/i,'Auto & Moto'],
+  [/norauto|feu vert|midas|controle tech|pace lavage|speedy|euromaster/i,'Auto & Moto'],
+  [/parking|horodateur|indigo|vinci park/i,'Auto & Moto'],
+  [/sncf|ouigo|tgv|keolis|ratp|navigo|uber|taxi|bolt|blabla|flixbus/i,'Voyages & Transports'],
+  [/restaurant|pizza|burger|sushi|kebab|brasserie|bistro|café|bar|mcdo|kfc|subway|domino|o'brozer|fresh food|le sultan/i,'Loisirs et sorties'],
+  [/cinéma|ciné|théâtre|concert|spectacle|musée|culture|fnac|livre|divertiss|fdj|jeux|pari/i,'Loisirs et sorties'],
+  [/virement|vir inst|vir sepa/i,'Virements émis'],
+  [/retrait|dab/i,'Retraits cash'],
+  [/chèque|chq\./i,'Chèques'],
+  [/crédit|cofidis|floa|cetelem|sofinco|consumer finance/i,'Emprunts (hors immobilier)'],
+  [/don|solidarité|helloasso|croix rouge|restos du coeur|sif\b/i,'Cadeaux et solidarité'],
+  [/amazon|action|gifi|brico|leroy merlin|casto|ikea|la poste|boulanger\b/i,'Vie quotidienne'],
+  [/coiffeur|coiffure|barber|beauté|parfum/i,'Vie quotidienne'],
+  [/domiserve|aide|service/i,'Autres dépenses'],
+  [/frais bancaire|agios|commission/i,'Services financiers & professionnels']
+];
+function guessCP(label){
+  const l=label.toLowerCase();
+  for(const[re,cat] of CAT_RULES){if(re.test(l))return cat}
+  return 'Non catégorisé';
+}
+function gSup(label){
+  // Extract supplier name from label: take first meaningful word(s)
+  let s=label.replace(/CARTE \d{2}\/\d{2}\/\d{2,4}/i,'').replace(/CB\*\d+/ig,'').replace(/PRLV SEPA/i,'').replace(/VIR (INST|SEPA)/i,'').replace(/\|.*/,'').trim();
+  s=s.replace(/\d{2}\/\d{2}\/\d{2,4}/g,'').replace(/\s+/g,' ').trim();
+  return s.toLowerCase().slice(0,40);
+}
+
+function detectBank(text){
+  const header=text.trim().split('\n')[0].replace(/^\uFEFF/,'');
+  for(const[id,b] of Object.entries(BANKS)){
+    if(b.detect(header))return id;
+  }
+  return null;
+}
+
+let _lastBank=null;
 function pCSV(text){
-  const lines=text.trim().split('\n'),out=[];
-  for(let i=1;i<lines.length;i++){const row=[];let inQ=false,field='';
-    for(let j=0;j<lines[i].length;j++){const c=lines[i][j];if(c==='"'){inQ=!inQ}else if(c===';'&&!inQ){row.push(field.trim());field=''}else{field+=c}}
-    row.push(field.trim());if(row.length<7)continue;
-    const amt=parseFloat(row[6].replace(',','.'));if(isNaN(amt))continue;
-    const d=row[0],parts=d.split('-');if(parts.length<3)continue;
-    out.push({id:Date.now()+i+Math.random(),date:d,dateVal:row[1],label:row[2].replace(/^"|"$/g,''),category:row[3].replace(/^"|"$/g,''),categoryParent:row[4].replace(/^"|"$/g,''),supplier:(row[5]||'').toLowerCase().replace(/^"|"$/g,''),amount:amt})}
+  const lines=text.trim().replace(/^\uFEFF/,'').split('\n');
+  if(lines.length<2)return[];
+  const bankId=detectBank(text);
+  _lastBank=bankId;
+  if(!bankId)return pCSVGeneric(lines);
+  const bank=BANKS[bankId];
+  const sep=bank.sep||';';
+  const out=[];
+  for(let i=1;i<lines.length;i++){
+    const row=splitCSV(lines[i],sep);
+    if(row.length<3)continue;
+    try{
+      const p=bank.parse(row);
+      if(!p.date||!p.date.match(/^\d{4}-\d{2}-\d{2}$/))continue;
+      if(isNaN(p.amount))continue;
+      out.push({id:Date.now()+i+Math.random(),date:p.date,dateVal:p.date,label:p.label||'Sans libellé',category:p.category||p.label,categoryParent:p.catP||'Non catégorisé',supplier:p.supplier||'',amount:p.amount});
+    }catch(e){continue}
+  }
   return out;
 }
-function oF(e){const files=e.target.files;if(!files.length)return;let t=0,d=0;
-  // Purge manual ponctual tx (not recurring) to avoid dupes with CSV data
-  const recSups=new Set(S.manRec.map(r=>r.supplier));
-  const before=S.tx.length;
-  S.tx=S.tx.filter(tx=>!tx.manual||recSups.has(tx.supplier.toLowerCase()));
-  const purged=before-S.tx.length;
-  const delSet=new Set(S.delKeys||[]);
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>{const tk=`${t.date}|${t.label.toLowerCase()}|${t.amount}`;return!k.has(tk)&&!delSet.has(tk)});S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
-  Promise.all(ps).then(()=>{save();render();const msg=`${t} importées`+(purged?` · ${purged} manuelles nettoyées`:'');toast('✅',msg);if(t>0)setTab('transactions')})}
-function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');S.tx=stx(SR);S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};S.delKeys=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
+
+// Generic parser: try to find date, label, amount columns automatically
+function pCSVGeneric(lines){
+  const sep=lines[0].includes('\t')?'\t':lines[0].split(';').length>lines[0].split(',').length?';':',';
+  const header=splitCSV(lines[0],sep).map(h=>q(h).toLowerCase());
+  // Find columns
+  let dateCol=-1,labelCol=-1,amountCol=-1,debitCol=-1,creditCol=-1;
+  header.forEach((h,i)=>{
+    if(dateCol<0&&/^date/.test(h))dateCol=i;
+    if(labelCol<0&&/(libellé|libelle|label|description|payee|destinataire|motif)/i.test(h))labelCol=i;
+    if(amountCol<0&&/(montant|amount|somme)/i.test(h))amountCol=i;
+    if(debitCol<0&&/(débit|debit)/i.test(h))debitCol=i;
+    if(creditCol<0&&/(crédit|credit)/i.test(h))creditCol=i;
+  });
+  if(dateCol<0)dateCol=0;
+  if(labelCol<0)labelCol=Math.min(1,header.length-1);
+  if(amountCol<0&&debitCol<0){
+    // Last numeric-looking column
+    for(let i=header.length-1;i>=0;i--){if(/(mont|amount|somme|total|\d)/i.test(header[i])){amountCol=i;break}}
+    if(amountCol<0)amountCol=header.length-1;
+  }
+  _lastBank='generic';
+  const out=[];
+  for(let i=1;i<lines.length;i++){
+    const row=splitCSV(lines[i],sep);
+    if(row.length<3)continue;
+    const date=pDate(q(row[dateCol]));if(!date)continue;
+    const label=q(row[labelCol])||'Sans libellé';
+    let amount=NaN;
+    if(amountCol>=0)amount=pAmt(row[amountCol]);
+    if(isNaN(amount)&&debitCol>=0){
+      const deb=pAmt(row[debitCol]),cre=creditCol>=0?pAmt(row[creditCol]):NaN;
+      amount=!isNaN(cre)&&cre>0?cre:!isNaN(deb)?-Math.abs(deb):NaN;
+    }
+    if(isNaN(amount))continue;
+    out.push({id:Date.now()+i+Math.random(),date,dateVal:date,label,category:label,categoryParent:guessCP(label),supplier:gSup(label),amount});
+  }
+  return out;
+}
+
+function splitCSV(line,sep){
+  const row=[];let inQ=false,field='';
+  for(let j=0;j<line.length;j++){const c=line[j];if(c==='"'){inQ=!inQ}else if(c===sep&&!inQ){row.push(field);field=''}else{field+=c}}
+  row.push(field);return row;
+}
+
+function oF(e){
+  const files=e.target.files;if(!files.length)return;let t=0,d=0;
+  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+  Promise.all(ps).then(()=>{
+    save();
+    if(!S.setup){
+      // Update onboarding preview
+      const p=document.getElementById('ob-preview');
+      if(p){const mks=[...new Set(S.tx.map(mkOf))].sort();
+        p.innerHTML=`<div class="al as">✅ ${S.tx.length} opérations sur ${mks.length} mois (${mks.map(mkL).join(', ')})${_lastBank&&BANKS[_lastBank]?' · Détecté: <strong>'+BANKS[_lastBank].name+'</strong>':_lastBank==='generic'?' · Format générique détecté':''}</div>`}
+    } else {
+      render();toast('✅',`${t} importées`);if(t>0)setTab('transactions');
+    }
+  });
+}
+
+function iT2(){const t=document.getElementById('ct2').value.trim();if(!t)return;const n=pCSV(t);if(!n.length){toast('⚠️','Rien trouvé');return}
+  const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();save();render();toast('✅',`${u.length} importées`);if(u.length)setTab('transactions')}
+
+function rAll(){if(!confirm('Effacer toutes les données et revenir à l\'accueil ?'))return;localStorage.removeItem('fp5');S={tab:'dashboard',mk:'all',tx:[],sal:0,savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],setup:false};render();toast('🗑️','Données effacées')}
 
 /* ── EVENTS ── */
-document.addEventListener('dragover',e=>{const z=document.getElementById('dz');if(z){e.preventDefault();z.classList.add('dg')}});
-document.addEventListener('dragleave',e=>{const z=document.getElementById('dz');if(z)z.classList.remove('dg')});
-document.addEventListener('drop',e=>{e.preventDefault();const z=document.getElementById('dz');if(z)z.classList.remove('dg');if(e.dataTransfer.files.length){const files=e.dataTransfer.files;let t=0,d=0;
-  const recSups2=new Set(S.manRec.map(r=>r.supplier));S.tx=S.tx.filter(tx=>!tx.manual||recSups2.has(tx.supplier.toLowerCase()));
-  const delSet2=new Set(S.delKeys||[]);
-  const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${(t._origLabel||t.label).toLowerCase()}|${t.amount}`));const u=n.filter(t=>{const tk=`${t.date}|${t.label.toLowerCase()}|${t.amount}`;return!k.has(tk)&&!delSet2.has(tk)});S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
-  Promise.all(ps).then(()=>{save();render();toast('✅',`${t} importées`);if(t>0)setTab('transactions')})}});
+document.addEventListener('dragover',e=>{e.preventDefault();document.querySelectorAll('.uz').forEach(z=>z.classList.add('dg'))});
+document.addEventListener('dragleave',e=>{document.querySelectorAll('.uz').forEach(z=>z.classList.remove('dg'))});
+document.addEventListener('drop',e=>{e.preventDefault();document.querySelectorAll('.uz').forEach(z=>z.classList.remove('dg'));
+  if(e.dataTransfer.files.length){const files=e.dataTransfer.files;let t=0,d=0;
+    const ps=Array.from(files).map(f=>new Promise(r=>{const rd=new FileReader();rd.onload=ev=>{const n=pCSV(ev.target.result);const k=new Set(S.tx.map(t=>`${t.date}|${t.label}|${t.amount}`));const u=n.filter(t=>!k.has(`${t.date}|${t.label}|${t.amount}`));S.tx.push(...u);aOv();t+=u.length;d+=n.length-u.length;r()};rd.readAsText(f)}));
+    Promise.all(ps).then(()=>{save();if(!S.setup){const p=document.getElementById('ob-preview');if(p){const mks=[...new Set(S.tx.map(mkOf))].sort();p.innerHTML=`<div class="al as">✅ ${S.tx.length} opérations sur ${mks.length} mois (${mks.map(mkL).join(', ')})${_lastBank&&BANKS[_lastBank]?' · '+BANKS[_lastBank].name:''}</div>`}}else{render();toast('✅',`${t} importées`)}})}});
 ['m-cat','m-re','m-add'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)cm(id)})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')['m-cat','m-re','m-add'].forEach(cm)});
 
-/* ── INIT ── */
-load();const _m=gMks();S.mk=_m.length?_m[_m.length-1]:'all';rNav();render();
-
-</script></body></html>
+/* INIT */
+load();
+initAuth().then(()=>{
+  if(S.setup&&S.tx.length){const _m=gMks();S.mk=_m.length?_m[_m.length-1]:'all';rNav()}
+  render();
+});
+</script>
+</body>
+</html>
