@@ -163,7 +163,7 @@ async function initAuth(){
   if(session){_user=session.user;await loadCloud()}
   supa.auth.onAuthStateChange(async(ev,ses)=>{
     if(ses){_user=ses.user;await loadCloud();rNav();render()}
-    else{_user=null;S={tab:'dashboard',mk:'all',tx:[],sal:0,savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],labelOv:{},delKeys:[],_editFixIdx:null,_search:'',setup:false};render()}
+    else{_user=null;S={tab:'dashboard',mk:'all',tx:[],defSal:0,salByMonth:{},savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],labelOv:{},delKeys:[],_editFixIdx:null,_search:'',setup:false};render()}
   });render();
 }
 function vLanding(){
@@ -181,7 +181,7 @@ function vLanding(){
 function vSetup(){
   return`<div style="max-width:560px;margin:0 auto">
     <div class="card"><div class="ct" style="margin-bottom:16px">🚀 Commencer</div>
-    <div class="fg"><label>Votre revenu mensuel net (€)</label><input type="number" id="ob-sal" placeholder="Ex: 2300" value="${S.sal||''}" style="font-size:18px"></div>
+    <div class="fg"><label>Votre revenu mensuel net (€)</label><input type="number" id="ob-sal" placeholder="Ex: 2300" value="${S.defSal||''}" style="font-size:18px"></div>
     <div class="st">Importez vos opérations</div>
     <div class="uz" id="dz" onclick="document.getElementById('fi').click()">
       <div style="font-size:40px;margin-bottom:12px">📄</div>
@@ -198,7 +198,7 @@ function finishSetup(){
   const sal=parseFloat(document.getElementById('ob-sal')?.value);
   if(!sal||sal<=0){toast('⚠️','Entrez votre revenu');return}
   if(!S.tx.length){toast('⚠️','Importez au moins un CSV');return}
-  S.sal=sal;S.setup=true;S.mk=gMks().length?gMks()[gMks().length-1]:'all';
+  S.defSal=sal;S.setup=true;S.mk=gMks().length?gMks()[gMks().length-1]:'all';
   save();rNav();render();toast('🎉','Bienvenue !');
 }
 function showAuth(mode){
@@ -232,7 +232,7 @@ async function doLogout(){if(!confirm('Se déconnecter ?'))return;await supa.aut
 async function syncUp(){
   if(!_user)return;_ss='saving';uSD();clearTimeout(_st);
   _st=setTimeout(async()=>{try{
-    const d={tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv||{},delKeys:S.delKeys||[],setup:S.setup};
+    const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv||{},delKeys:S.delKeys||[],setup:S.setup};
     const{error}=await supa.from('user_data').upsert({id:_user.id,data:d,updated_at:new Date().toISOString()});
     if(error)throw error;_ss='online'}catch(e){console.error(e);_ss='offline'}uSD()},1500);
 }
@@ -256,7 +256,7 @@ const DEFO={"hlm les foyers":"Logement"};
 // Categories that are typically fixed charges
 const FIXED_CATS=new Set(["Logement","Abonnements & téléphonie","Santé","Emprunts (hors immobilier)","Auto & Moto","Services financiers & professionnels"]);
 
-let S={tab:'dashboard',mk:'all',tx:[],sal:2300,savT:200,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},
+let S={tab:'dashboard',mk:'all',tx:[],defSal:0,salByMonth:{},savT:200,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},
   fixedSup:{},
   manRec:[],
   labelOv:{},
@@ -279,10 +279,10 @@ function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t
   if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
 })}
 function save(){
-  const d={tx:S.tx,sal:S.sal,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys,setup:S.setup};
+  const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys,setup:S.setup};
   localStorage.setItem('fp5',JSON.stringify(d));syncUp();
 }
-function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d){Object.assign(S,{tx:d.tx||[],sal:d.sal??0,savT:d.savT??0,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[],setup:d.setup??false});aOv();return}}catch(e){}
+function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d){Object.assign(S,{tx:d.tx||[],defSal:d.defSal??d.sal??0,salByMonth:d.salByMonth??{},savT:d.savT??0,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[],setup:d.setup??false});aOv();return}}catch(e){}
   S.tx=[];S.catOv={};
 }
 function cSt(mk){const tx=txM(mk).filter(t=>t.amount<0);const o={};tx.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t)});return o}
@@ -290,7 +290,8 @@ function cAvg(){const ms=gMks();if(!ms.length)return{};const s={};ms.forEach(mk=
 function fmt(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n)}
 function fmtD(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
-function net(s){let n=s||S.sal;if(S.taxOn&&S.taxR>0)n-=n*(S.taxR/100);if(S.savOn&&S.savT>0)n-=S.savT;return n}
+function getSal(mk){if(mk&&mk!=='all'&&S.salByMonth[mk]!==undefined)return S.salByMonth[mk];return S.defSal}
+function net(mk){let n=getSal(mk);if(S.taxOn&&S.taxR>0)n-=n*(S.taxR/100);if(S.savOn&&S.savT>0)n-=S.savT;return n}
 function toast(i,m){const el=document.getElementById('toast');document.getElementById('ti').textContent=i;document.getElementById('tm').textContent=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),3000)}
 function setTab(id){S.tab=id;rNav();render()}
 function setMk(mk){S.mk=mk;render()}
@@ -352,23 +353,43 @@ function mChips(mks){return`<div class="ms"><button class="mc ${S.mk==='all'?'a'
 
 /* ══ DASHBOARD ══ */
 function vD(mks){
-  const tx=txM(S.mk),exp=tx.filter(t=>t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0),nb=S.mk==='all'?mks.length:1,av=net()*nb,bal=av-exp;
+  const tx=txM(S.mk),nb=S.mk==='all'?mks.length:1;
+  const av=S.mk==='all'?mks.reduce((s,m)=>s+net(m),0):net(S.mk);
   const st=cSt(S.mk),sorted=Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
   const ded=[];if(S.taxOn&&S.taxR>0)ded.push(`Impôt ${S.taxR}%`);if(S.savOn&&S.savT>0)ded.push(`Épargne ${fmt(S.savT)}`);
   
-  // Fixed charges - only show active ones (excluded disappear naturally)
+  // Fixed charges
   const fixed=detectFixed();
   const fixedTotal=fixed.reduce((s,f)=>s+f.avg,0);
+  const fixedSups=new Set(fixed.map(f=>f.supplier));
   
+  // Split expenses: variable = not from fixed charge suppliers
+  const allExp=tx.filter(t=>t.amount<0);
+  const totalExp=allExp.reduce((s,t)=>s+Math.abs(t.amount),0);
+  const varExp=allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).reduce((s,t)=>s+Math.abs(t.amount),0);
+  
+  // Solde = net salary - fixed charges - variable expenses
+  const bal=av - fixedTotal*nb - varExp;
+  
+  const curSal=S.mk==='all'?S.defSal:getSal(S.mk);
   let h=mChips(mks);
-  h+=`<div class="g2"><div class="card"><div class="ch"><span class="ct">Dépenses</span><span style="font-size:18px">📉</span></div><div class="cv neg">${fmt(exp)}</div><div class="csub">${tx.filter(t=>t.amount<0).length} transactions</div></div>
-  <div class="card"><div class="ch"><span class="ct">Solde estimé</span><span style="font-size:18px">${bal>=0?'📈':'🚨'}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} dispo${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''}</div></div></div>`;
+  if(S.mk!=='all'){
+    h+=`<div class="card" style="padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:13px;color:var(--ts)">💰 Salaire ${mkS(S.mk)}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:var(--m);font-size:18px;font-weight:700;color:var(--ok)" id="sal-display">${fmt(curSal)}</span>
+        <button class="bi" onclick="editMonthSal()" style="width:26px;height:26px;font-size:11px">✎</button>
+      </div>
+    </div>`;
+  }
+  h+=`<div class="g2"><div class="card"><div class="ch"><span class="ct">Dépenses variables</span><span style="font-size:18px">📉</span></div><div class="cv neg">${fmt(varExp)}</div><div class="csub">${allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).length} transactions hors charges fixes</div></div>
+  <div class="card"><div class="ch"><span class="ct">Reste du mois</span><span style="font-size:18px">${bal>=0?'📈':'🚨'}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} net${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''} − ${fmt(fixedTotal*nb)} charges</div></div></div>`;
   
   // FIXED CHARGES CARD
   if(fixed.length||S._editFix){
     const editing=S._editFix;
     h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">🔒 Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;S._editFixIdx=null;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt(net()-fixedTotal)}</span> restant après charges</div>`;
+    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt((S.mk==='all'?net(mks[0]):net(S.mk))-fixedTotal)}</span> restant après charges</div>`;
     fixed.forEach((f,idx)=>{
       const isEditing=editing&&S._editFixIdx===idx;
       if(isEditing){
@@ -394,7 +415,7 @@ function vD(mks){
   }
   
   if(S.savOn||S.taxOn){h+=`<div class="card" style="padding:14px 18px"><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-family:var(--m)">`;
-    if(S.taxOn&&S.taxR>0)h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--warn)">⚡</span> Impôt : <strong style="color:var(--warn)">${fmt(S.sal*(S.taxR/100)*nb)}</strong></div>`;
+    if(S.taxOn&&S.taxR>0){const taxAmt=S.mk==='all'?mks.reduce((s,m)=>s+getSal(m)*(S.taxR/100),0):getSal(S.mk)*(S.taxR/100);h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--warn)">⚡</span> Impôt : <strong style="color:var(--warn)">${fmt(taxAmt)}</strong></div>`}
     if(S.savOn&&S.savT>0)h+=`<div style="display:flex;align-items:center;gap:6px"><span style="color:var(--ok)">💎</span> Épargne : <strong style="color:var(--ok)">${fmt(S.savT*nb)}</strong></div>`;
     h+=`</div></div>`}
   
@@ -408,7 +429,7 @@ function vD(mks){
 function vF(){
   const avg=cAvg(),mks=gMks(),last=mks.length?mks[mks.length-1]:'2026-03',nk=nxtMk(last),nl=mkL(nk);
   if(!Object.keys(S.fAdj).length)S.fAdj={...avg};
-  const proj=Object.values(S.fAdj).reduce((a,b)=>a+b,0),av=net(),rem=av-proj,pct=av>0?(proj/av)*100:0;
+  const proj=Object.values(S.fAdj).reduce((a,b)=>a+b,0),av=net(nk),rem=av-proj,pct=av>0?(proj/av)*100:0;
   const fx=['Logement','Emprunts (hors immobilier)','Abonnements & téléphonie','Santé'];
   let h=`<div class="card" style="background:linear-gradient(135deg,#6c5ce7,#5b4cd8);border:none;text-align:center"><div style="font-size:12px;opacity:.85;letter-spacing:1px;text-transform:uppercase">Prévision</div><div style="font-family:var(--m);font-size:26px;font-weight:700;margin:6px 0">${nl}</div><div style="font-size:13px;opacity:.8">Basé sur ${mks.length} mois</div></div>
   <div class="g2" style="margin-top:14px"><div class="card"><div class="ct">Budget prévu</div><div class="cv">${fmt(proj)}</div></div>
@@ -472,10 +493,12 @@ function vI(){
 
 /* ══ SETTINGS ══ */
 function vS(){
-  const g=S.sal,ta=S.taxOn?g*(S.taxR/100):0,sa=S.savOn?S.savT:0,n=g-ta-sa;
+  const g=S.defSal,ta=S.taxOn?g*(S.taxR/100):0,sa=S.savOn?S.savT:0,n=g-ta-sa;
   const rk=Object.keys(S.catOv),fixed=detectFixed();
   let h=`<div class="card"><div class="ct" style="margin-bottom:20px">⚙️ Paramètres</div>
-  <div class="fg"><label>Revenu mensuel net</label><input type="number" value="${S.sal}" onchange="S.sal=parseFloat(this.value)||0;save();render()" style="font-size:18px"></div>
+  <div class="fg"><label>Salaire par défaut (€/mois)</label><input type="number" value="${S.defSal}" onchange="S.defSal=parseFloat(this.value)||0;save();render()" style="font-size:18px">
+    <div style="font-size:11px;color:var(--tm);margin-top:4px">Utilisé pour les mois sans salaire spécifique</div></div>
+    ${Object.keys(S.salByMonth).length?`<div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Salaires par mois</div>${Object.entries(S.salByMonth).sort((a,b)=>b[0].localeCompare(a[0])).map(([mk,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span>'+mkL(mk)+'</span><span style="font-family:var(--m);font-weight:600">'+fmt(v)+'</span></div>').join('')}</div>`:''}
   <div class="st" style="margin-top:24px">Déductions</div>
   <div class="dc ${S.savOn?'en':''}"><div class="tr ${S.savOn?'a':''}" onclick="tSav()"><div><div class="trl">💎 Épargne</div><div class="trs">Montant mensuel réservé</div></div><div class="tsw"></div></div>${S.savOn?`<div style="padding:12px 16px 4px"><div class="di"><input type="number" value="${S.savT}" min="0" step="10" onchange="S.savT=parseFloat(this.value)||0;save();render()"><span class="u">€/mois</span></div></div>`:''}</div>
   <div class="dc ${S.taxOn?'en':''}"><div class="tr ${S.taxOn?'a':''}" onclick="tTax()"><div><div class="trl">⚡ Prélèvement à la source</div><div class="trs">Taux d'imposition</div></div><div class="tsw"></div></div>${S.taxOn?`<div style="padding:12px 16px 4px"><div class="di"><input type="number" value="${S.taxR}" min="0" max="50" step="0.1" onchange="S.taxR=parseFloat(this.value)||0;save();render()"><span class="u">%</span></div></div>`:''}</div>
@@ -512,6 +535,19 @@ function vS(){
 /* ── ACTIONS ── */
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
+function editMonthSal(){
+  const el=document.getElementById('sal-display');if(!el)return;
+  const mk=S.mk;if(mk==='all')return;
+  const cur=getSal(mk);
+  el.outerHTML=`<div style="display:flex;align-items:center;gap:6px"><input type="number" id="sal-edit-input" value="${cur}" style="width:110px;padding:6px 10px;font-size:16px;text-align:right;font-family:var(--m)" onkeydown="if(event.key==='Enter')saveMonthSal('${mk}')"><button class="bi ok" onclick="saveMonthSal('${mk}')" style="width:26px;height:26px;font-size:11px">✓</button></div>`;
+  const inp=document.getElementById('sal-edit-input');if(inp){inp.focus();inp.select()}
+}
+function saveMonthSal(mk){
+  const inp=document.getElementById('sal-edit-input');if(!inp)return;
+  const v=parseFloat(inp.value);if(isNaN(v)||v<0)return;
+  S.salByMonth[mk]=v;save();render();
+  toast('💰','Salaire '+mkS(mk)+' : '+fmt(v));
+}
 function removeFix(sup){S.fixedSup[sup]=false;S.manRec=S.manRec.filter(r=>r.supplier!==sup);S._editFix=false;save();render();toast('🔓','Charge retirée')}
 function removeFixCharge(sup){
   if(!confirm('Retirer cette charge fixe ?'))return;
@@ -798,7 +834,7 @@ function oF(e){const files=e.target.files;if(!files.length)return;let t=0,d=0;
         p.innerHTML=`<div class="al" style="background:var(--okb);border-color:rgba(52,217,180,0.25);color:var(--ok)">✅ ${S.tx.length} opérations sur ${mks.length} mois${_lastBk&&BANKS[_lastBk]?' · '+BANKS[_lastBk].name:''}</div>`}
     } else {save();render();const msg=`${t} importées`+(purged?` · ${purged} manuelles nettoyées`:'');toast('✅',msg);if(t>0)setTab('transactions')}
   })}
-function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');clearCloud();S.tx=[];S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.sal=2300;S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};S.delKeys=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
+function rAll(){if(!confirm('Effacer toutes les données ?'))return;localStorage.removeItem('fp5');clearCloud();S.tx=[];S.fAdj={};S.savOn=false;S.taxOn=false;S.savT=200;S.taxR=0;S.defSal=0;S.salByMonth={};S.catOv={...DEFO};S.fixedSup={};S.manRec=[];S.labelOv={};S.delKeys=[];aOv();S.mk='all';save();render();toast('🗑️','Reset OK')}
 
 /* ── EVENTS ── */
 document.addEventListener('dragover',e=>{const z=document.getElementById('dz');if(z){e.preventDefault();z.classList.add('dg')}});
