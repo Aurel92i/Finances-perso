@@ -378,7 +378,6 @@ function vD(mks){
           <input type="number" id="fix-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
           <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
             <button class="bi ok" onclick="saveFixEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
-            <button class="bi ko" onclick="S._editFixIdx=null;render()" style="width:28px;height:28px;font-size:12px">✕</button>
             <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">🗑</button>
           </div>
         </div>`;
@@ -507,16 +506,6 @@ function vS(){
   <p style="color:var(--ts);font-size:13px;margin-bottom:14px">Ajoutez ici les charges fixes qui n'apparaissent pas encore dans vos CSV.</p>`;
   if(S.manRec.length){S.manRec.forEach((r,i)=>{h+=`<div class="ri"><span class="rs">${IC[r.cat]||'📦'} ${r.label}</span><span class="ra">${fmt(Math.abs(r.amount))}/mois</span><button class="rd" onclick="dManRec(${i})">✕</button></div>`})}
   h+=`<button class="btn bs" onclick="openAdd(true)" style="margin-top:8px">+ Ajouter une charge récurrente</button></div>`;
-
-  // SYNC CARD
-  h+=`<div class="card" style="margin-top:14px"><div class="ct" style="margin-bottom:14px">📲 Synchronisation entre appareils</div>
-  <p style="color:var(--ts);font-size:13px;margin-bottom:14px">Vos données sont stockées localement. Pour les transférer sur un autre appareil, exportez votre profil puis importez-le sur l'autre.</p>
-  <div style="display:flex;gap:10px">
-    <button class="btn bp" onclick="exportProfile()" style="flex:1">📤 Exporter</button>
-    <button class="btn bs" onclick="document.getElementById('import-profile').click()" style="flex:1">📥 Importer</button>
-    <input type="file" id="import-profile" accept=".json" style="display:none" onchange="importProfile(event)">
-  </div>
-  <div class="al ai" style="margin-top:12px">Exportez régulièrement pour garder une sauvegarde</div></div>`;
   return h;
 }
 
@@ -732,39 +721,6 @@ function doAdd(){
   }
   save();cm('m-add');S.mk=dt.slice(0,7);render();
   toast('✅',`${window._aType==='dep'?'Dépense':'Revenu'} ajouté${window._aFreq==='rec'?' (récurrent)':''}!`);
-}
-
-/* ── SYNC ── */
-function exportProfile(){
-  const data=JSON.parse(localStorage.getItem('fp5')||'{}');
-  data._exportDate=new Date().toISOString();
-  data._version='fp5';
-  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  const d=new Date();
-  a.download=`finances-pro_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click();URL.revokeObjectURL(url);
-  toast('📤','Profil exporté');
-}
-function importProfile(e){
-  const f=e.target.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=ev=>{
-    try{
-      const d=JSON.parse(ev.target.result);
-      if(!d.tx||!d.tx.length){toast('⚠️','Fichier invalide');return}
-      if(!confirm(`Importer ${d.tx.length} opérations ? Cela remplacera toutes vos données actuelles.`))return;
-      Object.assign(S,{tx:d.tx,sal:d.sal??S.sal,savT:d.savT??S.savT,savOn:d.savOn??false,taxR:d.taxR??S.taxR,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[]});
-      aOv();save();
-      const mks=gMks();S.mk=mks.length?mks[mks.length-1]:'all';
-      rNav();render();
-      toast('📥',`Profil importé · ${S.tx.length} opérations`);
-    }catch(err){toast('❌','Erreur: fichier invalide')}
-  };
-  rd.readAsText(f);
-  e.target.value='';
 }
 
 function cm(id){document.getElementById(id).classList.remove('a')}
