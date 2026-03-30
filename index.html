@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -124,18 +125,20 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 .afg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:500px){.afg{grid-template-columns:1fr}}
 
-.auth-tabs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:20px}
-.auth-tabs button{flex:1;padding:10px;border:none;border-radius:8px;font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--ts);transition:all .2s}
-.auth-tabs button.sel{background:var(--accent);color:#fff}
+.auth-tabs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(–border);border-radius:var(–rs);margin-bottom:20px}
+.auth-tabs button{flex:1;padding:10px;border:none;border-radius:8px;font-family:var(–f);font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(–ts);transition:all .2s}
+.auth-tabs button.sel{background:var(–accent);color:#fff}
 .sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.sync-dot.online{background:var(--ok)}.sync-dot.offline{background:var(--warn)}.sync-dot.saving{background:var(--accent);animation:pulse 1s infinite}
+.sync-dot.online{background:var(–ok)}.sync-dot.offline{background:var(–warn)}.sync-dot.saving{background:var(–accent);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.user-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:14px;font-size:13px}
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.03);border:1px solid var(–border);border-radius:var(–rs);margin-bottom:14px;font-size:13px}
 .user-bar .ue{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:12px}
-.user-bar .lo{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--no);font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
-.user-bar .lo:hover{background:var(--nob);border-color:var(--no)}
+.user-bar .lo{padding:6px 14px;border-radius:8px;border:1px solid var(–border);background:transparent;color:var(–no);font-family:var(–f);font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
+.user-bar .lo:hover{background:var(–nob);border-color:var(–no)}
 </style>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 <div class="app" id="app">
@@ -387,6 +390,7 @@ function vD(mks){
         <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tm)">
           <span>Jour de paye :</span>
           <input type="number" min="1" max="31" value="${curPd}" placeholder="—" onchange="setPayDay('${S.mk}',this.value)" style="width:48px;padding:5px 8px;font-size:13px;text-align:center;font-family:var(--m)">
+          <span onclick="showPayDayInfo()" style="width:20px;height:20px;border-radius:50%;background:var(--border);color:var(--ts);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;font-style:italic;font-family:serif;flex-shrink:0">i</span>
         </div>
         <span style="font-family:var(--m);font-size:18px;font-weight:700;color:var(--ok)" id="sal-display">${fmt(curSal)}</span>
         <button class="bi" onclick="editMonthSal()" style="width:26px;height:26px;font-size:11px">✎</button>
@@ -546,6 +550,23 @@ function vS(){
 /* ── ACTIONS ── */
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?'💎':'⭕',S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?'⚡':'⭕',S.taxOn?'Impôt ON':'Impôt OFF')}
+function showPayDayInfo(){
+  const b=document.getElementById('m-cat-b');
+  document.getElementById('m-cat-t').innerHTML='📅 Jour de paye';
+  b.innerHTML=`<div style="font-size:14px;line-height:1.8;color:var(--ts)">
+    <p style="margin-bottom:16px;color:var(--text);font-weight:600">Le jour de paye permet de recaler votre mois financier sur votre vrai cycle de salaire.</p>
+    <p style="margin-bottom:16px">Votre salaire arrive généralement quelques jours <strong style="color:var(--text)">avant le 1er</strong> du mois suivant. Par exemple, vous recevez votre paye le <strong style="color:var(--ok)">28 mars</strong> pour le mois d'<strong style="color:var(--ok)">avril</strong>.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:16px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--al);margin-bottom:10px;font-size:12px;text-transform:uppercase;letter-spacing:1px">Exemple concret</div>
+      <div style="margin-bottom:6px">Jour de paye d'Avril = <strong style="color:var(--ok)">28</strong></div>
+      <div style="margin-bottom:6px">→ Les opérations à partir du <strong style="color:var(--text)">28 mars</strong> sont comptées en <strong style="color:var(--ok)">avril</strong></div>
+      <div>→ Les opérations du 1er au 27 mars restent en <strong style="color:var(--text)">mars</strong></div>
+    </div>
+    <p style="margin-bottom:16px">Cela permet de voir votre <strong style="color:var(--text)">vrai reste du mois</strong> : salaire reçu − charges − dépenses, sans décalage.</p>
+    <p style="color:var(--tm);font-size:12px">💡 Si vous ne définissez pas de jour de paye, le mois calendaire classique (1er au dernier jour) est utilisé. Chaque mois peut avoir son propre jour de paye.</p>
+  </div>`;
+  document.getElementById('m-cat').classList.add('a');
+}
 function setPayDay(mk,v){
   const day=parseInt(v);
   if(!v||isNaN(day)||day<1||day>31){delete S.payDayByMonth[mk];save();render();toast('📅','Jour de paye retiré pour '+mkS(mk));return}
