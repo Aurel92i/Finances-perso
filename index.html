@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<! top>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="%237c6cf0"/><stop offset="100%" stop-color="%2334d9b4"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="10" fill="%2306060b" stroke="url(%23g)" stroke-width="2.5"/><path d="M11 27 L17 21 L23 25 L31 13" stroke="url(%23g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31" cy="13" r="3" fill="%2334d9b4"/></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="%237c6cf0"/><stop offset="100%" stop-color="%2334d9b4"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="10" fill="%2306060b" stroke="url(%23g)" stroke-width="2.5"/><path d="M11 27 L17 21 L23 25 L31 13" stroke="url(%23g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="31" cy="13" r="3" fill="%2334d9b4"/></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%25%22%20y1%3D%22100%25%22%20x2%3D%22100%25%22%20y2%3D%220%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%237c6cf0%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2334d9b4%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2236%22%20height%3D%2236%22%20rx%3D%2210%22%20fill%3D%22%2306060b%22%20stroke%3D%22url%28%23g%29%22%20stroke-width%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M11%2027%20L17%2021%20L23%2025%20L31%2013%22%20stroke%3D%22url%28%23g%29%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2231%22%20cy%3D%2213%22%20r%3D%223%22%20fill%3D%22%2334d9b4%22%2F%3E%3C%2Fsvg%3E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#06060b">
@@ -228,7 +226,7 @@ label{display:block;font-size:11px;font-weight:700;color:var(--tm);margin-bottom
 </div>
 <div class="mo" id="m-cat"><div class="moc"><div class="moh"><h3 id="m-cat-t">Détail</h3><button class="cb" onclick="cm('m-cat')">×</button></div><div class="mob" id="m-cat-b"></div></div></div>
 <div class="mo" id="m-re"><div class="moc" style="max-width:420px"><div class="moh"><h3 id="m-re-t">Catégorie</h3><button class="cb" onclick="cm('m-re')">×</button></div><div class="mob" id="m-re-b"></div></div></div>
-<div class="mo" id="m-add"><div class="moc" style="max-width:500px"><div class="moh"><h3>${lc('plus',16)} Nouvelle opération</h3><button class="cb" onclick="cm('m-add')">×</button></div><div class="mob" id="m-add-b"></div></div></div>
+<div class="mo" id="m-add"><div class="moc" style="max-width:500px"><div class="moh"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Nouvelle opération</h3><button class="cb" onclick="cm('m-add')">×</button></div><div class="mob" id="m-add-b"></div></div></div>
 <div class="mo" id="m-auth" style="z-index:1100"><div class="moc" style="max-width:420px"><div class="moh"><h3 id="auth-title">Connexion</h3><div id="auth-cw"></div></div><div class="mob" id="auth-body"></div></div></div>
 <div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
 
@@ -359,7 +357,7 @@ async function doAuth(){
     if(window._authMode==='signup')r=await supa.auth.signUp({email:em,password:pw});
     else r=await supa.auth.signInWithPassword({email:em,password:pw});
     if(r.error)throw r.error;
-    cm('m-auth');toast('✅',window._authMode==='signup'?'Compte créé !':'Connecté !');
+    cm('m-auth');toast(lc('check',16,'var(--ok)'),window._authMode==='signup'?'Compte créé !':'Connecté !');
   }catch(e){window._authErr=e.message==='Invalid login credentials'?'Email ou mot de passe incorrect':e.message||'Erreur';renderAuth()}
 }
 async function doLogout(){if(!confirm('Se déconnecter ?'))return;await supa.auth.signOut();localStorage.removeItem('fp5');toast(lc('logout',16),'Déconnecté')}
@@ -376,8 +374,7 @@ async function loadCloud(){
     if(error)throw error;
     if(row&&row.data&&row.data.tx&&row.data.tx.length){Object.assign(S,row.data);aOv();localStorage.setItem('fp5',JSON.stringify(row.data));_ss='online'}
     else{load();if(S.tx.length)syncUp();_ss='online'}
-  }catch(e){console.error(e);_ss='offline';load()}
-}
+  }catch(e){console.error(e);_ss='offline';load()}}
 async function clearCloud(){if(!_user)return;try{await supa.from('user_data').delete().eq('id',_user.id)}catch(e){}}
 function uSD(){document.querySelectorAll('.sync-dot').forEach(d=>{d.className='sync-dot '+_ss})}
 
@@ -386,7 +383,7 @@ const IC={"Vie quotidienne":lc('cart',18),"Loisirs et sorties":lc('music',18),"A
 const MN=["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const TABS=[{id:'dashboard',l:lc('barchart',14)+' Vue'},{id:'forecast',l:lc('calendar',14)+' Prévoir'},{id:'transactions',l:lc('list',14)+' Opérations'},{id:'import',l:lc('download',14)+' Import'}];
 const AC=Object.keys(COL).sort();
-const DEFO={"hlm les foyers":"Logement"};
+const DEFO={"hlm les foyers":"Logement","hlm":"Logement","foyer":"Logement","hostinger":"Abonnements & téléphonie","anthropic":"Abonnements & téléphonie","openai":"Abonnements & téléphonie","canva":"Abonnements & téléphonie"};
 // Categories that are typically fixed charges
 const FIXED_CATS=new Set(["Logement","Abonnements & téléphonie","Santé","Emprunts (hors immobilier)","Auto & Moto","Services financiers & professionnels"]);
 
@@ -416,14 +413,20 @@ function gMks(){return[...new Set(S.tx.map(mkOf))].sort()}
 function txM(mk){return mk==='all'?S.tx:S.tx.filter(t=>mkOf(t)===mk)}
 function nxtMk(mk){const[y,m]=mk.split('-').map(Number);return(m===12?y+1:y)+'-'+String(m===12?1:m+1).padStart(2,'0')}
 function stx(r){return r.map((r,i)=>({id:i,date:r[0],dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6]}))}
-function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();if(S.catOv[s])t.categoryParent=S.catOv[s];
+function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();
+  // 1. Apply DEFO defaults first (bank misclassifications)
+  if(DEFO[s])t.categoryParent=DEFO[s];
+  // 2. User overrides take priority
+  if(S.catOv[s])t.categoryParent=S.catOv[s];
+  // 3. If still "Non catégorisé", try auto-detect from label
+  if(t.categoryParent==='Non catégorisé'){const g=gCP(t.label);if(g!=='Non catégorisé')t.categoryParent=g}
   // Apply label overrides
   const lk=t.label.toLowerCase();if(S.labelOv[lk])t.label=S.labelOv[lk];
   if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
 })}
 function save(){
   const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,payDayByMonth:S.payDayByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys,setup:S.setup};
-  localStorage.setItem('fp5',JSON.stringify(d));syncUp();
+  localStorage.setItem('fp5',JSON.stringify(d));localStorage.setItem('fp5_ts',String(Date.now()));syncUp();
 }
 function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d){Object.assign(S,{tx:d.tx||[],defSal:d.defSal??d.sal??0,salByMonth:d.salByMonth??{},payDayByMonth:d.payDayByMonth??{},savT:d.savT??0,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[],setup:d.setup??false});aOv();return}}catch(e){}
   S.tx=[];S.catOv={};
@@ -496,6 +499,7 @@ function render(){
   vMk();const el=document.getElementById('co'),mks=gMks();
   if(!_user){document.getElementById('nav').style.display='none';document.getElementById('fab').style.display='none';document.getElementById('sb').textContent='';el.innerHTML=vLanding();return}
   if(!S.setup||!S.tx.length){document.getElementById('nav').style.display='none';document.getElementById('fab').style.display='none';document.getElementById('sb').textContent='';el.innerHTML=vSetup();return}
+  document.getElementById('nav').style.display='flex';
   document.getElementById('sb').textContent=`${S.tx.length} opérations · ${mks.length} mois`;
   document.getElementById('fab').style.display=['transactions','dashboard'].includes(S.tab)?'flex':'none';document.getElementById('ham-btn').style.display=_user&&S.setup?'flex':'none';
   switch(S.tab){case'dashboard':el.innerHTML=vD(mks);break;case'forecast':el.innerHTML=vF();break;case'transactions':el.innerHTML=vT(mks);break;case'import':el.innerHTML=vI();break;case'settings':el.innerHTML=vS();break;case'account':el.innerHTML=vAccount();break;case'help':el.innerHTML=vHelp();break;case'legal':el.innerHTML=vLegal();break;case'data':el.innerHTML=vData();break}
@@ -838,8 +842,8 @@ function vData(){
 }
 
 /* ── ACTIONS ── */
-function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?lc('gem',14,'var(--ok)')+'':''+lc('xic',14),S.savOn?'Épargne ON':'Épargne OFF')}
-function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?lc('zap',14,'var(--warn)')+'':''+lc('xic',14),S.taxOn?'Impôt ON':'Impôt OFF')}
+function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?lc('gem',16,'var(--ok)'):lc('xic',16),S.savOn?'Épargne ON':'Épargne OFF')}
+function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?lc('zap',16,'var(--warn)'):lc('xic',16),S.taxOn?'Impôt ON':'Impôt OFF')}
 function showPayDayInfo(){
   const b=document.getElementById('m-cat-b');
   document.getElementById('m-cat-t').innerHTML=lc('calendar',14)+' Jour de paye';
@@ -1106,7 +1110,11 @@ function cm(id){document.getElementById(id).classList.remove('a')}
 /* ── MULTI-BANK CSV PARSER ── */
 const BANKS={
   boursobank:{name:'BoursoBank',detect:h=>h.includes('categoryParent')||h.includes('supplierFound'),
-    parse:r=>({date:r[0],label:q(r[2]),category:q(r[3]),catP:q(r[4]),supplier:q(r[5]).toLowerCase(),amount:pAmt(r[6])})},
+    parse:r=>{const catP=q(r[4]),sup=q(r[5]).toLowerCase(),lb=q(r[2]);
+      // If bank says "Non catégorisé" or known wrong categories, auto-detect
+      let cat=catP;
+      if(cat==='Non catégorisé'||DEFO[sup]){const g=gCP(lb);if(g!=='Non catégorisé')cat=g;if(DEFO[sup])cat=DEFO[sup]}
+      return{date:r[0],label:lb,category:q(r[3]),catP:cat,supplier:sup,amount:pAmt(r[6])}}},
   creditagricole:{name:'Crédit Agricole',detect:h=>/^date;/i.test(h)&&(h.includes('Débit')||h.includes('Debit'))&&(h.includes('Crédit')||h.includes('Credit'))&&!h.includes('Catégorie'),
     parse:r=>{const deb=pAmt(r[2]),cre=pAmt(r[3]);return{date:pDt(r[0]),label:q(r[1]),category:'',catP:gCP(q(r[1])),supplier:gS(q(r[1])),amount:cre||(-Math.abs(deb))||0}}},
   sg:{name:'Société Générale',detect:h=>h.includes('Sous-catégorie')||(/Date.*Date de valeur.*Libellé/i.test(h)&&h.includes('Montant')),
@@ -1129,7 +1137,7 @@ const BANKS={
 function q(s){return(s||'').replace(/^"|"$/g,'').trim()}
 function pAmt(s){if(!s)return NaN;return parseFloat(q(s).replace(/\s/g,'').replace(',','.'))}
 function pDt(s){s=q(s);if(!s)return'';if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);const m=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);if(m)return m[3]+'-'+m[2]+'-'+m[1];const m2=s.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{2})/);if(m2)return(+m2[3]>50?'19':'20')+m2[3]+'-'+m2[2]+'-'+m2[1];return''}
-const CR=[[/loyer|hlm|foyer|bailleur/i,'Logement'],[/edf|engie|gaz|energie|électricité/i,'Logement'],[/sfr|free|orange|bouygues|sosh|prixtel/i,'Abonnements & téléphonie'],[/canal\+|canal plus|netflix|disney|spotify|deezer|amazon prime|apple\.com|microsoft.*subscri|notion|openai|claude|anthropic|canva|hostinger/i,'Abonnements & téléphonie'],[/leclerc|carrefour|lidl|aldi|intermarché|super u|casino|monoprix|franprix|auchan|grand frais|picard|boulang|alimentation|el baraka|rivex|marché/i,'Vie quotidienne'],[/pharmacie|médecin|docteur|mutuelle|santé|labo|dentist/i,'Santé'],[/assurance|maif|maaf|macif|matmut|allianz|axa|active assur|acm iard/i,'Auto & Moto'],[/carburant|essence|total energies|shell|bp|leclerc dac/i,'Auto & Moto'],[/norauto|feu vert|midas|controle tech|pace lavage/i,'Auto & Moto'],[/sncf|ouigo|keolis|ratp|navigo|uber|taxi|bolt|blabla/i,'Voyages & Transports'],[/restaurant|pizza|burger|sushi|kebab|brasserie|café|bar|mcdo|kfc/i,'Loisirs et sorties'],[/cinéma|théâtre|concert|spectacle|fnac|fdj|jeux/i,'Loisirs et sorties'],[/virement|vir inst|vir sepa/i,'Virements émis'],[/retrait|dab/i,'Retraits cash'],[/chèque|chq\./i,'Chèques'],[/crédit|cofidis|floa|cetelem|sofinco|consumer finance/i,'Emprunts (hors immobilier)'],[/don|solidarité|helloasso|sif\b/i,'Cadeaux et solidarité'],[/amazon|action|gifi|brico|ikea|la poste|boulanger\b/i,'Vie quotidienne'],[/domiserve/i,'Autres dépenses']];
+const CR=[[/loyer|hlm|foyer|bailleur/i,'Logement'],[/edf|engie|gaz|energie|électricité/i,'Logement'],[/sfr|free|orange|bouygues|sosh|prixtel/i,'Abonnements & téléphonie'],[/canal\+|canal plus|netflix|disney|spotify|deezer|amazon prime|apple\.com|microsoft.*subscri|notion|openai|claude|anthropic|canva|hostinger|basic.?fit/i,'Abonnements & téléphonie'],[/leclerc|carrefour|lidl|aldi|intermarché|super u|casino|monoprix|franprix|auchan|grand frais|picard|boulang|alimentation|el baraka|rivex|marché/i,'Vie quotidienne'],[/pharmacie|médecin|docteur|mutuelle|santé|labo|dentist/i,'Santé'],[/assurance|maif|maaf|macif|matmut|allianz|axa|active assur|acm iard/i,'Auto & Moto'],[/carburant|essence|total energies|shell|bp|leclerc dac/i,'Auto & Moto'],[/norauto|feu vert|midas|controle tech|pace lavage/i,'Auto & Moto'],[/sncf|ouigo|keolis|ratp|navigo|uber|taxi|bolt|blabla/i,'Voyages & Transports'],[/restaurant|pizza|burger|sushi|kebab|brasserie|café|bar|mcdo|kfc|quick\b|o.?brozer|amour de pizza|le sultan|villa d.?or|chez theo|fresh food|ethnic food|pitaya|dersim|le soleil|le feu de bois/i,'Loisirs et sorties'],[/cinéma|théâtre|concert|spectacle|fnac|fdj|jeux/i,'Loisirs et sorties'],[/virement|vir inst|vir sepa/i,'Virements émis'],[/retrait|dab/i,'Retraits cash'],[/chèque|chq\./i,'Chèques'],[/crédit|cofidis|floa|cetelem|sofinco|consumer finance/i,'Emprunts (hors immobilier)'],[/\bdon\b|\bdons\b|solidarité|helloasso|\bsif\b/i,'Cadeaux et solidarité'],[/amazon|action|gifi|brico|ikea|la poste|boulanger\b|mozaik|ncd food|selecta|comptoir|scarabee/i,'Vie quotidienne'],[/domiserve/i,'Autres dépenses'],[/barber|coiffeur|coiffure/i,'Vie quotidienne']];
 function gCP(l){const lo=l.toLowerCase();for(const[re,c]of CR){if(re.test(lo))return c}return'Non catégorisé'}
 function gS(l){return l.replace(/CARTE \d{2}\/\d{2}\/\d{2,4}/i,'').replace(/CB\*\d+/ig,'').replace(/PRLV SEPA/i,'').replace(/VIR (INST|SEPA)/i,'').replace(/\|.*/,'').replace(/\d{2}\/\d{2}\/\d{2,4}/g,'').replace(/\s+/g,' ').trim().toLowerCase().slice(0,40)}
 function detectBk(t){const h=t.trim().split('\n')[0].replace(/^\uFEFF/,'');for(const[id,b]of Object.entries(BANKS)){if(b.detect(h))return id}return null}
@@ -1193,8 +1201,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){['m-cat','m-re','m-
 
 /* ── INIT ── */
 load();
-initAuth().then(()=>{
-  setTimeout(()=>{const sp=document.getElementById('splash');if(sp)sp.classList.add('hide');setTimeout(()=>{if(sp)sp.remove()},600)},1600);
-});
+initAuth();
+setTimeout(()=>{const sp=document.getElementById('splash');if(sp)sp.classList.add('hide');setTimeout(()=>{if(sp)sp.remove()},600)},2000);
 
 </script></body></html>
