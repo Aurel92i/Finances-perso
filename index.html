@@ -435,7 +435,7 @@ function fmtD(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency
 function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}
 function getSal(mk){if(mk&&mk!=='all'&&S.salByMonth[mk]!==undefined)return S.salByMonth[mk];return S.defSal}
 function net(mk){let n=getSal(mk);if(S.taxOn&&S.taxR>0)n-=n*(S.taxR/100);if(S.savOn&&S.savT>0)n-=S.savT;return n}
-function toast(i,m){const el=document.getElementById('toast');document.getElementById('ti').textContent=i;document.getElementById('tm').textContent=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),3000)}
+function toast(i,m){const el=document.getElementById('toast');document.getElementById('ti').innerHTML=i;document.getElementById('tm').innerHTML=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),3000)}
 function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');document.getElementById('drawer-ov').classList.toggle('open')}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-ov').classList.remove('open')}
 function setView(v){
