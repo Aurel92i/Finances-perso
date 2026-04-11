@@ -574,14 +574,15 @@ function vD(mks){
   const fixedTotal=fixed.reduce((s,f)=>s+f.avg,0);
   const fixedRevTotal=fixedRev.reduce((s,f)=>s+f.avg,0);
   const fixedSups=new Set(fixed.map(f=>f.supplier));
+  const fixedRevSups=new Set(fixedRev.map(f=>f.supplier));
   
   // Split expenses: variable = not from fixed charge suppliers
   const allExp=tx.filter(t=>t.amount<0);
   const totalExp=allExp.reduce((s,t)=>s+Math.abs(t.amount),0);
   const varExp=allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).reduce((s,t)=>s+Math.abs(t.amount),0);
   
-  // Revenus additionnels (hors salaire) = transactions positives
-  const revenues=tx.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0);
+  // Revenus additionnels (hors salaire, hors revenus fixes pour éviter double comptage)
+  const revenues=tx.filter(t=>t.amount>0&&!fixedRevSups.has(t.supplier.toLowerCase())).reduce((s,t)=>s+t.amount,0);
   
   // Solde = net salary + revenus - fixed charges - variable expenses
   const bal=av + revenues + fixedRevTotal*nb - fixedTotal*nb - varExp;
