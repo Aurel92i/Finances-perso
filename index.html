@@ -636,17 +636,31 @@ function vD(mks){
   }
   
   // REVENUS FIXES
-  if(fixedRev.length){
+  if(fixedRev.length||S._editFixRev){
     const editRev=S._editFixRev;
-    h+=`<div class="card" style="border-left:3px solid var(--ok)"><div class="ch"><span class="ct">${lc('tup',14)} Revenus fixes mensuels</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--ok)">+${fmt(fixedRevTotal)}</span><button class="bi" onclick="S._editFixRev=!S._editFixRev;render()" style="${editRev?'background:var(--accent);color:#fff':''}">✎</button></div></div>
+    h+=`<div class="card" style="border-left:3px solid var(--ok)"><div class="ch"><span class="ct">${lc('tup',14)} Revenus fixes mensuels</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--ok)">+${fmt(fixedRevTotal)}</span><button class="bi" onclick="S._editFixRev=!S._editFixRev;S._editRevIdx=null;render()" style="${editRev?'background:var(--accent);color:#fff':''}">✎</button></div></div>
     <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixedRev.length} revenu${fixedRev.length>1?'s':''} récurrent${fixedRev.length>1?'s':''}</div>`;
-    fixedRev.forEach(f=>{
-      if(editRev){
-        h+=`<div class="fix-item"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span><button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:24px;height:24px;font-size:11px;background:var(--nob);color:var(--no);margin-left:6px">${lc('trash',12)}</button></div>`;
+    fixedRev.forEach((f,idx)=>{
+      const isEditing=editRev&&S._editRevIdx===idx;
+      if(isEditing){
+        h+=`<div class="fix-item" style="flex-wrap:wrap;gap:8px;padding:12px 14px">
+          <span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span>
+          <input type="text" id="rev-ed-label" value="${f.label}" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
+          <input type="number" id="rev-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+          <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
+            <button class="bi ok" onclick="saveRevEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
+            <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">${lc("trash",14)}</button>
+          </div>
+        </div>`;
+      } else if(editRev){
+        h+=`<div class="fix-item" onclick="S._editRevIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
       } else {
         h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span></div>`;
       }
     });
+    if(editRev){
+      h+=`<div class="fix-item" onclick="addRevCharge()" style="justify-content:center;border:1px dashed var(--border);border-radius:8px;margin-top:8px;color:var(--ok);font-weight:600;gap:6px"><span>+</span> Ajouter un revenu récurrent</div>`;
+    }
     h+=`</div>`;
   }
   if(S.savOn||S.taxOn){h+=`<div class="card" style="padding:14px 18px"><div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-family:var(--m)">`;
@@ -957,6 +971,50 @@ function confirmAddFix(){
   S.manRec.push({label,amount:-amt,cat,supplier:sup});
   S.fixedSup[sup]=true;
   save();render();toast(lc('check',16,'var(--ok)'),'Charge ajoutée');
+}
+function saveRevEdit(idx){
+  const fixedAll=detectFixed();
+  const revs=fixedAll.filter(f=>f.isRevenue);
+  const f=revs[idx];if(!f)return;
+  const newLabel=document.getElementById('rev-ed-label').value.trim();
+  const newAmt=parseFloat(document.getElementById('rev-ed-amt').value);
+  if(!newLabel){toast(lc('alert',16,'var(--warn)'),'Libellé requis');return}
+  if(isNaN(newAmt)||newAmt<=0){toast(lc('alert',16,'var(--warn)'),'Montant invalide');return}
+  const existing=S.manRec.find(r=>r.supplier===f.supplier);
+  if(existing){existing.label=newLabel;existing.amount=newAmt}
+  else{S.manRec.push({label:newLabel,amount:newAmt,cat:f.cat,supplier:f.supplier})}
+  S._editRevIdx=null;save();render();toast(lc('check',16,'var(--ok)'),'Revenu modifié');
+}
+function addRevCharge(){
+  const catO=AC.map(c=>`<option value="${c}">${IC[c]||lc('pkg',16)} ${c}</option>`).join('');
+  const card=document.querySelector('.card[style*="border-left:3px solid var(--ok)"]');
+  if(!card||document.getElementById('rev-add-form'))return;
+  const form=document.createElement('div');
+  form.id='rev-add-form';
+  form.style.cssText='padding:12px 14px;border:1px dashed var(--ok);border-radius:8px;margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;';
+  form.innerHTML=`
+    <input type="text" id="rev-add-label" placeholder="Libellé" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
+    <input type="number" id="rev-add-amt" placeholder="Montant" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+    <select id="rev-add-cat" style="flex:1;min-width:140px;padding:6px 10px;font-size:13px">${catO}</select>
+    <div style="display:flex;gap:4px">
+      <button class="bi ok" onclick="confirmAddRev()" style="width:28px;height:28px;font-size:12px">✓</button>
+      <button class="bi ko" onclick="document.getElementById('rev-add-form').remove()" style="width:28px;height:28px;font-size:12px">✕</button>
+    </div>`;
+  card.appendChild(form);
+  document.getElementById('rev-add-label').focus();
+}
+function confirmAddRev(){
+  const label=document.getElementById('rev-add-label').value.trim();
+  const amt=parseFloat(document.getElementById('rev-add-amt').value);
+  const cat=document.getElementById('rev-add-cat').value;
+  if(!label){toast(lc('alert',16,'var(--warn)'),'Libellé requis');return}
+  if(isNaN(amt)||amt<=0){toast(lc('alert',16,'var(--warn)'),'Montant invalide');return}
+  const sup=label.toLowerCase();
+  const existing=detectFixed().find(f=>f.supplier===sup);
+  if(existing){toast(lc('alert',16,'var(--warn)'),'Ce revenu existe déjà');return}
+  S.manRec.push({label,amount:amt,cat,supplier:sup});
+  S.fixedSup[sup]=true;
+  save();render();toast(lc('check',16,'var(--ok)'),'Revenu ajouté');
 }
 function sFE(c){S.fEd=c;render();requestAnimationFrame(()=>{const i=document.getElementById('fedit');if(i){i.focus();i.select()}})}
 function cFE(c){const i=document.getElementById('fedit'),v=parseFloat(i.value);if(!isNaN(v)&&v>=0){S.fAdj[c]=v;S.fEd=null;save();render();toast(lc('check',16,'var(--ok)'),'OK')}}
