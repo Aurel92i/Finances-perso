@@ -577,8 +577,11 @@ function vD(mks){
   const totalExp=allExp.reduce((s,t)=>s+Math.abs(t.amount),0);
   const varExp=allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).reduce((s,t)=>s+Math.abs(t.amount),0);
   
-  // Solde = net salary - fixed charges - variable expenses
-  const bal=av - fixedTotal*nb - varExp;
+  // Revenus additionnels (hors salaire) = transactions positives
+  const revenues=tx.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0);
+  
+  // Solde = net salary + revenus - fixed charges - variable expenses
+  const bal=av + revenues - fixedTotal*nb - varExp;
   
   const curSal=S.mk==='all'?S.defSal:getSal(S.mk);
   const curPd=S.mk!=='all'?(S.payDayByMonth[S.mk]||''):'';
@@ -598,7 +601,7 @@ function vD(mks){
     </div>`;
   }
   h+=`<div class="g2"><div class="card"><div class="ch"><span class="ct">Dépenses variables</span><span style="font-size:18px">${lc('tdown',18)}</span></div><div class="cv neg">${fmt(varExp)}</div><div class="csub">${allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).length} transactions hors charges fixes</div></div>
-  <div class="card"><div class="ch"><span class="ct">Reste du mois</span><span style="font-size:18px">${bal>=0?lc('tup',18):lc('alert',18,'var(--no)')}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} net${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''} − ${fmt(fixedTotal*nb)} charges</div></div></div>`;
+  <div class="card"><div class="ch"><span class="ct">Reste du mois</span><span style="font-size:18px">${bal>=0?lc('tup',18):lc('alert',18,'var(--no)')}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} net${revenues?' + '+fmt(revenues)+' revenus':''}${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''} − ${fmt(fixedTotal*nb)} charges</div></div></div>`;
   
   // FIXED CHARGES CARD
   if(fixed.length||S._editFix){
