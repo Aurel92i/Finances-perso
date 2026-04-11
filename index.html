@@ -637,10 +637,15 @@ function vD(mks){
   
   // REVENUS FIXES
   if(fixedRev.length){
-    h+=`<div class="card" style="border-left:3px solid var(--ok)"><div class="ch"><span class="ct">${lc('tup',14)} Revenus fixes mensuels</span><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--ok)">+${fmt(fixedRevTotal)}</span></div>
+    const editRev=S._editFixRev;
+    h+=`<div class="card" style="border-left:3px solid var(--ok)"><div class="ch"><span class="ct">${lc('tup',14)} Revenus fixes mensuels</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--ok)">+${fmt(fixedRevTotal)}</span><button class="bi" onclick="S._editFixRev=!S._editFixRev;render()" style="${editRev?'background:var(--accent);color:#fff':''}">✎</button></div></div>
     <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixedRev.length} revenu${fixedRev.length>1?'s':''} récurrent${fixedRev.length>1?'s':''}</div>`;
     fixedRev.forEach(f=>{
-      h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span></div>`;
+      if(editRev){
+        h+=`<div class="fix-item"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span><button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:24px;height:24px;font-size:11px;background:var(--nob);color:var(--no);margin-left:6px">${lc('trash',12)}</button></div>`;
+      } else {
+        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span></div>`;
+      }
     });
     h+=`</div>`;
   }
