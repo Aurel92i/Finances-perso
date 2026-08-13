@@ -438,7 +438,7 @@ function txM(mk){return mk==='all'?S.tx:S.tx.filter(t=>mkOf(t)===mk)}
 function nxtMk(mk){const[y,m]=mk.split('-').map(Number);return(m===12?y+1:y)+'-'+String(m===12?1:m+1).padStart(2,'0')}
 function stx(r){return r.map((r,i)=>({id:i,date:r[0],dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6]}))}
 const CATLOW=new Set(Object.keys(COL).map(c=>c.toLowerCase()));
-const SUPALIAS=[[/consumer finance/,'ca consumer finance'],[/claude|anthropic/,'claude.ai'],[/hlm|les foyers/,'hlm les foyers'],[/canal ?plus|canal\+/,'canal plus'],[/active assur/,'active assurances'],[/acm iard/,'acm iard'],[/energie mutuelle/,'energie mutuelle'],[/^edf\b|^edf /,'edf'],[/floa/,'floa bank'],[/^sfr\b/,'sfr'],[/basic ?fit/,'basic fit'],[/leclerc dac/,'leclerc dac'],[/norauto/,'norauto'],[/microsoft/,'microsoft'],[/hostinger/,'hostinger'],[/openai/,'openai'],[/canva/,'canva']];
+const SUPALIAS=[[/consumer finance/,'ca consumer finance'],[/claude|anthropic/,'claude.ai'],[/hlm|les foyers/,'hlm les foyers'],[/canal ?plus|canal\+/,'canal plus'],[/active assur/,'active assurances'],[/acm iard/,'acm iard'],[/energie mutuelle/,'energie mutuelle'],[/^edf\b|^edf /,'edf'],[/floa/,'floa bank'],[/^sfr\b/,'sfr'],[/basic ?fit/,'basic fit'],[/leclerc dac/,'leclerc dac'],[/norauto/,'norauto'],[/microsoft/,'microsoft'],[/cofidis/,'cofidis amazon'],[/hostinger/,'hostinger'],[/openai/,'openai'],[/canva/,'canva']];
 function normSup(s){let x=(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
   for(const[re,c]of SUPALIAS){if(re.test(x))return c}
   return x}
@@ -470,6 +470,7 @@ function aOv(){migSup();S.tx.forEach(t=>{
   if(CATLOW.has((t.supplier||'').toLowerCase())){t.supplier=gS(t._origLabel||t.label)}
   // 0b. Normalisation: unifie les noms de fournisseurs entre formats d'export
   t.supplier=normSup(t.supplier);
+  if(/cofidis/i.test(t._origLabel||t.label))t.supplier='cofidis amazon';
   const s=t.supplier;
   // 0bis. RÉPARATION: categoryParent invalide (sous-catégorie Bourso)
   if(!COL[t.categoryParent]){
@@ -538,13 +539,14 @@ function detectFixed(){
     const avg=amts.reduce((a,b)=>a+b,0)/mc;
     const maxDev=Math.max(...amts.map(a=>Math.abs(a-avg)/Math.max(avg,1)));
     const isFixed=S.fixedSup[sup]===true||
-      (mc>=Math.min(mks.length,2)&&maxDev<0.15&&FIXED_CATS.has(d.cat));
+      (mc>=Math.min(mks.length,3)&&maxDev<0.15&&FIXED_CATS.has(d.cat)&&avg>=3);
     if(isFixed){
       // If user explicitly set this as recurring, use their chosen amount
       const mr=manRecMap[sup];
       const displayAmt=mr?Math.abs(mr.amount):avg;
       const displayLabel=mr?mr.label:cleanLbl(d.label);
-      fixed.push({supplier:sup,label:displayLabel,cat:d.cat,avg:displayAmt,months:mc,forced:S.fixedSup[sup]===true,manual:!!mr,isRevenue:false});
+      const mkKeys=Object.keys(d.months).sort();
+      fixed.push({supplier:sup,label:displayLabel,cat:d.cat,avg:displayAmt,months:mc,byMonth:d.months,lastAmt:d.months[mkKeys[mkKeys.length-1]],forced:S.fixedSup[sup]===true,manual:!!mr,isRevenue:false});
     }
   });
   // Add manual recurring NOT already in auto-detected list
@@ -552,7 +554,7 @@ function detectFixed(){
   S.manRec.forEach(r=>{
     const rs=r.supplier||r.label.toLowerCase();
     if(!autoSups.has(rs)){
-      fixed.push({supplier:rs,label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,forced:true,manual:true,isRevenue:r.amount>0});
+      fixed.push({supplier:rs,label:r.label,cat:r.cat,avg:Math.abs(r.amount),months:0,byMonth:null,lastAmt:Math.abs(r.amount),forced:true,manual:true,isRevenue:r.amount>0});
     }
   });
   return fixed.sort((a,b)=>b.avg-a.avg);
@@ -636,8 +638,17 @@ function vD(mks){
   const fixedAll=detectFixed();
   const fixed=fixedAll.filter(f=>!f.isRevenue);
   const fixedRev=fixedAll.filter(f=>f.isRevenue);
-  const fixedTotal=fixed.reduce((s,f)=>s+f.avg,0);
-  const fixedRevTotal=fixedRev.reduce((s,f)=>s+f.avg,0);
+  const curMk=new Date().toISOString().slice(0,7);
+  const lastDataMk=mks.length?mks[mks.length-1]:curMk;
+  const mkAmt=f=>{
+    if(S.mk==='all'||S._viewPeriod!=='month')return f.avg;
+    if(f.byMonth&&f.byMonth[S.mk]!=null)return f.byMonth[S.mk];
+    // Mois passé avec historique: charge non prélevée ce mois → 0
+    if(f.byMonth&&S.mk<curMk&&S.mk<=lastDataMk)return 0;
+    // Mois courant/futur ou charge manuelle: prévisionnel
+    return f.manual?f.avg:(f.lastAmt??f.avg)};
+  const fixedTotal=fixed.reduce((s,f)=>s+mkAmt(f),0);
+  const fixedRevTotal=fixedRev.reduce((s,f)=>s+mkAmt(f),0);
   const fixedSups=new Set(fixed.map(f=>f.supplier));
   const fixedRevSups=new Set(fixedRev.map(f=>f.supplier));
   
@@ -688,16 +699,17 @@ function vD(mks){
         h+=`<div class="fix-item" style="flex-wrap:wrap;gap:8px;padding:12px 14px">
           <span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span>
           <input type="text" id="fix-ed-label" value="${f.label}" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
-          <input type="number" id="fix-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+          <input type="number" id="fix-ed-amt" value="${mkAmt(f).toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
           <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
             <button class="bi ok" onclick="saveFixEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
             <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">${lc("trash",14)}</button>
           </div>
         </div>`;
       } else if(editing){
-        h+=`<div class="fix-item" onclick="S._editFixIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
+        h+=`<div class="fix-item" onclick="S._editFixIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(mkAmt(f))}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
       } else {
-        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}</span><span class="fix-amt">${fmt(f.avg)}</span></div>`;
+        const _a=mkAmt(f);
+        h+=`<div class="fix-item" style="cursor:default${_a===0?';opacity:.45':''}"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}${f.manual?'<span class="fix-tag">Manuel</span>':''}${_a===0?' <span style="font-size:10px;color:var(--tm)">non prélevée ce mois</span>':''}</span><span class="fix-amt">${_a===0?'—':fmt(_a)}</span></div>`;
       }
     });
     if(editing){
@@ -717,16 +729,16 @@ function vD(mks){
         h+=`<div class="fix-item" style="flex-wrap:wrap;gap:8px;padding:12px 14px">
           <span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span>
           <input type="text" id="rev-ed-label" value="${f.label}" style="flex:1;min-width:120px;padding:6px 10px;font-size:13px">
-          <input type="number" id="rev-ed-amt" value="${f.avg.toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
+          <input type="number" id="rev-ed-amt" value="${mkAmt(f).toFixed(2)}" step="0.01" style="width:100px;padding:6px 10px;font-size:13px;text-align:right">
           <div style="display:flex;gap:4px;width:100%;justify-content:flex-end;margin-top:4px">
             <button class="bi ok" onclick="saveRevEdit(${idx})" style="width:28px;height:28px;font-size:12px">✓</button>
             <button class="bi" onclick="removeFixCharge('${esc(f.supplier)}')" style="width:28px;height:28px;font-size:12px;background:var(--nob);color:var(--no)">${lc("trash",14)}</button>
           </div>
         </div>`;
       } else if(editRev){
-        h+=`<div class="fix-item" onclick="S._editRevIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
+        h+=`<div class="fix-item" onclick="S._editRevIdx=${idx};render()"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(mkAmt(f))}</span><span style="font-size:11px;color:var(--al);margin-left:6px;flex-shrink:0">✎</span></div>`;
       } else {
-        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(f.avg)}</span></div>`;
+        h+=`<div class="fix-item" style="cursor:default"><span class="fix-icon">${IC[f.cat]||lc('pkg',16)}</span><span class="fix-label">${f.label}<span class="fix-tag">Manuel</span></span><span class="fix-amt" style="color:var(--ok)">+${fmt(mkAmt(f))}</span></div>`;
       }
     });
     if(editRev){
