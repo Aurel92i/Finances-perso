@@ -343,13 +343,34 @@ function showAuth(mode){
 function renderAuth(){
   const b=document.getElementById('auth-body'),t=document.getElementById('auth-title');
   const mode=window._authMode,err=window._authErr;
+  if(mode==='reset'){
+    t.innerHTML=lc('lock',14)+' Réinitialiser';
+    let h=`<div class="auth-tabs"><button onclick="window._authMode='login';renderAuth()">Connexion</button><button onclick="window._authMode='signup';renderAuth()">Inscription</button></div>`;
+    if(err)h+=`<div class="al" style="background:var(--nob);border-color:rgba(240,108,108,0.25);color:var(--no);margin-bottom:14px">${err}</div>`;
+    if(window._resetSent)h+=`<div class="al" style="background:var(--okb);border-color:rgba(34,211,182,0.25);color:var(--ok);margin-bottom:14px">${lc('check',14,'var(--ok)')} Email envoyé ! Vérifiez votre boîte de réception.</div>`;
+    h+=`<div class="fg"><label>Email</label><input type="email" id="au-em" placeholder="vous@email.com" style="font-size:16px"></div>
+    <button class="btn bp" onclick="doReset()">Envoyer le lien de réinitialisation</button>
+    <div style="text-align:center;margin-top:14px"><button style="background:none;border:none;color:var(--al);cursor:pointer;font-family:var(--f);font-size:13px" onclick="window._authMode='login';window._resetSent=false;renderAuth()">← Retour à la connexion</button></div>`;
+    b.innerHTML=h;setTimeout(()=>{const el=document.getElementById('au-em');if(el)el.focus()},200);
+    return;
+  }
   t.innerHTML=mode==='login'?lc('lock',14)+' Connexion':lc('pencil',14)+' Inscription';
   let h=`<div class="auth-tabs"><button class="${mode==='login'?'sel':''}" onclick="window._authMode='login';renderAuth()">Connexion</button><button class="${mode==='signup'?'sel':''}" onclick="window._authMode='signup';renderAuth()">Inscription</button></div>`;
   if(err)h+=`<div class="al" style="background:var(--nob);border-color:rgba(240,108,108,0.25);color:var(--no);margin-bottom:14px">${err}</div>`;
   h+=`<div class="fg"><label>Email</label><input type="email" id="au-em" placeholder="vous@email.com" style="font-size:16px"></div>
   <div class="fg"><label>Mot de passe</label><input type="password" id="au-pw" placeholder="${mode==='signup'?'Min. 6 caractères':'Votre mot de passe'}" onkeydown="if(event.key==='Enter')doAuth()" style="font-size:16px"></div>
   <button class="btn bp" onclick="doAuth()">${mode==='login'?'Se connecter':'Créer mon compte'}</button>`;
+  if(mode==='login')h+=`<div style="text-align:center;margin-top:14px"><button style="background:none;border:none;color:var(--ts);cursor:pointer;font-family:var(--f);font-size:13px" onclick="window._authMode='reset';window._authErr='';window._resetSent=false;renderAuth()">Mot de passe oublié ?</button></div>`;
   b.innerHTML=h;setTimeout(()=>{const el=document.getElementById('au-em');if(el)el.focus()},200);
+}
+async function doReset(){
+  const em=document.getElementById('au-em')?.value?.trim();
+  if(!em){window._authErr='Entrez votre email';renderAuth();return}
+  try{
+    const{error}=await supa.auth.resetPasswordForEmail(em,{redirectTo:window.location.origin+'/'});
+    if(error)throw error;
+    window._authErr='';window._resetSent=true;renderAuth();
+  }catch(e){window._authErr=e.message||'Erreur';renderAuth()}
 }
 async function doAuth(){
   const em=document.getElementById('au-em').value.trim(),pw=document.getElementById('au-pw').value;
