@@ -387,7 +387,7 @@ async function doLogout(){if(!confirm('Se déconnecter ?'))return;await supa.aut
 async function syncUp(){
   if(!_user)return;_ss='saving';uSD();clearTimeout(_st);
   _st=setTimeout(async()=>{try{
-    const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,payDayByMonth:S.payDayByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv||{},delKeys:S.delKeys||[],setup:S.setup};
+    const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,payDayByMonth:S.payDayByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv||{},delKeys:S.delKeys||[],exclVir:S.exclVir||false,setup:S.setup};
     const{error}=await supa.from('user_data').upsert({id:_user.id,data:d,updated_at:new Date().toISOString()});
     if(error)throw error;_ss='online'}catch(e){console.error(e);_ss='offline'}uSD()},1500);
 }
@@ -420,6 +420,7 @@ let S={tab:'dashboard',mk:'all',tx:[],defSal:0,salByMonth:{},payDayByMonth:{},sa
   _viewPeriod:'month',
   _weekOffset:0,
   _selectedDay:null,
+  exclVir:false,
   setup:false
 };
 
@@ -436,8 +437,47 @@ function gMks(){return[...new Set(S.tx.map(mkOf))].sort()}
 function txM(mk){return mk==='all'?S.tx:S.tx.filter(t=>mkOf(t)===mk)}
 function nxtMk(mk){const[y,m]=mk.split('-').map(Number);return(m===12?y+1:y)+'-'+String(m===12?1:m+1).padStart(2,'0')}
 function stx(r){return r.map((r,i)=>({id:i,date:r[0],dateVal:r[1],label:r[2],category:r[3],categoryParent:r[4],supplier:r[5],amount:r[6]}))}
-function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();
-  // 1. Apply DEFO defaults first (bank misclassifications)
+const CATLOW=new Set(Object.keys(COL).map(c=>c.toLowerCase()));
+const SUPALIAS=[[/consumer finance/,'ca consumer finance'],[/claude|anthropic/,'claude.ai'],[/hlm|les foyers/,'hlm les foyers'],[/canal ?plus|canal\+/,'canal plus'],[/active assur/,'active assurances'],[/acm iard/,'acm iard'],[/energie mutuelle/,'energie mutuelle'],[/^edf\b|^edf /,'edf'],[/floa/,'floa bank'],[/^sfr\b/,'sfr'],[/basic ?fit/,'basic fit'],[/leclerc dac/,'leclerc dac'],[/norauto/,'norauto'],[/microsoft/,'microsoft'],[/hostinger/,'hostinger'],[/openai/,'openai'],[/canva/,'canva']];
+function normSup(s){let x=(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+  for(const[re,c]of SUPALIAS){if(re.test(x))return c}
+  return x}
+function migSup(){
+  const nk={};Object.entries(S.catOv||{}).forEach(([k,v])=>{nk[normSup(k)]=v});S.catOv=nk;
+  const nf={};Object.entries(S.fixedSup||{}).forEach(([k,v])=>{const n=normSup(k);if(!(n in nf)||v===false)nf[n]=v});S.fixedSup=nf;
+  (S.manRec||[]).forEach(r=>{r.supplier=normSup(r.supplier||(r.label||'').toLowerCase())});
+  const seen=new Set();S.manRec=(S.manRec||[]).filter(r=>{if(seen.has(r.supplier))return false;seen.add(r.supplier);return true});
+}
+function bMap(c){const lo=(c||'').toLowerCase();
+  if(/aliment|boulang|supermarch|courses/.test(lo))return'Vie quotidienne';
+  if(/restaurant|bar|discoth|caf[ée]/.test(lo))return'Loisirs et sorties';
+  if(/livres|cd\/dvd|bijoux|jouets|v[êe]tements|accessoires|coiffeur|institut|multim[ée]dia|high.?tech|mobilier|[ée]lectrom[ée]nager|bricolage|jardin/.test(lo))return'Vie quotidienne';
+  if(/t[ée]l[ée]phon|internet|tv\b|abonnement/.test(lo))return'Abonnements & téléphonie';
+  if(/carburant|p[ée]age|parking|garage|entretien v[ée]hicule|assurances? \(auto/.test(lo))return'Auto & Moto';
+  if(/cr[ée]dit conso|pr[êe]t/.test(lo))return'Emprunts (hors immobilier)';
+  if(/loyer|electricit|gaz|chauffage|assurance habitation|charges de copro/.test(lo))return'Logement';
+  if(/pharmacie|m[ée]decin|opticien|dentiste|h[ôo]pital|mutuelle/.test(lo))return'Santé';
+  if(/transports quotidiens|train|avion|h[ôo]tel|voyage/.test(lo))return'Voyages & Transports';
+  if(/club|association|sport|cin[ée]ma|concert|spectacle|jeux/.test(lo))return'Loisirs et sorties';
+  if(/virements? [ée]mis|virement interne/.test(lo))return'Virements émis';
+  if(/solidarit|dons?\b/.test(lo))return'Cadeaux et solidarité';
+  if(/retrait/.test(lo))return'Retraits cash';
+  if(/ch[èe]que/.test(lo))return'Chèques';
+  if(/frais bancaires|services financiers|imp[ôo]ts|taxes/.test(lo))return'Services financiers & professionnels';
+  return null}
+function aOv(){migSup();S.tx.forEach(t=>{
+  // 0. RÉPARATION: supplier corrompu (= nom de catégorie, ancien bug format Bourso)
+  if(CATLOW.has((t.supplier||'').toLowerCase())){t.supplier=gS(t._origLabel||t.label)}
+  // 0b. Normalisation: unifie les noms de fournisseurs entre formats d'export
+  t.supplier=normSup(t.supplier);
+  const s=t.supplier;
+  // 0bis. RÉPARATION: categoryParent invalide (sous-catégorie Bourso)
+  if(!COL[t.categoryParent]){
+    const g=gCP(t._origLabel||t.label);
+    if(g!=='Non catégorisé')t.categoryParent=g;
+    else{const bm=bMap(t.categoryParent)||bMap(t.category);t.categoryParent=bm||'Non catégorisé'}
+  }
+  // 1. DEFO defaults (bank misclassifications)
   if(DEFO[s])t.categoryParent=DEFO[s];
   // 2. User overrides take priority
   if(S.catOv[s])t.categoryParent=S.catOv[s];
@@ -448,10 +488,10 @@ function aOv(){S.tx.forEach(t=>{const s=t.supplier.toLowerCase();
   if(t._origLabel){const ok=t._origLabel.toLowerCase();if(S.labelOv[ok])t.label=S.labelOv[ok]}
 })}
 function save(){
-  const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,payDayByMonth:S.payDayByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys,setup:S.setup};
+  const d={tx:S.tx,defSal:S.defSal,salByMonth:S.salByMonth,payDayByMonth:S.payDayByMonth,savT:S.savT,savOn:S.savOn,taxR:S.taxR,taxOn:S.taxOn,fAdj:S.fAdj,catOv:S.catOv,fixedSup:S.fixedSup,manRec:S.manRec,labelOv:S.labelOv,delKeys:S.delKeys,exclVir:S.exclVir,setup:S.setup};
   localStorage.setItem('fp5',JSON.stringify(d));localStorage.setItem('fp5_ts',String(Date.now()));syncUp();
 }
-function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d){Object.assign(S,{tx:d.tx||[],defSal:d.defSal??d.sal??0,salByMonth:d.salByMonth??{},payDayByMonth:d.payDayByMonth??{},savT:d.savT??0,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[],setup:d.setup??false});aOv();return}}catch(e){}
+function load(){try{const d=JSON.parse(localStorage.getItem('fp5'));if(d){Object.assign(S,{tx:d.tx||[],defSal:d.defSal??d.sal??0,salByMonth:d.salByMonth??{},payDayByMonth:d.payDayByMonth??{},savT:d.savT??0,savOn:d.savOn??false,taxR:d.taxR??0,taxOn:d.taxOn??false,fAdj:d.fAdj??{},catOv:d.catOv??{},fixedSup:d.fixedSup??{},manRec:d.manRec??[],labelOv:d.labelOv??{},delKeys:d.delKeys??[],exclVir:d.exclVir??false,setup:d.setup??false});aOv();return}}catch(e){}
   S.tx=[];S.catOv={};
 }
 function cSt(mk){const tx=txM(mk).filter(t=>t.amount<0);const o={};tx.forEach(t=>{const c=t.categoryParent;if(!o[c])o[c]={total:0,count:0,txs:[]};o[c].total+=Math.abs(t.amount);o[c].count++;o[c].txs.push(t)});return o}
@@ -476,6 +516,7 @@ function setMk(mk){S.mk=mk;render()}
 function rNav(){document.getElementById('nav').innerHTML=TABS.map(t=>`<button class="nb ${S.tab===t.id?'a':''}" onclick="setTab('${t.id}')">${t.l}</button>`).join('')}
 
 /* ── FIXED CHARGES DETECTION ── */
+function cleanLbl(l){return(l||'').split('|')[0].replace(/^CARTE \d{2}\/\d{2}\/\d{2,4}\s*/i,'').replace(/^PRLV SEPA\s*/i,'').replace(/^VIR (INST|SEPA)\s*/i,'').replace(/\s*CB\*\d+/ig,'').replace(/\s+/g,' ').trim()||l}
 function detectFixed(){
   const mks=gMks();if(mks.length<2)return[];
   const bySup={};
@@ -502,7 +543,7 @@ function detectFixed(){
       // If user explicitly set this as recurring, use their chosen amount
       const mr=manRecMap[sup];
       const displayAmt=mr?Math.abs(mr.amount):avg;
-      const displayLabel=mr?mr.label:d.label.split('|')[0].trim().split(' CARTE')[0].split(' PRLV')[0].trim();
+      const displayLabel=mr?mr.label:cleanLbl(d.label);
       fixed.push({supplier:sup,label:displayLabel,cat:d.cat,avg:displayAmt,months:mc,forced:S.fixedSup[sup]===true,manual:!!mr,isRevenue:false});
     }
   });
@@ -587,6 +628,7 @@ function vD(mks){
   const nb=isPeriod?1:(S.mk==='all'?mks.length:1);
   const av=isPeriod?net(gMks().length?gMks()[gMks().length-1]:undefined):(S.mk==='all'?mks.reduce((s,m)=>s+net(m),0):net(S.mk));
   const st=isPeriod?cStFiltered(tx):cSt(S.mk);
+  if(S.exclVir)delete st['Virements émis'];
   const sorted=Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
   const ded=[];if(S.taxOn&&S.taxR>0)ded.push(`Impôt ${S.taxR}%`);if(S.savOn&&S.savT>0)ded.push(`Épargne ${fmt(S.savT)}`);
   
@@ -600,7 +642,8 @@ function vD(mks){
   const fixedRevSups=new Set(fixedRev.map(f=>f.supplier));
   
   // Split expenses: variable = not from fixed charge suppliers
-  const allExp=tx.filter(t=>t.amount<0);
+  const allExpRaw=tx.filter(t=>t.amount<0);
+  const allExp=S.exclVir?allExpRaw.filter(t=>t.categoryParent!=='Virements émis'):allExpRaw;
   const totalExp=allExp.reduce((s,t)=>s+Math.abs(t.amount),0);
   const varExp=allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).reduce((s,t)=>s+Math.abs(t.amount),0);
   
@@ -628,13 +671,17 @@ function vD(mks){
     </div>`;
   }
   h+=`<div class="g2"><div class="card"><div class="ch"><span class="ct">Dépenses variables</span><span style="font-size:18px">${lc('tdown',18)}</span></div><div class="cv neg">${fmt(varExp)}</div><div class="csub">${allExp.filter(t=>!fixedSups.has(t.supplier.toLowerCase())).length} transactions hors charges fixes</div></div>
-  <div class="card"><div class="ch"><span class="ct">Reste du mois</span><span style="font-size:18px">${bal>=0?lc('tup',18):lc('alert',18,'var(--no)')}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} net${fixedRevTotal?' + '+fmt(fixedRevTotal*nb)+' rev. fixes':''}${revenues?' + '+fmt(revenues)+' revenus':''}${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''} − ${fmt(fixedTotal*nb)} charges</div></div></div>`;
+  <div class="card"><div class="ch"><span class="ct">Reste du mois</span><span style="font-size:18px">${bal>=0?lc('tup',18):lc('alert',18,'var(--no)')}</span></div><div class="cv ${bal>=0?'pos':'neg'}">${fmt(bal)}</div><div class="csub">sur ${fmt(av)} net${nb>1?' <span style="opacity:.6">('+nb+' mois)</span>':''}${fixedRevTotal?' + '+fmt(fixedRevTotal*nb)+' rev. fixes':''}${revenues?' + '+fmt(revenues)+' revenus':''}${ded.length?' <span style="opacity:.6">('+ded.join(' · ')+')</span>':''} − ${fmt(fixedTotal*nb)} charges${nb>1?' <span style="opacity:.6">('+nb+'×'+fmt(fixedTotal)+')</span>':''}</div></div></div>`;
+  if(S.mk==='all'&&S._viewPeriod==='month'){
+    const noSal=mks.filter(m=>getSal(m)<=0);
+    if(noSal.length){h+=`<div class="al aw" style="cursor:pointer" onclick="setTab('settings')">${lc('alert',14)} ${noSal.length} mois sans salaire configuré (${noSal.map(mkS).join(', ')}) — le total "net" est incomplet. Cliquez pour définir un salaire par défaut.</div>`}
+  }
   
   // FIXED CHARGES CARD
   if(fixed.length||S._editFix){
     const editing=S._editFix;
     h+=`<div class="card" style="border-left:3px solid var(--al)"><div class="ch"><span class="ct">${lc('lock',14)} Charges fixes mensuelles</span><div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--m);font-size:20px;font-weight:700;color:var(--no)">${fmt(fixedTotal)}</span><button class="bi" onclick="S._editFix=!S._editFix;S._editFixIdx=null;render()" style="${editing?'background:var(--accent);color:#fff':''}">✎</button></div></div>
-    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt((S.mk==='all'?net(mks[0]):net(S.mk))-fixedTotal)}</span> restant après charges</div>`;
+    <div style="font-size:12px;color:var(--ts);margin-bottom:12px">${fixed.length} charge${fixed.length>1?'s':''} · <span style="color:var(--ok)">${fmt((S.mk==='all'?net(mks[mks.length-1]):net(S.mk))-fixedTotal)}</span> restant après charges</div>`;
     fixed.forEach((f,idx)=>{
       const isEditing=editing&&S._editFixIdx===idx;
       if(isEditing){
@@ -779,6 +826,7 @@ function vS(){
   <div class="st" style="margin-top:24px">Déductions</div>
   <div class="dc ${S.savOn?'en':''}"><div class="tr ${S.savOn?'a':''}" onclick="tSav()"><div><div class="trl">${lc('gem',16)} Épargne</div><div class="trs">Montant mensuel réservé</div></div><div class="tsw"></div></div>${S.savOn?`<div style="padding:12px 16px 4px"><div class="di"><input type="number" value="${S.savT}" min="0" step="10" onchange="S.savT=parseFloat(this.value)||0;save();render()"><span class="u">€/mois</span></div></div>`:''}</div>
   <div class="dc ${S.taxOn?'en':''}"><div class="tr ${S.taxOn?'a':''}" onclick="tTax()"><div><div class="trl">${lc('zap',16)} Prélèvement à la source</div><div class="trs">Taux d'imposition</div></div><div class="tsw"></div></div>${S.taxOn?`<div style="padding:12px 16px 4px"><div class="di"><input type="number" value="${S.taxR}" min="0" max="50" step="0.1" onchange="S.taxR=parseFloat(this.value)||0;save();render()"><span class="u">%</span></div></div>`:''}</div>
+  <div class="dc ${S.exclVir?'en':''}"><div class="tr ${S.exclVir?'a':''}" onclick="tVir()"><div><div class="trl">${lc('send',16)} Exclure les virements émis</div><div class="trs">Ne pas compter les virements dans les dépenses (transferts internes, épargne…)</div></div><div class="tsw"></div></div></div>
   <div class="st" style="margin-top:24px">Récapitulatif</div>
   <div class="card" style="background:rgba(255,255,255,0.02);margin-bottom:0"><div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>Revenu brut</span><span style="font-family:var(--m);font-weight:600">${fmt(g)}</span></div>`;
   if(S.taxOn&&S.taxR>0)h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:var(--warn)"><span>− Impôt (${S.taxR}%)</span><span style="font-family:var(--m);font-weight:600">-${fmt(ta)}</span></div>`;
@@ -902,6 +950,7 @@ function vData(){
 /* ── ACTIONS ── */
 function tSav(){S.savOn=!S.savOn;save();render();toast(S.savOn?lc('gem',16,'var(--ok)'):lc('xic',16),S.savOn?'Épargne ON':'Épargne OFF')}
 function tTax(){S.taxOn=!S.taxOn;save();render();toast(S.taxOn?lc('zap',16,'var(--warn)'):lc('xic',16),S.taxOn?'Impôt ON':'Impôt OFF')}
+function tVir(){S.exclVir=!S.exclVir;save();render();toast(S.exclVir?lc('send',16,'var(--al)'):lc('xic',16),S.exclVir?'Virements exclus des dépenses':'Virements comptés en dépenses')}
 function showPayDayInfo(){
   const b=document.getElementById('m-cat-b');
   document.getElementById('m-cat-t').innerHTML=lc('calendar',14)+' Jour de paye';
@@ -1211,12 +1260,17 @@ function cm(id){document.getElementById(id).classList.remove('a')}
 
 /* ── MULTI-BANK CSV PARSER ── */
 const BANKS={
-  boursobank:{name:'BoursoBank',detect:h=>h.includes('categoryParent')||h.includes('supplierFound'),
-    parse:r=>{const catP=q(r[4]),sup=q(r[5]).toLowerCase(),lb=q(r[2]);
-      // If bank says "Non catégorisé" or known wrong categories, auto-detect
-      let cat=catP;
-      if(cat==='Non catégorisé'||DEFO[sup]){const g=gCP(lb);if(g!=='Non catégorisé')cat=g;if(DEFO[sup])cat=DEFO[sup]}
-      return{date:r[0],label:lb,category:q(r[3]),catP:cat,supplier:sup,amount:pAmt(r[6])}}},
+  boursobank:{name:'BoursoBank',detect:h=>h.includes('categoryParent')||h.includes('supplierFound'),headerBased:true,
+    parseH:(r,ix)=>{
+      const lb=q(r[ix.label]);
+      let sup='';
+      if(ix.supplierFound>=0)sup=q(r[ix.supplierFound]).toLowerCase();
+      else if(ix.suggestedLabel>=0)sup=q(r[ix.suggestedLabel]).toLowerCase();
+      if(!sup)sup=gS(lb);
+      sup=normSup(sup);
+      let cat=ix.categoryParent>=0?q(r[ix.categoryParent]):'';
+      if(!cat||cat==='Non catégorisé'||DEFO[sup]){const g=gCP(lb);if(g!=='Non catégorisé')cat=g;if(DEFO[sup])cat=DEFO[sup]}
+      return{date:q(r[ix.dateOp]),label:lb,category:ix.category>=0?q(r[ix.category]):lb,catP:cat||'Non catégorisé',supplier:sup,amount:pAmt(r[ix.amount])}}},
   creditagricole:{name:'Crédit Agricole',detect:h=>/^date;/i.test(h)&&(h.includes('Débit')||h.includes('Debit'))&&(h.includes('Crédit')||h.includes('Credit'))&&!h.includes('Catégorie'),
     parse:r=>{const deb=pAmt(r[2]),cre=pAmt(r[3]);return{date:pDt(r[0]),label:q(r[1]),category:'',catP:gCP(q(r[1])),supplier:gS(q(r[1])),amount:cre||(-Math.abs(deb))||0}}},
   sg:{name:'Société Générale',detect:h=>h.includes('Sous-catégorie')||(/Date.*Date de valeur.*Libellé/i.test(h)&&h.includes('Montant')),
@@ -1249,8 +1303,16 @@ function pCSV(text){
   const bk=detectBk(text);_lastBk=bk;
   if(!bk)return pCSVG(lines);
   const bank=BANKS[bk],sep=bank.sep||';',out=[];
+  let ix=null;
+  if(bank.headerBased){
+    const hdr=splitL(lines[0].replace(/^\uFEFF/,''),sep).map(h=>q(h));
+    ix={dateOp:-1,label:-1,suggestedLabel:-1,category:-1,categoryParent:-1,supplierFound:-1,amount:-1};
+    hdr.forEach((h,i)=>{if(ix[h]!==undefined&&ix[h]<0)ix[h]=i});
+    if(ix.dateOp<0||ix.label<0||ix.amount<0)return pCSVG(lines);
+  }
   for(let i=1;i<lines.length;i++){const row=splitL(lines[i],sep);if(row.length<3)continue;
-    try{const p=bank.parse(row);if(!p.date||!/^\d{4}-\d{2}-\d{2}$/.test(p.date)||isNaN(p.amount))continue;
+    try{const p=bank.headerBased?bank.parseH(row,ix):bank.parse(row);
+      if(!p.date||!/^\d{4}-\d{2}-\d{2}$/.test(p.date)||isNaN(p.amount))continue;
       out.push({id:Date.now()+i+Math.random(),date:p.date,dateVal:p.date,label:p.label||'Sans libellé',category:p.category||p.label,categoryParent:p.catP||'Non catégorisé',supplier:p.supplier||'',amount:p.amount})}catch(e){}}
   return out;
 }
