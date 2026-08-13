@@ -291,12 +291,14 @@ const supa=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 let _user=null;let _ss='offline';let _st=null;
 
 async function initAuth(){
-  const{data:{session}}=await supa.auth.getSession();
-  if(session){_user=session.user;await loadCloud()}
+  try{
+    const{data:{session}}=await supa.auth.getSession();
+    if(session){_user=session.user;try{await loadCloud()}catch(e){console.error('loadCloud:',e)}}
+  }catch(e){console.error('getSession:',e);_user=null}
   supa.auth.onAuthStateChange(async(ev,ses)=>{
-    if(ses){_user=ses.user;await loadCloud();rNav();render()}
+    if(ses){_user=ses.user;try{await loadCloud()}catch(e){}rNav();render()}
     else{_user=null;S={tab:'dashboard',mk:'all',tx:[],defSal:0,salByMonth:{},payDayByMonth:{},savT:0,savOn:false,taxR:0,taxOn:false,fAdj:{},fEd:null,catOv:{},fixedSup:{},manRec:[],labelOv:{},delKeys:[],_editFixIdx:null,_search:'',setup:false};render()}
-  });render();
+  });rNav();render();
 }
 function vLanding(){
   return`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
@@ -1280,7 +1282,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){['m-cat','m-re','m-
 
 /* ── INIT ── */
 load();
-initAuth();
+initAuth().catch(e=>console.error('initAuth:',e)).finally(()=>{rNav();render()});
 setTimeout(()=>{const sp=document.getElementById('splash');if(sp)sp.classList.add('hide');setTimeout(()=>{if(sp)sp.remove()},600)},2000);
 
 </script></body></html>
