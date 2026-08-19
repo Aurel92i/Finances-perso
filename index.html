@@ -60,36 +60,37 @@ td.ctr,th.ctr{text-align:center}
 .name-in{width:100%;border:none;background:transparent;font:inherit;color:inherit;padding:3px 2px}
 .eur-in{width:96px;text-align:right;background:var(--edit);border:1px solid var(--edit-b);border-radius:6px;padding:5px 7px;font-family:"Spline Sans Mono",monospace;font-size:13.5px;font-weight:500;color:var(--ink)}
 .eur-in::placeholder{color:#B9A75C}
+.eur-in:invalid,.eur-in:user-invalid{border-color:var(--edit-b);box-shadow:none;outline:none}
 .jour{font-size:12.5px;color:var(--mut);white-space:nowrap}
 .reste-cell{font-family:"Spline Sans Mono",monospace;font-size:13.5px;font-weight:700;white-space:nowrap}
 .reste-cell.neg{color:var(--neg)}
 .del{border:none;background:none;color:#B7BFC9;cursor:pointer;font-size:15px;padding:2px 5px;border-radius:5px}
 .del:hover{color:var(--neg);background:var(--neg-bg)}
-.addrow{display:block;width:100%;border:none;background:none;color:var(--mut);font:600 13px "Public Sans",sans-serif;padding:10px;cursor:pointer;text-align:left}
+.addrow{border:none;background:none;color:var(--mut);font:600 13px "Public Sans",sans-serif;padding:10px;cursor:pointer;text-align:left}
 .addrow:hover{color:var(--ink);background:var(--line-soft)}
+.envbar{display:flex;align-items:center;gap:8px;padding-right:10px;border-top:1px solid var(--line-soft)}
+.envbar .addrow{flex:1}
 tfoot td{border-top:1px solid var(--line);font-weight:700;background:#FAFBFC}
 input[type=checkbox]{width:17px;height:17px;accent-color:var(--pos);cursor:pointer}
 .hint{font-size:12.5px;color:var(--mut);padding:10px 16px;border-top:1px dashed var(--line)}
 
 /* ---- import ---- */
-.import-card{border:1px dashed var(--ink);background:linear-gradient(0deg,#FCFDFE,#FCFDFE)}
+.import-card{border:1px dashed var(--ink);background:#FCFDFE}
 .import-card .inner{padding:16px;display:flex;flex-direction:column;gap:10px}
 .import-card p{margin:0;font-size:13.5px;color:var(--mut)}
-.ia-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
-.ia-dot.on{background:var(--pos)} .ia-dot.off{background:#C9A227}
+.import-card p b{color:var(--ink)}
 
 /* ---- historique ---- */
 .hist-card{margin-top:16px}
 .hist-card td,.hist-card th{padding:7px 10px}
 
-/* ---- modals ---- */
+/* ---- modals & toast ---- */
 dialog{border:1px solid var(--line);border-radius:14px;padding:0;max-width:560px;width:calc(100% - 32px);color:var(--ink)}
 dialog::backdrop{background:rgba(22,32,43,.45)}
 .dlg-h{padding:14px 18px;border-bottom:1px solid var(--line);font-family:"Archivo",sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em}
 .dlg-b{padding:16px 18px;max-height:65vh;overflow:auto;font-size:14px}
 .dlg-f{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
 .dlg-b label{display:block;font-weight:600;font-size:13px;margin:10px 0 4px}
-.dlg-b input[type=password],.dlg-b input[type=text]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:14px "Public Sans",sans-serif}
 .dlg-b .note{font-size:12.5px;color:var(--mut)}
 .rowline{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
 .rowline b{font-family:"Spline Sans Mono",monospace;font-weight:700}
@@ -98,6 +99,9 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
 .err{color:var(--neg);font-weight:600}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font:600 13.5px "Public Sans",sans-serif;box-shadow:0 6px 20px rgba(22,32,43,.25);z-index:50;opacity:0;transition:opacity .25s}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
 
 @media (max-width:900px){
   .tiles{grid-template-columns:1fr 1fr}
@@ -117,7 +121,7 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
   <button class="btn" id="btnImport">+ Ajouter un relevé de compte</button>
   <button class="btn ghost" id="btnClose">Clôturer le mois</button>
   <button class="btn ghost" id="btnSettings" aria-label="Réglages">⚙</button>
-  <input type="file" id="fileInput" accept=".csv,.pdf" multiple hidden>
+  <input type="file" id="fileInput" accept=".csv" multiple hidden>
 </header>
 
 <section class="tiles" aria-label="Synthèse">
@@ -139,7 +143,7 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
         <thead><tr><th>Source</th><th class="num">Montant</th><th></th></tr></thead>
         <tbody id="revBody"></tbody>
       </table>
-      <button class="addrow" id="addRev">+ Ajouter un revenu</button>
+      <button class="addrow" id="addRev" style="display:block;width:100%">+ Ajouter un revenu</button>
     </section>
 
     <section class="card" style="margin-top:16px" aria-label="Charges fixes">
@@ -149,8 +153,8 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
         <tbody id="fixBody"></tbody>
         <tfoot><tr><td>Total — <span id="fixCount"></span></td><td></td><td class="num mono" id="fixTot"></td><td colspan="2"></td></tr></tfoot>
       </table>
-      <button class="addrow" id="addFix">+ Ajouter une charge</button>
-      <div class="hint">Cellules jaunes : à toi de saisir. Coche « Payé » quand le prélèvement passe — l'import de relevé le fait tout seul.</div>
+      <button class="addrow" id="addFix" style="display:block;width:100%">+ Ajouter une charge</button>
+      <div class="hint">Cellules jaunes : à toi de saisir (flèches = pas de 50 €, saisie libre au clavier). Coche « Payé » quand le prélèvement passe — l'import de relevé le fait tout seul.</div>
     </section>
   </div>
 
@@ -162,14 +166,18 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
         <tbody id="envBody"></tbody>
         <tfoot><tr><td>Total</td><td class="num mono" id="envTotB"></td><td class="num mono" id="envTotD"></td><td class="num" id="envTotR"></td><td></td></tr></tfoot>
       </table>
-      <button class="addrow" id="addEnv">+ Ajouter une enveloppe</button>
-      <div class="hint">« Dépensé » se remplit automatiquement quand tu importes un relevé — ou à la main si tu préfères. Rouge = enveloppe dépassée.</div>
+      <div class="envbar">
+        <button class="addrow" id="addEnv">+ Ajouter une enveloppe</button>
+        <button class="btn ghost small" id="btnPredef" title="Enregistrer les enveloppes et budgets actuels comme valeurs par défaut">Prédéfinir ces budgets</button>
+        <button class="btn ghost small" id="btnRestoreDef" title="Remettre les enveloppes à leurs valeurs prédéfinies">Revenir aux prédéfinis</button>
+      </div>
+      <div class="hint">« Prédéfinir » enregistre tes enveloppes et budgets actuels comme valeurs par défaut. À chaque changement de mois, clôture ou réinitialisation, tout repart de ces valeurs (Dépensé remis à zéro).</div>
     </section>
 
     <section class="card import-card" style="margin-top:16px" aria-label="Import de relevé">
       <div class="inner">
-        <p><span class="ia-dot" id="iaDot"></span><b id="iaState"></b></p>
-        <p>Ajoute ton relevé BoursoBank (CSV) ou un relevé PDF : les colonnes « Dépensé », « Payé » et les revenus se remplissent tout seuls pour le mois affiché.</p>
+        <p><b>Import automatique du relevé</b></p>
+        <p>Ajoute ton export CSV BoursoBank : chaque ligne est analysée et classée (resto, santé, carburant…). Les colonnes « Dépensé », les cases « Payé » et les revenus détectés se remplissent tout seuls pour le mois affiché — avec un aperçu avant d'appliquer.</p>
         <button class="btn" id="btnImport2">+ Ajouter un relevé de compte</button>
         <p id="opsInfo"></p>
       </div>
@@ -191,18 +199,16 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
 <dialog id="dlgSettings">
   <div class="dlg-h">Réglages</div>
   <div class="dlg-b">
-    <label for="apiKey">Clé API Anthropic (pour l'analyse IA des relevés)</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-...">
-    <p class="note">Crée une clé sur <b>console.anthropic.com</b> → API Keys. Elle reste uniquement dans <b>ton navigateur</b> (localStorage) — ne la mets jamais dans le dépôt GitHub. Sans clé, les CSV BoursoBank sont quand même classés automatiquement (règles intégrées) ; la clé ajoute l'IA pour les PDF et les cas ambigus.</p>
     <label>Sauvegarde</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn ghost small" id="btnExport">Exporter mes données (JSON)</button>
       <button class="btn ghost small" id="btnImportJson">Restaurer un export</button>
       <input type="file" id="jsonInput" accept=".json" hidden>
     </div>
-    <label>Zone dangereuse</label>
-    <button class="btn ghost small" id="btnReset" style="border-color:var(--neg);color:var(--neg)">Tout effacer et repartir de zéro</button>
-    <p class="note">Tes données vivent dans ce navigateur. Pense à exporter de temps en temps.</p>
+    <p class="note">Tes données vivent uniquement dans ce navigateur. Pense à exporter de temps en temps.</p>
+    <label>Réinitialiser</label>
+    <button class="btn ghost small" id="btnReset" style="border-color:var(--neg);color:var(--neg)">Réinitialiser l'application</button>
+    <p class="note">Remet tout à zéro (revenus, dépensé, cases payées, historique…) mais conserve tes enveloppes prédéfinies : les budgets repartent de tes valeurs par défaut.</p>
   </div>
   <div class="dlg-f"><button class="btn" id="btnSettingsOk">Fermer</button></div>
 </dialog>
@@ -233,10 +239,23 @@ const eur = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" 
 const fmt = (x) => eur.format(Math.round((x + Number.EPSILON) * 100) / 100);
 
 function seed() {
+  const envs = [
+    { n: "Courses alimentaires", b: 650, d: 0 },
+    { n: "Virements à des proches", b: 500, d: 0 },
+    { n: "Retraits espèces", b: 300, d: 0 },
+    { n: "Shopping & équipement", b: 250, d: 0 },
+    { n: "Épargne & comptes perso", b: 250, d: 0 },
+    { n: "Divers & non catégorisé", b: 200, d: 0 },
+    { n: "Carburant", b: 150, d: 0 },
+    { n: "Transports & voyages", b: 100, d: 0 },
+    { n: "Restaurants & sorties", b: 80, d: 0 },
+    { n: "Auto (entretien, parking…)", b: 50, d: 0 },
+    { n: "Santé (hors mutuelle)", b: 40, d: 0 },
+    { n: "Frais bancaires & incidents", b: 0, d: 0 }
+  ];
   return {
-    v: 1,
+    v: 2,
     mois: "2026-08",
-    key: "",
     revenus: [
       { n: "Salaire net GRDF", v: 0 },
       { n: "Compléments (astreintes, primes, heures sup…)", v: 0 },
@@ -247,7 +266,7 @@ function seed() {
       { n: "Crédit — CA Consumer Finance", j: "10", m: 100.0, p: false, k: "CA CONSUMER|CACF" },
       { n: "Crédit — FLOA (prélèvement)", j: "7", m: 39.25, p: false, k: "FLOA(?!.*FRANCE 4)" },
       { n: "Crédit — FLOA France 4 (carte)", j: "10", m: 172.74, p: false, k: "FLOA FRANCE 4|FRANCE 4" },
-      { n: "Assurance auto — Direct Assurance", j: "6", m: 40.08, p: false, k: "DIRECT ASSURANCE|AVANSSUR" },
+      { n: "Assurance auto — Direct Assurance", j: "6", m: 40.08, p: false, k: "DIRECT ASSURANC|AVANSSUR" },
       { n: "Assurance — ACM Crédit Mutuel", j: "16", m: 18.94, p: false, k: "ACM IARD|ACM " },
       { n: "Assurance habitation — Acheel", j: "24", m: 17.89, p: false, k: "ACHEEL" },
       { n: "Mutuelle santé — Énergie Mutuelle", j: "15", m: 64.75, p: false, k: "ENERGIE MUTUELLE" },
@@ -262,20 +281,8 @@ function seed() {
       { n: "Topwg Nounou", j: "7", m: 3.99, p: false, k: "TOPWG" },
       { n: "Canal+ / Microsoft", j: "—", m: 10.0, p: false, k: "CANAL|MICROSOFT" }
     ],
-    envs: [
-      { n: "Courses alimentaires", b: 650, d: 0 },
-      { n: "Virements à des proches", b: 500, d: 0 },
-      { n: "Retraits espèces", b: 300, d: 0 },
-      { n: "Shopping & équipement", b: 250, d: 0 },
-      { n: "Épargne & comptes perso", b: 250, d: 0 },
-      { n: "Divers & non catégorisé", b: 200, d: 0 },
-      { n: "Carburant", b: 150, d: 0 },
-      { n: "Transports & voyages", b: 100, d: 0 },
-      { n: "Restaurants & sorties", b: 80, d: 0 },
-      { n: "Auto (entretien, parking…)", b: 50, d: 0 },
-      { n: "Santé (hors mutuelle)", b: 40, d: 0 },
-      { n: "Frais bancaires & incidents", b: 0, d: 0 }
-    ],
+    envs: envs,
+    defEnvs: envs.map(e => ({ n: e.n, b: e.b })),
     ops: {},
     hist: [
       { mois: "Avril 2026", rev: null, fix: 742.02, var: 1848.35 },
@@ -288,9 +295,18 @@ function seed() {
 }
 let S;
 try { S = JSON.parse(localStorage.getItem(LS)) || seed(); } catch (e) { S = seed(); }
+/* migration depuis une éventuelle version précédente */
+if (!S.defEnvs) S.defEnvs = (S.envs || []).map(e => ({ n: e.n, b: +e.b || 0 }));
+if ("key" in S) delete S.key;
+S.v = 2;
 const save = () => localStorage.setItem(LS, JSON.stringify(S));
+save();
 
-/* ================= Mapping BoursoBank (mode local, sans IA) ================= */
+function applyDefaults() { S.envs = S.defEnvs.map(e => ({ n: e.n, b: +e.b || 0, d: 0 })); }
+function resetForMonth() { applyDefaults(); S.charges.forEach(c => c.p = false); }
+function monthDirty() { return S.envs.some(e => (+e.d || 0) > 0) || S.charges.some(c => c.p); }
+
+/* ================= Mapping BoursoBank (règles intégrées) ================= */
 const FIXE_CATS = new Set(["Téléphonie (fixe et mobile)", "Multimedia à domicile (TV, internet, téléphonie…)", "Assurances (Auto/Moto)", "Crédit conso", "Complémentaires santé", "Eau", "Energie (électricité, gaz, fuel, chauffage…)", "Assurance habitation et RC", "Loyers, Charges", "Club / association (sport, hobby, art…)"]);
 const VMAP = { "Alimentation": "Courses alimentaires", "Carburant": "Carburant", "Entretien - Réparation": "Auto (entretien, parking…)", "Parking": "Auto (entretien, parking…)", "Auto / Moto - Autres": "Auto (entretien, parking…)", "Restaurants, bars, discothèques…": "Restaurants & sorties", "Divertissement - culture (ciné, théâtre, concerts…)": "Restaurants & sorties", "Vêtements et accessoires": "Shopping & équipement", "Livres, CD/DVD, bijoux, jouets…": "Shopping & équipement", "Electronique et informatique": "Shopping & équipement", "Equipements sportifs et artistiques": "Shopping & équipement", "Mobilier, électroménager, décoration…": "Shopping & équipement", "Bien-être et soins (coiffeur, parfums…)": "Shopping & équipement", "Vie Quotidienne - Autres": "Shopping & équipement", "Vie quotidienne": "Shopping & équipement", "Médecins et frais médicaux": "Santé (hors mutuelle)", "Pharmacie et laboratoire": "Santé (hors mutuelle)", "Optique, audition…": "Santé (hors mutuelle)", "Taxis": "Transports & voyages", "Transports quotidiens (métro, bus…)": "Transports & voyages", "Transports longue distance (avions, trains…)": "Transports & voyages", "Hébergement (hôtels, camping…)": "Transports & voyages", "Retraits cash": "Retraits espèces", "Virements émis": "Virements à des proches", "Virements émis de comptes à comptes": "Épargne & comptes perso", "Frais bancaires et de gestion (dont agios)": "Frais bancaires & incidents", "Non catégorisé": "Divers & non catégorisé", "Autres dépenses": "Divers & non catégorisé", "Chèques": "Divers & non catégorisé", "Solidarité - Autres": "Divers & non catégorisé" };
 const DIVERS = "Divers & non catégorisé";
@@ -314,7 +330,8 @@ function parseCSV(text, sep) {
 }
 function num(s) { if (s == null || s === "") return NaN; return parseFloat(String(s).replace(/[\s\u00A0]/g, "").replace(",", ".")); }
 function opsFromCSV(text) {
-  const sep = (text.split("\n")[0].split(";").length > text.split("\n")[0].split(",").length) ? ";" : ",";
+  const first = text.split("\n")[0];
+  const sep = first.split(";").length >= first.split(",").length ? ";" : ",";
   const rows = parseCSV(text, sep);
   if (!rows.length) return [];
   const head = rows[0].map(h => h.trim());
@@ -339,10 +356,10 @@ function dedupe(existing, incoming) {
   return out;
 }
 
-/* ================= Analyse locale (règles intégrées) ================= */
+/* ================= Analyse des opérations (règles intégrées) ================= */
 function localAnalyse(ops) {
   const parPoste = {}; S.envs.forEach(e => parPoste[e.n] = 0);
-  const chargesDet = new Map(); // idx -> total
+  const chargesDet = new Map();
   const nouvelles = []; let salaire = 0, autres = 0;
   const regs = S.charges.map(c => { try { return c.k ? new RegExp(c.k, "i") : null; } catch (e) { return null; } });
   const cleanName = (n) => n.replace(/\(.*?\)/g, "").split("—").pop().trim();
@@ -366,40 +383,7 @@ function localAnalyse(ops) {
   }
   const charges = [...chargesDet.entries()].map(([i, montant]) => ({ i, montant: Math.round(montant * 100) / 100 }));
   Object.keys(parPoste).forEach(k => parPoste[k] = Math.round(parPoste[k] * 100) / 100);
-  return { par_poste: parPoste, charges, revenus: { salaire: Math.round(salaire * 100) / 100, autres: Math.round(autres * 100) / 100 }, nouvelles, resume: "Classement automatique par les règles BoursoBank intégrées (sans IA)." };
-}
-
-/* ================= Analyse IA (API Anthropic) ================= */
-async function aiAnalyse(ops, pdfs) {
-  const chargesL = S.charges.map((c, i) => ({ i, nom: c.n, montant_habituel: c.m }));
-  const envsL = S.envs.map(e => e.n);
-  const sys = "Tu es l'assistant budget d'un particulier français. Tu analyses des opérations bancaires d'UN mois et tu réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, sans balises markdown.";
-  const consigne = `Mois analysé : ${S.mois}.
-Opérations (montant négatif = dépense, positif = crédit) : ${JSON.stringify(ops)}
-Charges fixes de l'utilisateur (avec index i) : ${JSON.stringify(chargesL)}
-Enveloppes de dépenses variables (noms exacts à réutiliser) : ${JSON.stringify(envsL)}
-Règles :
-- Toute dépense correspondant à une charge fixe listée va dans "charges" (index i, montant total positif réellement prélevé ce mois) et PAS dans par_poste.
-- Libellés contenant HLM, FLOA, COFIDIS, APPLE.COM/BILL ou TOPWG = charges fixes. Libellé HERBIN AURELIEN = virement interne : en débit → enveloppe "Épargne & comptes perso", en crédit → ignorer.
-- Les autres dépenses se répartissent dans par_poste en utilisant EXACTEMENT les noms d'enveloppes fournis (totaux positifs). Ce qui ne rentre nulle part → "Divers & non catégorisé".
-- Prélèvements récurrents non listés dans les charges → "nouvelles" (et compte-les aussi dans "Divers & non catégorisé").
-- Crédits : salaire (employeur GRDF ou virement de paie) → revenus.salaire ; autres crédits externes → revenus.autres.
-Réponds avec ce JSON exact : {"par_poste":{"nom enveloppe":total,...},"charges":[{"i":0,"montant":620.00},...],"revenus":{"salaire":0,"autres":0},"nouvelles":[{"libelle":"...","montant":0}],"resume":"1 à 2 phrases en français sur le mois"}`;
-  const content = [{ type: "text", text: consigne }];
-  for (const p of (pdfs || [])) content.unshift({ type: "document", source: { type: "base64", media_type: "application/pdf", data: p } });
-  if (pdfs && pdfs.length) content[content.length - 1].text += "\nDes relevés PDF sont joints : extrais-en d'abord les opérations du mois analysé, ajoute-les à la liste, puis applique les règles.";
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-api-key": S.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-    body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 4000, system: sys, messages: [{ role: "user", content }] })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error((data && data.error && data.error.message) || ("Erreur API " + res.status));
-  const txt = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
-  const clean = txt.replace(/```json|```/g, "").trim();
-  const j = JSON.parse(clean.slice(clean.indexOf("{"), clean.lastIndexOf("}") + 1));
-  j.nouvelles = j.nouvelles || []; j.charges = j.charges || []; j.par_poste = j.par_poste || {}; j.revenus = j.revenus || { salaire: 0, autres: 0 };
-  return j;
+  return { par_poste: parPoste, charges, revenus: { salaire: Math.round(salaire * 100) / 100, autres: Math.round(autres * 100) / 100 }, nouvelles };
 }
 
 /* ================= Import : fichiers → analyse → aperçu ================= */
@@ -411,59 +395,58 @@ function moisLabel(m) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 async function handleFiles(files) {
-  const dlg = $("dlgImport"); $("impApply").disabled = true;
+  const dlg = $("dlgImport"); $("impApply").disabled = true; pending = null;
   $("impBody").innerHTML = '<p><span class="spin"></span>Lecture des fichiers…</p>';
-  dlg.showModal();
+  if (!dlg.open) dlg.showModal();
   try {
-    let csvOps = [], pdfs = [], ignored = 0;
+    let csvOps = [], ignored = 0;
     for (const f of files) {
-      if (/\.pdf$/i.test(f.name)) {
-        pdfs.push(await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result.split(",")[1]); r.onerror = () => ko(new Error("Lecture PDF impossible")); r.readAsDataURL(f); }));
-      } else {
-        const all = opsFromCSV(await f.text());
-        const inMonth = all.filter(o => o.d.startsWith(S.mois));
-        ignored += all.length - inMonth.length;
-        csvOps = csvOps.concat(inMonth);
-      }
+      if (!/\.csv$/i.test(f.name)) throw new Error("« " + f.name + " » n'est pas un CSV. Exporte le relevé au format CSV depuis BoursoBank (Mon compte → Historique → Exporter).");
+      const all = opsFromCSV(await f.text());
+      const inMonth = all.filter(o => o.d.startsWith(S.mois));
+      ignored += all.length - inMonth.length;
+      csvOps = csvOps.concat(inMonth);
     }
-    if (pdfs.length && !S.key) throw new Error("L'analyse d'un PDF nécessite une clé API Anthropic (⚙ Réglages). Les CSV BoursoBank, eux, marchent sans clé.");
+    if (!csvOps.length && !(S.ops[S.mois] || []).length) {
+      $("impBody").innerHTML = '<p class="err">Aucune opération de ' + moisLabel() + ' dans ce fichier' + (ignored ? " (" + ignored + " opération(s) d'autres mois ignorée(s))" : "") + '.</p><p class="note">Vérifie le mois sélectionné en haut de la page, ou exporte le bon mois depuis BoursoBank.</p>';
+      return;
+    }
     const merged = dedupe(S.ops[S.mois] || [], csvOps);
     S.ops[S.mois] = merged; save();
-    $("impBody").innerHTML = `<p><span class="spin"></span>${S.key ? "Analyse par l'IA…" : "Classement automatique…"}</p>`;
-    const result = S.key ? await aiAnalyse(merged, pdfs) : localAnalyse(merged);
+    $("impBody").innerHTML = '<p><span class="spin"></span>Classement automatique des opérations…</p>';
+    const result = localAnalyse(merged);
     pending = result;
-    renderPreview(result, merged.length, ignored, pdfs.length);
+    renderPreview(result, merged.length, ignored);
     $("impApply").disabled = false;
   } catch (e) {
-    $("impBody").innerHTML = `<p class="err">${e.message}</p>`;
+    $("impBody").innerHTML = '<p class="err">' + esc(e.message) + '</p>';
   }
 }
-function renderPreview(r, nOps, ignored, nPdf) {
+function renderPreview(r, nOps, ignored) {
   const lines = [];
-  lines.push(`<p><b>${nOps}</b> opération(s) de ${moisLabel()}${nPdf ? " + " + nPdf + " PDF" : ""}${ignored ? ` — ${ignored} hors mois ignorée(s)` : ""}.</p>`);
-  if (r.resume) lines.push(`<p class="note">${r.resume}</p>`);
+  lines.push('<p><b>' + nOps + '</b> opération(s) de ' + moisLabel() + (ignored ? ' — ' + ignored + ' hors mois ignorée(s)' : '') + '.</p>');
   const rev = r.revenus || {};
   if ((rev.salaire || 0) + (rev.autres || 0) > 0) {
     lines.push('<label>Revenus détectés</label>');
-    if (rev.salaire) lines.push(`<div class="rowline"><span>Salaire</span><b>${fmt(rev.salaire)}</b></div>`);
-    if (rev.autres) lines.push(`<div class="rowline"><span>Autres crédits</span><b>${fmt(rev.autres)}</b></div>`);
+    if (rev.salaire) lines.push('<div class="rowline"><span>Salaire</span><b>' + fmt(rev.salaire) + '</b></div>');
+    if (rev.autres) lines.push('<div class="rowline"><span>Autres crédits</span><b>' + fmt(rev.autres) + '</b></div>');
   }
   if (r.charges.length) {
     lines.push('<label>Charges fixes repérées → seront cochées « Payé »</label>');
     for (const c of r.charges) {
       const ch = S.charges[c.i]; if (!ch) continue;
-      const delta = Math.abs(c.montant - ch.m) > 0.005 ? ` <span class="tagnew">(${fmt(ch.m)} → ${fmt(c.montant)})</span>` : "";
-      lines.push(`<div class="rowline"><span>${ch.n}${delta}</span><b>${fmt(c.montant)}</b></div>`);
+      const delta = Math.abs(c.montant - ch.m) > 0.005 ? ' <span class="tagnew">(' + fmt(ch.m) + ' → ' + fmt(c.montant) + ')</span>' : '';
+      lines.push('<div class="rowline"><span>' + esc(ch.n) + delta + '</span><b>' + fmt(c.montant) + '</b></div>');
     }
   }
   const pp = Object.entries(r.par_poste).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
   if (pp.length) {
     lines.push('<label>Dépensé par enveloppe</label>');
-    for (const [k, v] of pp) lines.push(`<div class="rowline"><span>${k}</span><b>${fmt(v)}</b></div>`);
+    for (const [k, v] of pp) lines.push('<div class="rowline"><span>' + esc(k) + '</span><b>' + fmt(v) + '</b></div>');
   }
   if (r.nouvelles && r.nouvelles.length) {
     lines.push('<label>Prélèvements qui ressemblent à de nouvelles charges fixes</label>');
-    for (const n of r.nouvelles) lines.push(`<div class="rowline"><span>${n.libelle}</span><b>${fmt(n.montant)}</b></div>`);
+    for (const n of r.nouvelles) lines.push('<div class="rowline"><span>' + esc(n.libelle) + '</span><b>' + fmt(n.montant) + '</b></div>');
     lines.push('<p class="note">Comptés en « Divers » pour l\u2019instant — ajoute-les au bloc Charges fixes si c\u2019est récurrent.</p>');
   }
   lines.push('<p class="note">« Appliquer » remplace les colonnes Dépensé et l\u2019état Payé du mois par ce que dit le relevé.</p>');
@@ -481,8 +464,9 @@ function applyPending() {
   for (const c of pending.charges) { const ch = S.charges[c.i]; if (ch) { ch.p = true; if (c.montant > 0) ch.m = c.montant; } }
   const rev = pending.revenus || {};
   if (rev.salaire > 0 && S.revenus[0]) S.revenus[0].v = rev.salaire;
-  if (rev.autres > 0) { const slot = S.revenus.find(r => /autres/i.test(r.n)) || S.revenus[S.revenus.length - 1]; slot.v = rev.autres; }
+  if (rev.autres > 0) { const slot = S.revenus.find(x => /autres/i.test(x.n)) || S.revenus[S.revenus.length - 1]; if (slot) slot.v = rev.autres; }
   pending = null; save(); render();
+  toast("Relevé appliqué à " + moisLabel());
 }
 
 /* ================= Rendu ================= */
@@ -490,9 +474,51 @@ function totRev() { return S.revenus.reduce((s, r) => s + (+r.v || 0), 0); }
 function totFix() { return S.charges.reduce((s, c) => s + (+c.m || 0), 0); }
 function totEnvB() { return S.envs.reduce((s, e) => s + (+e.b || 0), 0); }
 function totEnvD() { return S.envs.reduce((s, e) => s + (+e.d || 0), 0); }
+function esc(s) { return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
 
 function render() {
   $("month").value = S.mois;
+  renderTotalsOnly();
+
+  $("revBody").innerHTML = S.revenus.map((r, i) => '<tr>' +
+    '<td><input class="name-in" data-t="rev" data-i="' + i + '" data-f="n" value="' + esc(r.n) + '" aria-label="Nom du revenu"></td>' +
+    '<td class="num"><input class="eur-in" type="number" step="50" min="0" data-t="rev" data-i="' + i + '" data-f="v" value="' + (r.v || "") + '" placeholder="0"></td>' +
+    '<td class="ctr"><button class="del" data-del="rev" data-i="' + i + '" aria-label="Supprimer">×</button></td></tr>').join("");
+
+  $("fixBody").innerHTML = S.charges.map((c, i) => '<tr>' +
+    '<td><input class="name-in" data-t="fix" data-i="' + i + '" data-f="n" value="' + esc(c.n) + '" aria-label="Nom de la charge"></td>' +
+    '<td class="ctr jour"><input class="name-in" style="width:52px;text-align:center" data-t="fix" data-i="' + i + '" data-f="j" value="' + esc(c.j || "") + '" aria-label="Jour de prélèvement"></td>' +
+    '<td class="num"><input class="eur-in" type="number" step="50" min="0" data-t="fix" data-i="' + i + '" data-f="m" value="' + (c.m ?? "") + '" placeholder="0"></td>' +
+    '<td class="ctr"><input type="checkbox" data-t="fix" data-i="' + i + '" data-f="p" ' + (c.p ? "checked" : "") + ' aria-label="Payé"></td>' +
+    '<td class="ctr"><button class="del" data-del="fix" data-i="' + i + '" aria-label="Supprimer">×</button></td></tr>').join("");
+
+  $("envBody").innerHTML = S.envs.map((e, i) => {
+    const r = (+e.b || 0) - (+e.d || 0);
+    return '<tr>' +
+    '<td><input class="name-in" data-t="env" data-i="' + i + '" data-f="n" value="' + esc(e.n) + '" aria-label="Nom de l\u2019enveloppe"></td>' +
+    '<td class="num"><input class="eur-in" type="number" step="50" min="0" data-t="env" data-i="' + i + '" data-f="b" value="' + (e.b ?? "") + '" placeholder="0"></td>' +
+    '<td class="num"><input class="eur-in" type="number" step="50" min="0" data-t="env" data-i="' + i + '" data-f="d" value="' + (e.d || "") + '" placeholder="0"></td>' +
+    '<td class="num reste-cell ' + (e.d && r < 0 ? "neg" : "") + '">' + (e.d ? fmt(r) : "—") + '</td>' +
+    '<td class="ctr"><button class="del" data-del="env" data-i="' + i + '" aria-label="Supprimer">×</button></td></tr>';
+  }).join("");
+
+  $("histBody").innerHTML = S.hist.map((h, i) => {
+    const sort = (+h.fix || 0) + (+h.var || 0);
+    const rest = h.rev != null && h.rev !== "" ? (+h.rev - sort) : null;
+    return '<tr>' +
+    '<td>' + esc(h.mois) + '</td>' +
+    '<td class="num"><input class="eur-in" type="number" step="50" min="0" data-t="hist" data-i="' + i + '" data-f="rev" value="' + (h.rev ?? "") + '" placeholder="—"></td>' +
+    '<td class="num mono">' + fmt(h.fix || 0) + '</td>' +
+    '<td class="num mono">' + fmt(h.var || 0) + '</td>' +
+    '<td class="num mono">' + fmt(sort) + '</td>' +
+    '<td class="num reste-cell ' + (rest != null && rest < 0 ? "neg" : "") + '">' + (rest != null ? fmt(rest) : "—") + '</td>' +
+    '<td class="ctr"><button class="del" data-del="hist" data-i="' + i + '" aria-label="Supprimer">×</button></td></tr>';
+  }).join("");
+
+  const n = (S.ops[S.mois] || []).length;
+  $("opsInfo").textContent = n ? n + " opération(s) déjà importée(s) pour " + moisLabel() + " — réimporter un export à jour remplace proprement." : "";
+}
+function renderTotalsOnly() {
   const rev = totRev(), fix = totFix(), envB = totEnvB(), envD = totEnvD();
   const reste = rev - fix - envB;
   $("tRev").textContent = fmt(rev); $("tFix").textContent = fmt(fix); $("tEnv").textContent = fmt(envB);
@@ -500,58 +526,24 @@ function render() {
   const tile = $("tileReste"); tile.classList.toggle("pos", reste >= 0); tile.classList.toggle("neg", reste < 0);
   $("tResteSub").textContent = rev === 0 ? "saisis tes revenus pour un chiffre réaliste" : "revenus − charges fixes − enveloppes";
   $("hRev").textContent = fmt(rev); $("hFix").textContent = fmt(fix); $("hEnv").textContent = fmt(envB) + " budgétés";
-
-  $("revBody").innerHTML = S.revenus.map((r, i) => `<tr>
-    <td><input class="name-in" data-t="rev" data-i="${i}" data-f="n" value="${esc(r.n)}" aria-label="Nom du revenu"></td>
-    <td class="num"><input class="eur-in" type="number" step="0.01" data-t="rev" data-i="${i}" data-f="v" value="${r.v || ""}" placeholder="0"></td>
-    <td class="ctr"><button class="del" data-del="rev" data-i="${i}" aria-label="Supprimer">×</button></td></tr>`).join("");
-
-  $("fixBody").innerHTML = S.charges.map((c, i) => `<tr>
-    <td><input class="name-in" data-t="fix" data-i="${i}" data-f="n" value="${esc(c.n)}" aria-label="Nom de la charge"></td>
-    <td class="ctr jour"><input class="name-in" style="width:52px;text-align:center" data-t="fix" data-i="${i}" data-f="j" value="${esc(c.j || "")}" aria-label="Jour de prélèvement"></td>
-    <td class="num"><input class="eur-in" type="number" step="0.01" data-t="fix" data-i="${i}" data-f="m" value="${c.m ?? ""}" placeholder="0"></td>
-    <td class="ctr"><input type="checkbox" data-t="fix" data-i="${i}" data-f="p" ${c.p ? "checked" : ""} aria-label="Payé"></td>
-    <td class="ctr"><button class="del" data-del="fix" data-i="${i}" aria-label="Supprimer">×</button></td></tr>`).join("");
   $("fixTot").textContent = fmt(fix);
   $("fixCount").textContent = S.charges.filter(c => c.p).length + "/" + S.charges.length + " payées";
-
-  $("envBody").innerHTML = S.envs.map((e, i) => {
-    const r = (+e.b || 0) - (+e.d || 0);
-    return `<tr>
-    <td><input class="name-in" data-t="env" data-i="${i}" data-f="n" value="${esc(e.n)}" aria-label="Nom de l'enveloppe"></td>
-    <td class="num"><input class="eur-in" type="number" step="0.01" data-t="env" data-i="${i}" data-f="b" value="${e.b ?? ""}" placeholder="0"></td>
-    <td class="num"><input class="eur-in" type="number" step="0.01" data-t="env" data-i="${i}" data-f="d" value="${e.d || ""}" placeholder="0"></td>
-    <td class="num reste-cell ${r < 0 ? "neg" : ""}">${e.d ? fmt(r) : "—"}</td>
-    <td class="ctr"><button class="del" data-del="env" data-i="${i}" aria-label="Supprimer">×</button></td></tr>`;
-  }).join("");
   $("envTotB").textContent = fmt(envB);
   $("envTotD").textContent = envD ? fmt(envD) : "—";
   const rTot = envB - envD;
-  $("envTotR").innerHTML = envD ? `<span class="reste-cell ${rTot < 0 ? "neg" : ""}">${fmt(rTot)}</span>` : "—";
-
-  $("histBody").innerHTML = S.hist.map((h, i) => {
-    const sort = (+h.fix || 0) + (+h.var || 0);
-    const rest = h.rev != null && h.rev !== "" ? (+h.rev - sort) : null;
-    return `<tr>
-    <td>${esc(h.mois)}</td>
-    <td class="num"><input class="eur-in" type="number" step="0.01" data-t="hist" data-i="${i}" data-f="rev" value="${h.rev ?? ""}" placeholder="—"></td>
-    <td class="num mono">${fmt(h.fix || 0)}</td>
-    <td class="num mono">${fmt(h.var || 0)}</td>
-    <td class="num mono">${fmt(sort)}</td>
-    <td class="num reste-cell ${rest != null && rest < 0 ? "neg" : ""}">${rest != null ? fmt(rest) : "—"}</td>
-    <td class="ctr"><button class="del" data-del="hist" data-i="${i}" aria-label="Supprimer">×</button></td></tr>`;
-  }).join("");
-
-  const n = (S.ops[S.mois] || []).length;
-  $("opsInfo").textContent = n ? n + " opération(s) déjà importée(s) pour " + moisLabel() + " — réimporter un export à jour remplace proprement." : "";
-  $("iaDot").className = "ia-dot " + (S.key ? "on" : "off");
-  $("iaState").textContent = S.key ? "IA activée (clé API enregistrée)" : "Mode règles automatiques — ajoute une clé API dans ⚙ pour l'IA et les PDF";
+  $("envTotR").innerHTML = envD ? '<span class="reste-cell ' + (rTot < 0 ? "neg" : "") + '">' + fmt(rTot) + '</span>' : "—";
 }
-function esc(s) { return String(s ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+function toast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add("show"));
+  setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 2600);
+}
 
 /* ================= Événements ================= */
 document.addEventListener("input", (ev) => {
-  const t = ev.target, ty = t.dataset.t;
+  const t = ev.target, ty = t.dataset && t.dataset.t;
   if (!ty) return;
   const i = +t.dataset.i, f = t.dataset.f;
   const list = ty === "rev" ? S.revenus : ty === "fix" ? S.charges : ty === "env" ? S.envs : S.hist;
@@ -560,17 +552,16 @@ document.addEventListener("input", (ev) => {
   else if (f === "p") list[i].p = t.checked;
   else list[i][f] = t.value === "" ? (ty === "hist" ? null : 0) : +t.value;
   save();
-  if (t.type !== "text" && f !== "n" && f !== "j") renderTotalsOnly();
+  if (f !== "n" && f !== "j") {
+    renderTotalsOnly();
+    if (ty === "env" && (f === "b" || f === "d")) {
+      const e = list[i], r = (+e.b || 0) - (+e.d || 0);
+      const cell = t.closest("tr").querySelector(".reste-cell");
+      if (cell) { cell.textContent = e.d ? fmt(r) : "—"; cell.classList.toggle("neg", !!e.d && r < 0); }
+    }
+  }
 });
 document.addEventListener("change", (ev) => { if (ev.target.dataset && ev.target.dataset.t) render(); });
-function renderTotalsOnly() {
-  const rev = totRev(), fix = totFix(), envB = totEnvB();
-  const reste = rev - fix - envB;
-  $("tRev").textContent = fmt(rev); $("tFix").textContent = fmt(fix); $("tEnv").textContent = fmt(envB);
-  $("tReste").textContent = fmt(reste); $("hRev").textContent = fmt(rev); $("hFix").textContent = fmt(fix);
-  $("hEnv").textContent = fmt(envB) + " budgétés"; $("fixTot").textContent = fmt(fix);
-  const tile = $("tileReste"); tile.classList.toggle("pos", reste >= 0); tile.classList.toggle("neg", reste < 0);
-}
 document.addEventListener("click", (ev) => {
   const d = ev.target.dataset && ev.target.dataset.del;
   if (!d) return;
@@ -581,22 +572,47 @@ document.addEventListener("click", (ev) => {
 $("addRev").onclick = () => { S.revenus.push({ n: "Nouveau revenu", v: 0 }); save(); render(); };
 $("addFix").onclick = () => { S.charges.push({ n: "Nouvelle charge", j: "", m: 0, p: false, k: "" }); save(); render(); };
 $("addEnv").onclick = () => { S.envs.push({ n: "Nouvelle enveloppe", b: 0, d: 0 }); save(); render(); };
-$("month").addEventListener("change", (e) => { S.mois = e.target.value || S.mois; save(); render(); });
 
-$("btnImport").onclick = $("btnImport2").onclick = () => $("fileInput").click();
+/* --- enveloppes prédéfinies --- */
+$("btnPredef").onclick = () => {
+  S.defEnvs = S.envs.map(e => ({ n: e.n, b: +e.b || 0 }));
+  save();
+  toast("Enveloppes et budgets enregistrés comme valeurs par défaut");
+};
+$("btnRestoreDef").onclick = () => {
+  applyDefaults(); save(); render();
+  toast("Enveloppes reparties des valeurs prédéfinies");
+};
+
+/* --- changement de mois : on repart des prédéfinis --- */
+$("month").addEventListener("change", (e) => {
+  const val = e.target.value;
+  if (!val || val === S.mois) { e.target.value = S.mois; return; }
+  if (monthDirty() && !confirm("Passer à " + moisLabel(val) + " ?\n\nLes enveloppes repartiront de tes valeurs prédéfinies : « Dépensé » remis à zéro et cases « Payé » décochées. (Pour archiver d'abord ce mois, utilise plutôt « Clôturer le mois ».)")) {
+    e.target.value = S.mois; return;
+  }
+  S.mois = val;
+  resetForMonth();
+  save(); render();
+});
+
+/* --- import --- */
+$("btnImport").onclick = () => $("fileInput").click();
+$("btnImport2").onclick = () => $("fileInput").click();
 $("fileInput").addEventListener("change", (e) => { if (e.target.files.length) handleFiles([...e.target.files]); e.target.value = ""; });
 $("impCancel").onclick = () => { pending = null; $("dlgImport").close(); };
 $("impApply").onclick = () => { applyPending(); $("dlgImport").close(); };
 
+/* --- clôture --- */
 $("btnClose").onclick = () => {
   const rev = totRev(), fix = totFix(), dep = totEnvD();
-  $("closeBody").innerHTML = `
-    <div class="rowline"><span>Mois</span><b style="font-family:'Public Sans'">${moisLabel()}</b></div>
-    <div class="rowline"><span>Revenus</span><b>${fmt(rev)}</b></div>
-    <div class="rowline"><span>Charges fixes</span><b>${fmt(fix)}</b></div>
-    <div class="rowline"><span>Dépenses variables (colonne Dépensé)</span><b>${fmt(dep)}</b></div>
-    <div class="rowline"><span>Reste réel</span><b>${fmt(rev - fix - dep)}</b></div>
-    <p class="note">Ces chiffres partent dans l'historique, puis le mois suivant s'ouvre : cases « Payé » décochées, colonnes « Dépensé » remises à zéro. Budgets, montants de charges et revenus sont conservés.</p>`;
+  $("closeBody").innerHTML =
+    '<div class="rowline"><span>Mois</span><b style="font-family:\'Public Sans\'">' + moisLabel() + '</b></div>' +
+    '<div class="rowline"><span>Revenus</span><b>' + fmt(rev) + '</b></div>' +
+    '<div class="rowline"><span>Charges fixes</span><b>' + fmt(fix) + '</b></div>' +
+    '<div class="rowline"><span>Dépenses variables (colonne Dépensé)</span><b>' + fmt(dep) + '</b></div>' +
+    '<div class="rowline"><span>Reste réel</span><b>' + fmt(rev - fix - dep) + '</b></div>' +
+    '<p class="note">Ces chiffres partent dans l\u2019historique, puis le mois suivant s\u2019ouvre : enveloppes reparties de tes valeurs prédéfinies, « Dépensé » à zéro, cases « Payé » décochées. Montants de charges et revenus conservés.</p>';
   $("dlgClose").showModal();
 };
 $("closeCancel").onclick = () => $("dlgClose").close();
@@ -605,13 +621,14 @@ $("closeOk").onclick = () => {
   const [y, m] = S.mois.split("-").map(Number);
   const nd = new Date(y, m, 1);
   S.mois = nd.getFullYear() + "-" + String(nd.getMonth() + 1).padStart(2, "0");
-  S.charges.forEach(c => c.p = false);
-  S.envs.forEach(e => e.d = 0);
+  resetForMonth();
   save(); render(); $("dlgClose").close();
+  toast("Mois archivé — bienvenue en " + moisLabel());
 };
 
-$("btnSettings").onclick = () => { $("apiKey").value = S.key; $("dlgSettings").showModal(); };
-$("btnSettingsOk").onclick = () => { S.key = $("apiKey").value.trim(); save(); render(); $("dlgSettings").close(); };
+/* --- réglages --- */
+$("btnSettings").onclick = () => $("dlgSettings").showModal();
+$("btnSettingsOk").onclick = () => $("dlgSettings").close();
 $("btnExport").onclick = () => {
   const blob = new Blob([JSON.stringify(S, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
@@ -622,12 +639,26 @@ $("btnExport").onclick = () => {
 $("btnImportJson").onclick = () => $("jsonInput").click();
 $("jsonInput").addEventListener("change", async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  try { const j = JSON.parse(await f.text()); if (!j.envs || !j.charges) throw 0; S = j; save(); render(); $("dlgSettings").close(); }
-  catch (err) { alert("Fichier de sauvegarde illisible."); }
+  try {
+    const j = JSON.parse(await f.text());
+    if (!j.envs || !j.charges) throw new Error("format");
+    S = j;
+    if (!S.defEnvs) S.defEnvs = S.envs.map(x => ({ n: x.n, b: +x.b || 0 }));
+    if ("key" in S) delete S.key;
+    S.v = 2;
+    save(); render(); $("dlgSettings").close();
+    toast("Sauvegarde restaurée");
+  } catch (err) { alert("Fichier de sauvegarde illisible."); }
   e.target.value = "";
 });
 $("btnReset").onclick = () => {
-  if (confirm("Tout effacer (revenus, charges, enveloppes, historique, clé API) et repartir de zéro ?")) { S = seed(); save(); render(); $("dlgSettings").close(); }
+  if (!confirm("Réinitialiser l\u2019application ?\n\nRevenus, dépensé, cases payées, historique et opérations importées repartent de zéro. Tes enveloppes prédéfinies sont conservées et réappliquées.")) return;
+  const keep = S.defEnvs.map(e => ({ n: e.n, b: +e.b || 0 }));
+  S = seed();
+  S.defEnvs = keep;
+  applyDefaults();
+  save(); render(); $("dlgSettings").close();
+  toast("Application réinitialisée — budgets prédéfinis appliqués");
 };
 
 render();
