@@ -33,12 +33,12 @@ header h1{font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing
 .btn:focus-visible,input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 /* ---- tuiles synthèse ---- */
-.tiles{display:grid;grid-template-columns:1fr 1fr 1fr 2fr;gap:12px;margin-bottom:18px}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1fr 1.6fr 1.6fr;gap:12px;margin-bottom:18px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 .tile .lab{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:600}
 .tile .val{font-size:22px;font-weight:700;margin-top:4px}
 .tile.reste{display:flex;flex-direction:column;justify-content:center;transition:background .3s,border-color .3s}
-.tile.reste .val{font-size:34px;font-weight:700}
+.tile.reste .val{font-size:30px;font-weight:700}
 .tile.reste .sub{font-size:12px;color:var(--mut);margin-top:2px}
 .tile.reste.pos{background:var(--pos-bg);border-color:var(--pos)}
 .tile.reste.pos .val{color:var(--pos)}
@@ -133,6 +133,11 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
     <div class="val mono" id="tReste">0 €</div>
     <div class="sub" id="tResteSub">revenus − charges fixes − enveloppes</div>
   </div>
+  <div class="tile reste" id="tileActuel">
+    <div class="lab">Reste actuel</div>
+    <div class="val mono" id="tActuel">0 €</div>
+    <div class="sub">revenus − charges payées − dépensé à ce jour</div>
+  </div>
 </section>
 
 <div class="grid">
@@ -162,7 +167,7 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
     <section class="card" aria-label="Enveloppes variables">
       <h2>Enveloppes variables <span class="tot mono" id="hEnv"></span></h2>
       <table>
-        <thead><tr><th>Poste</th><th class="num">Budget</th><th class="num">Dépensé</th><th class="num">Reste</th><th></th></tr></thead>
+        <thead><tr><th>Poste</th><th class="num">Budget</th><th class="num">Dépensé</th><th class="num">Écart</th><th></th></tr></thead>
         <tbody id="envBody"></tbody>
         <tfoot><tr><td>Total</td><td class="num mono" id="envTotB"></td><td class="num mono" id="envTotD"></td><td class="num" id="envTotR"></td><td></td></tr></tfoot>
       </table>
@@ -528,6 +533,10 @@ function renderTotalsOnly() {
   $("hRev").textContent = fmt(rev); $("hFix").textContent = fmt(fix); $("hEnv").textContent = fmt(envB) + " budgétés";
   $("fixTot").textContent = fmt(fix);
   $("fixCount").textContent = S.charges.filter(c => c.p).length + "/" + S.charges.length + " payées";
+  const fixPaid = S.charges.reduce((s, c) => s + (c.p ? (+c.m || 0) : 0), 0);
+  const actuel = rev - fixPaid - envD;
+  $("tActuel").textContent = fmt(actuel);
+  const ta = $("tileActuel"); ta.classList.toggle("pos", actuel >= 0); ta.classList.toggle("neg", actuel < 0);
   $("envTotB").textContent = fmt(envB);
   $("envTotD").textContent = envD ? fmt(envD) : "—";
   const rTot = envB - envD;
