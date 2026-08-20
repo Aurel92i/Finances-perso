@@ -176,7 +176,7 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
         <button class="btn ghost small" id="btnPredef" title="Enregistrer les enveloppes et budgets actuels comme valeurs par défaut">Prédéfinir ces budgets</button>
         <button class="btn ghost small" id="btnRestoreDef" title="Remettre les enveloppes à leurs valeurs prédéfinies">Revenir aux prédéfinis</button>
       </div>
-      <div class="hint">« Prédéfinir » enregistre tes enveloppes et budgets actuels comme valeurs par défaut. À chaque changement de mois, clôture ou réinitialisation, tout repart de ces valeurs (Dépensé remis à zéro).</div>
+      <div class="hint">« Prédéfinir » enregistre tes enveloppes et budgets actuels comme modèle. Chaque mois garde ensuite ses propres saisies : tu navigues d'un mois à l'autre sans rien perdre, et un mois jamais ouvert repart de ce modèle.</div>
     </section>
 
     <section class="card import-card" style="margin-top:16px" aria-label="Import de relevé">
@@ -196,7 +196,7 @@ dialog::backdrop{background:rgba(22,32,43,.45)}
     <thead><tr><th>Mois</th><th class="num">Revenus</th><th class="num">Charges fixes</th><th class="num">Dépenses variables</th><th class="num">Sorties totales</th><th class="num">Reste</th><th></th></tr></thead>
     <tbody id="histBody"></tbody>
   </table>
-  <div class="hint">« Clôturer le mois » archive automatiquement le mois affiché ici, puis passe au mois suivant. Revenus d'avril à août : à compléter si tu les retrouves (tes exports ne contenaient que les débits).</div>
+  <div class="hint">« Clôturer le mois » archive le mois affiché ici, puis ouvre le mois suivant (nouveau ou déjà commencé — rien n'est perdu). Revenus d'avril à août : à compléter si tu les retrouves (tes exports ne contenaient que les débits).</div>
 </section>
 
 </div>
@@ -288,6 +288,7 @@ function seed() {
     ],
     envs: envs,
     defEnvs: envs.map(e => ({ n: e.n, b: e.b })),
+    byMonth: {},
     ops: {},
     hist: [
       { mois: "Avril 2026", rev: null, fix: 742.02, var: 1848.35 },
@@ -302,14 +303,30 @@ let S;
 try { S = JSON.parse(localStorage.getItem(LS)) || seed(); } catch (e) { S = seed(); }
 /* migration depuis une éventuelle version précédente */
 if (!S.defEnvs) S.defEnvs = (S.envs || []).map(e => ({ n: e.n, b: +e.b || 0 }));
+if (!S.byMonth) S.byMonth = {};
 if ("key" in S) delete S.key;
-S.v = 2;
+S.v = 3;
 const save = () => localStorage.setItem(LS, JSON.stringify(S));
 save();
 
 function applyDefaults() { S.envs = S.defEnvs.map(e => ({ n: e.n, b: +e.b || 0, d: 0 })); }
-function resetForMonth() { applyDefaults(); S.charges.forEach(c => c.p = false); }
-function monthDirty() { return S.envs.some(e => (+e.d || 0) > 0) || S.charges.some(c => c.p); }
+function snapshot() {
+  return { revenus: JSON.parse(JSON.stringify(S.revenus)), charges: JSON.parse(JSON.stringify(S.charges)), envs: JSON.parse(JSON.stringify(S.envs)) };
+}
+function saveCurrentMonth() { S.byMonth[S.mois] = snapshot(); }
+function loadMonth(mois) {
+  const snap = S.byMonth[mois];
+  if (snap) {
+    S.revenus = JSON.parse(JSON.stringify(snap.revenus));
+    S.charges = JSON.parse(JSON.stringify(snap.charges));
+    S.envs = JSON.parse(JSON.stringify(snap.envs));
+  } else {
+    // Mois jamais visité : structure des charges/revenus reprise du mois courant (mais remise à zéro), enveloppes reparties des prédéfinis.
+    S.revenus = S.revenus.map(r => ({ n: r.n, v: 0 }));
+    S.charges = S.charges.map(c => ({ n: c.n, j: c.j, m: c.m, p: false, k: c.k }));
+    applyDefaults();
+  }
+}
 
 /* ================= Mapping BoursoBank (règles intégrées) ================= */
 const FIXE_CATS = new Set(["Téléphonie (fixe et mobile)", "Multimedia à domicile (TV, internet, téléphonie…)", "Assurances (Auto/Moto)", "Crédit conso", "Complémentaires santé", "Eau", "Energie (électricité, gaz, fuel, chauffage…)", "Assurance habitation et RC", "Loyers, Charges", "Club / association (sport, hobby, art…)"]);
@@ -597,12 +614,11 @@ $("btnRestoreDef").onclick = () => {
 $("month").addEventListener("change", (e) => {
   const val = e.target.value;
   if (!val || val === S.mois) { e.target.value = S.mois; return; }
-  if (monthDirty() && !confirm("Passer à " + moisLabel(val) + " ?\n\nLes enveloppes repartiront de tes valeurs prédéfinies : « Dépensé » remis à zéro et cases « Payé » décochées. (Pour archiver d'abord ce mois, utilise plutôt « Clôturer le mois ».)")) {
-    e.target.value = S.mois; return;
-  }
+  saveCurrentMonth();
   S.mois = val;
-  resetForMonth();
+  loadMonth(val);
   save(); render();
+  toast(moisLabel() + " — tes données sont conservées, chaque mois garde les siennes");
 });
 
 /* --- import --- */
@@ -627,10 +643,12 @@ $("btnClose").onclick = () => {
 $("closeCancel").onclick = () => $("dlgClose").close();
 $("closeOk").onclick = () => {
   S.hist.push({ mois: moisLabel(), rev: totRev() || null, fix: totFix(), var: totEnvD() });
+  saveCurrentMonth();
   const [y, m] = S.mois.split("-").map(Number);
   const nd = new Date(y, m, 1);
-  S.mois = nd.getFullYear() + "-" + String(nd.getMonth() + 1).padStart(2, "0");
-  resetForMonth();
+  const next = nd.getFullYear() + "-" + String(nd.getMonth() + 1).padStart(2, "0");
+  S.mois = next;
+  loadMonth(next);
   save(); render(); $("dlgClose").close();
   toast("Mois archivé — bienvenue en " + moisLabel());
 };
@@ -639,6 +657,7 @@ $("closeOk").onclick = () => {
 $("btnSettings").onclick = () => $("dlgSettings").showModal();
 $("btnSettingsOk").onclick = () => $("dlgSettings").close();
 $("btnExport").onclick = () => {
+  saveCurrentMonth(); save();
   const blob = new Blob([JSON.stringify(S, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -653,15 +672,16 @@ $("jsonInput").addEventListener("change", async (e) => {
     if (!j.envs || !j.charges) throw new Error("format");
     S = j;
     if (!S.defEnvs) S.defEnvs = S.envs.map(x => ({ n: x.n, b: +x.b || 0 }));
+    if (!S.byMonth) S.byMonth = {};
     if ("key" in S) delete S.key;
-    S.v = 2;
+    S.v = 3;
     save(); render(); $("dlgSettings").close();
     toast("Sauvegarde restaurée");
   } catch (err) { alert("Fichier de sauvegarde illisible."); }
   e.target.value = "";
 });
 $("btnReset").onclick = () => {
-  if (!confirm("Réinitialiser l\u2019application ?\n\nRevenus, dépensé, cases payées, historique et opérations importées repartent de zéro. Tes enveloppes prédéfinies sont conservées et réappliquées.")) return;
+  if (!confirm("Réinitialiser l\u2019application ?\n\nRevenus, dépensé, cases payées, historique, opérations importées et données de TOUS les mois repartent de zéro. Tes enveloppes prédéfinies sont conservées et réappliquées.")) return;
   const keep = S.defEnvs.map(e => ({ n: e.n, b: +e.b || 0 }));
   S = seed();
   S.defEnvs = keep;
